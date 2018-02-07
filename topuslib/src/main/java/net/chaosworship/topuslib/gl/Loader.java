@@ -1,0 +1,251 @@
+package net.chaosworship.topuslib.gl;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.opengl.GLUtils;
+import android.os.Environment;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Scanner;
+
+import static android.opengl.GLES20.GL_COMPILE_STATUS;
+import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
+import static android.opengl.GLES20.GL_LINK_STATUS;
+import static android.opengl.GLES20.GL_RGBA;
+import static android.opengl.GLES20.GL_TEXTURE_2D;
+import static android.opengl.GLES20.GL_TRUE;
+import static android.opengl.GLES20.GL_UNSIGNED_BYTE;
+import static android.opengl.GLES20.GL_VERTEX_SHADER;
+import static android.opengl.GLES20.glAttachShader;
+import static android.opengl.GLES20.glBindTexture;
+import static android.opengl.GLES20.glCompileShader;
+import static android.opengl.GLES20.glCreateProgram;
+import static android.opengl.GLES20.glCreateShader;
+import static android.opengl.GLES20.glGenFramebuffers;
+import static android.opengl.GLES20.glGenRenderbuffers;
+import static android.opengl.GLES20.glGenTextures;
+import static android.opengl.GLES20.glGetProgramInfoLog;
+import static android.opengl.GLES20.glGetProgramiv;
+import static android.opengl.GLES20.glGetShaderInfoLog;
+import static android.opengl.GLES20.glGetShaderiv;
+import static android.opengl.GLES20.glLinkProgram;
+import static android.opengl.GLES20.glShaderSource;
+import static android.opengl.GLES20.glTexImage2D;
+import static android.opengl.GLES20.glUseProgram;
+
+
+@SuppressWarnings({"unused", "SameParameterValue", "WeakerAccess"})
+public class Loader {
+
+    private static final int INVALIDPROGRAM = 0;
+    private static final int INVALIDTEXTURE = 0;
+
+    public static class LoaderException extends Exception {
+        LoaderException(String message) {
+            super(message);
+        }
+    }
+
+    private final Context mContext;
+    private final HashMap<String, Integer> mPrograms;
+    private final HashMap<Integer, Integer> mTextures;
+    private final HashMap<String, FrameBuffer> mFrameBuffers;
+
+    @SuppressLint("UseSparseArrays")
+    public Loader(Context context) {
+        mContext = context;
+        mPrograms = new HashMap<>();
+        mTextures = new HashMap<>();
+        mFrameBuffers = new HashMap<>();
+        invalidateAll();
+    }
+
+    public void invalidateAll() {
+        mPrograms.clear();
+        mTextures.clear();
+        mFrameBuffers.clear();
+    }
+
+    public int useProgram(String name) {
+        if(name == null || name.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        if(!mPrograms.containsKey(name)) {
+            try {
+                mPrograms.put(name, loadProgram(name));
+            } catch (LoaderException e) {
+                e.printStackTrace();
+                mPrograms.put(name, INVALIDPROGRAM); // don't try more than once
+            }
+        }
+
+        int program = mPrograms.get(name);
+        if(program != INVALIDPROGRAM) {
+            glUseProgram(program);
+        }
+
+        return program;
+    }
+
+    public FrameBuffer getFrameBuffer(String name, int width, int height) throws LoaderException {
+        if(!mFrameBuffers.containsKey(name)) {
+            FrameBuffer newFB;
+            try {
+                newFB = new FrameBuffer(width, height);
+            } catch (LoaderException e) {
+                e.printStackTrace();
+                newFB = null;
+            }
+
+            mFrameBuffers.put(name, newFB);
+        }
+
+        FrameBuffer frameBuffer = mFrameBuffers.get(name);
+        if(frameBuffer != null && !frameBuffer.isSize(width, height)) {
+            throw new LoaderException("possible frame buffer name collision");
+        }
+
+        return frameBuffer;
+    }
+
+    public int getTexture(int resourceId) {
+        if(!mTextures.containsKey(resourceId)) {
+            try {
+                mTextures.put(resourceId, loadTexture(resourceId));
+            } catch (LoaderException e) {
+                e.printStackTrace();
+                mTextures.put(resourceId, INVALIDTEXTURE); // don't try more than once
+            }
+        }
+        return mTextures.get(resourceId);
+    }
+
+    private int loadProgram(String shaderBaseName) throws LoaderException {
+
+        int vertShader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertShader, readShaderAsset(shaderBaseName + "_v"));
+        glCompileShader(vertShader);
+        checkShaderCompile(vertShader);
+
+        int fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragShader, readShaderAsset(shaderBaseName + "_f"));
+        glCompileShader(fragShader);
+        checkShaderCompile(fragShader);
+
+        int program = glCreateProgram();
+        glAttachShader(program, vertShader);
+        glAttachShader(program, fragShader);
+        glLinkProgram(program);
+        checkProgramLink(program);
+
+        return program;
+    }
+
+    private static void checkShaderCompile(int shader) throws LoaderException {
+        int[] result = new int[1];
+        glGetShaderiv(shader, GL_COMPILE_STATUS, result, 0);
+        if(result[0] != GL_TRUE) {
+            throw new LoaderException(glGetShaderInfoLog(shader));
+        }
+    }
+
+    private static void checkProgramLink(int program) throws LoaderException {
+        int[] result = new int[1];
+        glGetProgramiv(program, GL_LINK_STATUS, result, 0);
+        if(result[0] != GL_TRUE) {
+            throw new LoaderException(glGetProgramInfoLog(program));
+        }
+    }
+
+    private String readShaderAsset(String name) throws LoaderException {
+        try {
+            InputStream is = mContext.getAssets().open("shaders/" + name + ".glsl");
+            Scanner s = new Scanner(is).useDelimiter("\\A");
+            return s.next();
+        } catch (IOException e) {
+            throw new LoaderException(e.getMessage());
+        }
+    }
+
+    private String readShaderRawRes(String name) throws LoaderException {
+        int identifier = mContext.getResources().getIdentifier(name, "raw", mContext.getPackageName());
+        if(identifier == 0) {
+            throw new LoaderException("shader not found:" + name);
+        }
+        InputStream is = mContext.getResources().openRawResource(identifier);
+        Scanner s = new Scanner(is).useDelimiter("\\A");
+        return s.next();
+    }
+
+    private int loadTexture(int resourceId) throws LoaderException {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        Bitmap bmp = BitmapFactory.decodeResource(mContext.getResources(), resourceId, options);
+        return loadTextureAndRecycle(bmp);
+    }
+
+    public static int loadTextureAndRecycle(Bitmap bitmap) throws LoaderException {
+        int handle = genTexture();
+        glBindTexture(GL_TEXTURE_2D, handle);
+        GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        bitmap.recycle();
+        return handle;
+    }
+
+    static int createTexture(int width, int height) throws LoaderException {
+        int handle = genTexture();
+        glBindTexture(GL_TEXTURE_2D, handle);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return handle;
+    }
+
+    static int genTexture() throws LoaderException {
+        int[] textureHandle = new int[1];
+        glGenTextures(1, textureHandle, 0);
+        if(textureHandle[0] == 0) {
+            throw new LoaderException("failed to generate texture");
+        }
+        return textureHandle[0];
+    }
+
+    static int genFramebuffer() throws LoaderException {
+        int[] fboHandle = new int[1];
+        glGenFramebuffers(1, fboHandle, 0);
+        if(fboHandle[0] == 0) {
+            throw new LoaderException("failed to generate fbo");
+        }
+        return fboHandle[0];
+    }
+
+    static int genRenderBuffer() throws LoaderException {
+        int[] rboHandle = new int[1];
+        glGenRenderbuffers(1, rboHandle, 0);
+        if(rboHandle[0] == 0) {
+            throw new LoaderException("failed to generate rbo");
+        }
+        return rboHandle[0];
+    }
+
+    private static void debugSaveImage(Bitmap bmp, String filename) {
+        String path = Environment.getExternalStorageDirectory().toString();
+        File file = new File(path, "debugimage-" + filename + ".png");
+        try {
+            OutputStream fOut = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
