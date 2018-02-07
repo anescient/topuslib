@@ -44,8 +44,8 @@ import static android.opengl.GLES20.glUseProgram;
 @SuppressWarnings({"unused", "SameParameterValue", "WeakerAccess"})
 public class Loader {
 
-    private static final int INVALIDPROGRAM = 0;
-    private static final int INVALIDTEXTURE = 0;
+    protected static final int INVALIDPROGRAM = 0;
+    protected static final int INVALIDTEXTURE = 0;
 
     public static class LoaderException extends Exception {
         LoaderException(String message) {
@@ -53,7 +53,7 @@ public class Loader {
         }
     }
 
-    private final Context mContext;
+    protected final Context mContext;
     private final HashMap<String, Integer> mPrograms;
     private final HashMap<Integer, Integer> mTextures;
     private final HashMap<String, FrameBuffer> mFrameBuffers;
@@ -236,7 +236,7 @@ public class Loader {
         return rboHandle[0];
     }
 
-    private static void debugSaveImage(Bitmap bmp, String filename) {
+    protected static void debugSaveImage(Bitmap bmp, String filename) {
         String path = Environment.getExternalStorageDirectory().toString();
         File file = new File(path, "debugimage-" + filename + ".png");
         try {
