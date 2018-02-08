@@ -43,6 +43,14 @@ public class Vec2 {
         return Float.floatToIntBits(x) ^ Float.floatToIntBits(y);
     }
 
+    public boolean lessThanXY(Vec2 rhs) {
+        return x == rhs.x ? y < rhs.y : x < rhs.x;
+    }
+
+    public boolean lessThanYX(Vec2 rhs) {
+        return y == rhs.y ? x < rhs.x : y < rhs.y;
+    }
+
     public boolean isZero() {
         return x == 0 && y == 0;
     }
