@@ -1,4 +1,6 @@
-package net.chaosworship.topuslib.math;
+package net.chaosworship.topuslib.math.rangesearch;
+
+import net.chaosworship.topuslib.math.Rectangle;
 
 import java.util.Collection;
 

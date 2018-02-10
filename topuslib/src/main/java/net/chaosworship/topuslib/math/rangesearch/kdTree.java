@@ -1,4 +1,7 @@
-package net.chaosworship.topuslib.math;
+package net.chaosworship.topuslib.math.rangesearch;
+
+import net.chaosworship.topuslib.math.Rectangle;
+import net.chaosworship.topuslib.math.Vec2;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,12 +93,14 @@ public class kdTree<T> implements RectangularSearch<T> {
         mPointValuesByX.addAll(pointValues);
         mPointValuesByY.clear();
         mPointValuesByY.addAll(pointValues);
+        reload();
     }
 
     // if the collection of points/values objects hasn't changed but the points themselves have been altered
     public void reload() {
         Collections.sort(mPointValuesByX, PointValuePair.compareXY);
         Collections.sort(mPointValuesByY, PointValuePair.compareYX);
+        mRoot = null;
     }
 
     @Override

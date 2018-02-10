@@ -1,9 +1,11 @@
-package net.chaosworship.topuslib.math;
+package net.chaosworship.topuslib.math.rangesearch;
+
+import net.chaosworship.topuslib.math.Vec2;
 
 import java.util.Comparator;
 
 
-public class PointValuePair<T> {
+class PointValuePair<T> {
 
     static final Comparator<PointValuePair> compareXY = new Comparator<PointValuePair>() {
         @Override
@@ -19,10 +21,10 @@ public class PointValuePair<T> {
         }
     };
 
-    public final Vec2 point;
-    public final T value;
+    final Vec2 point;
+    final T value;
 
-    public PointValuePair(Vec2 point, T value) {
+    PointValuePair(Vec2 point, T value) {
         this.point = point;
         this.value = value;
     }
