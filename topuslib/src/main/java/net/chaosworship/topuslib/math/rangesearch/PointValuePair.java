@@ -5,7 +5,7 @@ import net.chaosworship.topuslib.math.Vec2;
 import java.util.Comparator;
 
 
-class PointValuePair<T> {
+public class PointValuePair<T> {
 
     static final Comparator<PointValuePair> compareXY = new Comparator<PointValuePair>() {
         @Override
@@ -21,10 +21,10 @@ class PointValuePair<T> {
         }
     };
 
-    final Vec2 point;
-    final T value;
+    public final Vec2 point;
+    public final T value;
 
-    PointValuePair(Vec2 point, T value) {
+    public PointValuePair(Vec2 point, T value) {
         this.point = point;
         this.value = value;
     }

@@ -20,6 +20,9 @@ public class Rectangle {
     }
 
     public void setWithCenter(Vec2 center, float width, float height) {
+        if(width < 0 || height < 0) {
+            throw new IllegalArgumentException();
+        }
         minx = center.x - width / 2;
         maxx = minx + width;
         miny = center.y - height / 2;
