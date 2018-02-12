@@ -5,6 +5,7 @@ import net.chaosworship.topuslib.math.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Stack;
 
 
 public class KDTree<T> implements RectangularSearch<T> {
@@ -20,12 +21,14 @@ public class KDTree<T> implements RectangularSearch<T> {
         private int mEvenNodesUsed;
         private final ArrayList<OddNode<T>> mOddNodes;
         private int mOddNodesUsed;
+        private final Stack<DoublySortedPointValues<T>> mSortedPointValues;
 
         KDTreePool() {
             mLeafNodes = new ArrayList<>();
             mDegenerateNodes = new ArrayList<>();
             mEvenNodes = new ArrayList<>();
             mOddNodes = new ArrayList<>();
+            mSortedPointValues = new Stack<>();
             reset();
         }
 
@@ -62,6 +65,18 @@ public class KDTree<T> implements RectangularSearch<T> {
                 mOddNodes.add(new OddNode<>(this));
             }
             return mOddNodes.get(mOddNodesUsed++);
+        }
+
+        DoublySortedPointValues<T> getSortedPointValues() {
+            if(mSortedPointValues.empty()) {
+                return new DoublySortedPointValues<>();
+            } else {
+                return mSortedPointValues.pop();
+            }
+        }
+
+        void putSortedPointValues(DoublySortedPointValues<T> sortedPointValues) {
+            mSortedPointValues.push(sortedPointValues);
         }
     }
 
@@ -108,13 +123,13 @@ public class KDTree<T> implements RectangularSearch<T> {
 
     private static class EvenNode<T> implements Node<T> {
 
-        private final KDTreePool<T> mNodePool;
+        private final KDTreePool<T> mPool;
         private Node<T> mLesserXChild;
         private Node<T> mGreaterXChild;
         private float mMedianX;
 
-        EvenNode(KDTreePool<T> nodePool) {
-            mNodePool = nodePool;
+        EvenNode(KDTreePool<T> pool) {
+            mPool = pool;
             mLesserXChild = null;
             mGreaterXChild = null;
             mMedianX = 0;
@@ -122,32 +137,36 @@ public class KDTree<T> implements RectangularSearch<T> {
 
         @Override
         public void set(DoublySortedPointValues<T> pointValues) {
-            DoublySortedPointValues<T> lesser = new DoublySortedPointValues<>();
-            DoublySortedPointValues<T> greater = new DoublySortedPointValues<>();
+            DoublySortedPointValues<T> lesser = mPool.getSortedPointValues();
+            DoublySortedPointValues<T> greater = mPool.getSortedPointValues();
             mMedianX = pointValues.splitOnX(lesser, greater);
             if(lesser.size() == 0) {
                 throw new AssertionError();
             }
 
             if(greater.size() == 0) {
-                mGreaterXChild = mNodePool.getDegenerateNode();
+                mGreaterXChild = mPool.getDegenerateNode();
                 mGreaterXChild.set(null);
-                mLesserXChild = mNodePool.getDegenerateNode();
+                mPool.putSortedPointValues(greater);
+                mLesserXChild = mPool.getDegenerateNode();
                 mLesserXChild.set(lesser);
+                mPool.putSortedPointValues(lesser);
             } else {
                 if(lesser.size() > 1) {
-                    mLesserXChild = mNodePool.getOddNode();
+                    mLesserXChild = mPool.getOddNode();
                 } else {
-                    mLesserXChild = mNodePool.getLeafNode();
+                    mLesserXChild = mPool.getLeafNode();
                 }
                 mLesserXChild.set(lesser);
+                mPool.putSortedPointValues(lesser);
 
                 if(greater.size() > 1) {
-                    mGreaterXChild = mNodePool.getOddNode();
+                    mGreaterXChild = mPool.getOddNode();
                 } else {
-                    mGreaterXChild = mNodePool.getLeafNode();
+                    mGreaterXChild = mPool.getLeafNode();
                 }
                 mGreaterXChild.set(greater);
+                mPool.putSortedPointValues(greater);
             }
         }
 
@@ -166,13 +185,13 @@ public class KDTree<T> implements RectangularSearch<T> {
 
     private static class OddNode<T> implements Node<T> {
 
-        private final KDTreePool<T> mNodePool;
+        private final KDTreePool<T> mPool;
         private Node<T> mLesserYChild;
         private Node<T> mGreaterYChild;
         private float mMedianY;
 
-        OddNode(KDTreePool<T> nodePool) {
-            mNodePool = nodePool;
+        OddNode(KDTreePool<T> pool) {
+            mPool = pool;
             mLesserYChild = null;
             mGreaterYChild = null;
             mMedianY = 0;
@@ -180,32 +199,36 @@ public class KDTree<T> implements RectangularSearch<T> {
 
         @Override
         public void set(DoublySortedPointValues<T> pointValues) {
-            DoublySortedPointValues<T> lesser = new DoublySortedPointValues<>();
-            DoublySortedPointValues<T> greater = new DoublySortedPointValues<>();
+            DoublySortedPointValues<T> lesser = mPool.getSortedPointValues();
+            DoublySortedPointValues<T> greater = mPool.getSortedPointValues();
             mMedianY = pointValues.splitOnY(lesser, greater);
             if(lesser.size() == 0) {
                 throw new AssertionError();
             }
 
             if(greater.size() == 0) {
-                mGreaterYChild = mNodePool.getDegenerateNode();
+                mGreaterYChild = mPool.getDegenerateNode();
                 mGreaterYChild.set(null);
-                mLesserYChild = mNodePool.getDegenerateNode();
+                mPool.putSortedPointValues(greater);
+                mLesserYChild = mPool.getDegenerateNode();
                 mLesserYChild.set(lesser);
+                mPool.putSortedPointValues(lesser);
             } else {
                 if(lesser.size() > 1) {
-                    mLesserYChild = mNodePool.getEvenNode();
+                    mLesserYChild = mPool.getEvenNode();
                 } else {
-                    mLesserYChild = mNodePool.getLeafNode();
+                    mLesserYChild = mPool.getLeafNode();
                 }
                 mLesserYChild.set(lesser);
+                mPool.putSortedPointValues(lesser);
 
                 if(greater.size() > 1) {
-                    mGreaterYChild = mNodePool.getEvenNode();
+                    mGreaterYChild = mPool.getEvenNode();
                 } else {
-                    mGreaterYChild = mNodePool.getLeafNode();
+                    mGreaterYChild = mPool.getLeafNode();
                 }
                 mGreaterYChild.set(greater);
+                mPool.putSortedPointValues(greater);
             }
         }
 
@@ -248,13 +271,13 @@ public class KDTree<T> implements RectangularSearch<T> {
     private Node<T> mRoot;
     private final ArrayList<T> mSearchResults;
     private final DoublySortedPointValues<T> mPointValues;
-    private final KDTreePool<T> mNodePool;
+    private final KDTreePool<T> mPool;
 
     public KDTree() {
         mRoot = null;
         mSearchResults = new ArrayList<>();
         mPointValues = new DoublySortedPointValues<>();
-        mNodePool = new KDTreePool<>();
+        mPool = new KDTreePool<>();
     }
 
     @Override
@@ -267,12 +290,12 @@ public class KDTree<T> implements RectangularSearch<T> {
     public void reload() {
         mPointValues.sort();
         mRoot = null;
-        mNodePool.reset();
+        mPool.reset();
         if(mPointValues.size() > 0) {
             if(mPointValues.size() == 1) {
-                mRoot = mNodePool.getLeafNode();
+                mRoot = mPool.getLeafNode();
             } else {
-                mRoot = mNodePool.getEvenNode();
+                mRoot = mPool.getEvenNode();
             }
             mRoot.set(mPointValues);
         }
