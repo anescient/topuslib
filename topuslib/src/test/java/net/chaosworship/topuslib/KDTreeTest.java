@@ -17,12 +17,13 @@ import static org.junit.Assert.*;
 
 public class KDTreeTest {
 
+    private static final KDTree<String> mStringTree = new KDTree<>();
+
     @Test
     public void emptySet() throws Exception {
         ArrayList<PointValuePair<String>> pointValues = new ArrayList<>();
-        KDTree<String> kdtree = new KDTree<>();
-        kdtree.load(pointValues);
-        assertTrue(kdtree.search(new Rectangle(-1, -1, 1, 1)).isEmpty());
+        mStringTree.load(pointValues);
+        assertTrue(mStringTree.search(new Rectangle(-1, -1, 1, 1)).isEmpty());
     }
 
     @Test
@@ -31,19 +32,18 @@ public class KDTreeTest {
         String value = "abc";
         ArrayList<PointValuePair<String>> pointValues = new ArrayList<>();
         pointValues.add(new PointValuePair<>(point, value));
-        KDTree<String> kdtree = new KDTree<>();
-        kdtree.load(pointValues);
+        mStringTree.load(pointValues);
         List<String> results;
 
-        results = kdtree.search(new Rectangle(-99, -99, 99, 99));
+        results = mStringTree.search(new Rectangle(-99, -99, 99, 99));
         assertTrue(results.size() == 1);
         assertSame(results.get(0), value);
 
-        results = kdtree.search(new Rectangle(12, 34, 12, 34));
+        results = mStringTree.search(new Rectangle(12, 34, 12, 34));
         assertTrue(results.size() == 1);
         assertSame(results.get(0), value);
 
-        results = kdtree.search(new Rectangle(-1, -1, 1, 1));
+        results = mStringTree.search(new Rectangle(-1, -1, 1, 1));
         assertTrue(results.isEmpty());
     }
 
@@ -56,8 +56,7 @@ public class KDTreeTest {
             pointValues.add(new PointValuePair<>(point, Integer.toString(i)));
         }
 
-        KDTree<String> kdTree = new KDTree<>();
-        kdTree.load(pointValues);
+        mStringTree.load(pointValues);
 
         HashSet<Integer> resultSizes = new HashSet<>();
 
@@ -65,7 +64,7 @@ public class KDTreeTest {
             Rectangle area = new Rectangle();
             area.setWithCenter(new Vec2(random.nextFloat(), random.nextFloat()), random.nextFloat(), random.nextFloat());
             ArrayList<String> expected = bruteSearch(area, pointValues);
-            assertTrue(CollectionTester.unorderedReferencesEqual(kdTree.search(area), expected));
+            assertTrue(CollectionTester.unorderedReferencesEqual(mStringTree.search(area), expected));
             resultSizes.add(expected.size());
         }
         assertTrue(resultSizes.size() == 41);
@@ -75,13 +74,13 @@ public class KDTreeTest {
                 pvp.point.set(random.nextFloat() * 2, random.nextFloat() * 2);
             }
         }
-        kdTree.reload();
+        mStringTree.reload();
         resultSizes.clear();
         for(int i = 0; i < 100; i++) {
             Rectangle area = new Rectangle();
             area.setWithCenter(new Vec2(random.nextFloat(), random.nextFloat()), random.nextFloat(), random.nextFloat());
             ArrayList<String> expected = bruteSearch(area, pointValues);
-            assertTrue(CollectionTester.unorderedReferencesEqual(kdTree.search(area), expected));
+            assertTrue(CollectionTester.unorderedReferencesEqual(mStringTree.search(area), expected));
             resultSizes.add(expected.size());
         }
         assertTrue(resultSizes.size() == 31);
@@ -112,8 +111,7 @@ public class KDTreeTest {
         pointValues.add(H);
         pointValues.add(I);
 
-        KDTree<String> kdTree = new KDTree<>();
-        kdTree.load(pointValues);
+        mStringTree.load(pointValues);
 
         ArrayList<String> expected = new ArrayList<>();
         for(PointValuePair<String> pvp : pointValues) {
@@ -121,17 +119,17 @@ public class KDTreeTest {
         }
 
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(-10, -10, 10, 10)),
+                mStringTree.search(new Rectangle(-10, -10, 10, 10)),
                 expected));
 
         expected.clear();
         expected.add(A.value);
         expected.add(B.value);
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(-1.5f, -1.5f, -0.5f, -0.5f)),
+                mStringTree.search(new Rectangle(-1.5f, -1.5f, -0.5f, -0.5f)),
                 expected));
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(-1, -1, -1, -1)),
+                mStringTree.search(new Rectangle(-1, -1, -1, -1)),
                 expected));
 
         expected.clear();
@@ -141,19 +139,19 @@ public class KDTreeTest {
         expected.add(F.value);
         expected.add(G.value);
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(0.5f, 0.5f, 1.5f, 1.5f)),
+                mStringTree.search(new Rectangle(0.5f, 0.5f, 1.5f, 1.5f)),
                 expected));
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(1, 1, 1, 1)),
+                mStringTree.search(new Rectangle(1, 1, 1, 1)),
                 expected));
 
         expected.add(A.value);
         expected.add(B.value);
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(-1.5f, -1.5f, 1.5f, 1.5f)),
+                mStringTree.search(new Rectangle(-1.5f, -1.5f, 1.5f, 1.5f)),
                 expected));
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(-1, -1, 1, 1)),
+                mStringTree.search(new Rectangle(-1, -1, 1, 1)),
                 expected));
     }
 
@@ -170,29 +168,28 @@ public class KDTreeTest {
         pointValues.add(C);
         pointValues.add(D);
 
-        KDTree<String> kdTree = new KDTree<>();
-        kdTree.load(pointValues);
+        mStringTree.load(pointValues);
 
-        assertTrue(kdTree.search(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f)).isEmpty());
+        assertTrue(mStringTree.search(new Rectangle(-0.5f, -0.5f, 0.5f, 0.5f)).isEmpty());
 
         ArrayList<String> expected = new ArrayList<>();
         expected.add(A.value);
         expected.add(B.value);
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(-1, 0, 1, 0)),
+                mStringTree.search(new Rectangle(-1, 0, 1, 0)),
                 expected));
 
         expected.clear();
         expected.add(C.value);
         expected.add(D.value);
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(0, -1, 0, 1)),
+                mStringTree.search(new Rectangle(0, -1, 0, 1)),
                 expected));
 
         expected.add(A.value);
         expected.add(B.value);
         assertTrue(CollectionTester.unorderedReferencesEqual(
-                kdTree.search(new Rectangle(-1, -1, 1, 1)),
+                mStringTree.search(new Rectangle(-1, -1, 1, 1)),
                 expected));
     }
 
