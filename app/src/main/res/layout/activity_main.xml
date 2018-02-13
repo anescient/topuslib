@@ -5,15 +5,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="net.chaosworship.topuslib.MainActivity">
+    tools:context="net.chaosworship.topuslibtest.MainActivity">
 
     <TextView
+        android:id="@+id/text_output"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:text="butts"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/button_go"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
+        android:id="@+id/button_go"
+        android:layout_width="200dp"
+        android:layout_height="100dp"
+        android:text="go"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_output"/>
 
 </android.support.constraint.ConstraintLayout>

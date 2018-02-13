@@ -2,8 +2,9 @@ package net.chaosworship.topuslib;
 
 import net.chaosworship.topuslib.math.Rectangle;
 import net.chaosworship.topuslib.math.Vec2;
-import net.chaosworship.topuslib.math.rangesearch.PointValuePair;
 import net.chaosworship.topuslib.math.rangesearch.KDTree;
+import net.chaosworship.topuslib.math.rangesearch.PointValuePair;
+import net.chaosworship.topuslib.math.rangesearch.RectangularSearch;
 
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ import static org.junit.Assert.*;
 
 public class KDTreeTest {
 
-    private static final KDTree<String> mStringTree = new KDTree<>();
+    private static final RectangularSearch<String> mStringTree = new KDTree<>();
 
     @Test
     public void emptySet() throws Exception {
@@ -74,6 +75,7 @@ public class KDTreeTest {
                 pvp.point.set(random.nextFloat() * 2, random.nextFloat() * 2);
             }
         }
+
         mStringTree.reload();
         resultSizes.clear();
         for(int i = 0; i < 100; i++) {

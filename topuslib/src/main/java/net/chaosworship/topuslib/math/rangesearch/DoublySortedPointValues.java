@@ -21,6 +21,11 @@ class DoublySortedPointValues<T> {
         return mPointValuesByX.size();
     }
 
+    void clear() {
+        mPointValuesByX.clear();
+        mPointValuesByY.clear();
+    }
+
     PointValuePair<T> getSingle() {
         if(BuildConfig.DEBUG && mPointValuesByX.size() != 1) {
             throw new AssertionError();
@@ -67,10 +72,13 @@ class DoublySortedPointValues<T> {
     }
 
     float splitOnX(DoublySortedPointValues<T> lesser, DoublySortedPointValues<T> greater) {
-        if(BuildConfig.DEBUG) {
-            if(mPointValuesByX.size() < 2) {
+        if(mPointValuesByX.size() < 2) {
+            if(mPointValuesByX.size() == 0) {
                 throw new AssertionError();
             }
+            greater.clear();
+            lesser.set(mPointValuesByX);
+            return mPointValuesByX.get(0).point.x;
         }
 
         float medianX = mPointValuesByX.get(mPointValuesByX.size() / 2 - 1).point.x;
@@ -107,10 +115,13 @@ class DoublySortedPointValues<T> {
     }
 
     float splitOnY(DoublySortedPointValues<T> lesser, DoublySortedPointValues<T> greater) {
-        if(BuildConfig.DEBUG) {
-            if(mPointValuesByY.size() < 2) {
+        if(mPointValuesByY.size() < 2) {
+            if(mPointValuesByY.size() == 0) {
                 throw new AssertionError();
             }
+            greater.clear();
+            lesser.set(mPointValuesByY);
+            return mPointValuesByY.get(0).point.y;
         }
 
         float medianY = mPointValuesByY.get(mPointValuesByY.size() / 2 - 1).point.y;
