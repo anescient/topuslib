@@ -2,10 +2,10 @@ package net.chaosworship.topuslibtest;
 
 import android.os.SystemClock;
 
-import net.chaosworship.topuslib.math.Rectangle;
-import net.chaosworship.topuslib.math.Vec2;
-import net.chaosworship.topuslib.math.rangesearch.PointValuePair;
-import net.chaosworship.topuslib.math.rangesearch.RectangularSearch;
+import net.chaosworship.topuslib.geom2d.Rectangle;
+import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.geom2d.rangesearch.PointValuePair;
+import net.chaosworship.topuslib.geom2d.rangesearch.RectangularSearch;
 
 import java.util.ArrayList;
 import java.util.Random;

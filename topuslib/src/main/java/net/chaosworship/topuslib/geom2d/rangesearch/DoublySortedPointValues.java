@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib.math.rangesearch;
+package net.chaosworship.topuslib.geom2d.rangesearch;
 
 import net.chaosworship.topuslib.BuildConfig;
 

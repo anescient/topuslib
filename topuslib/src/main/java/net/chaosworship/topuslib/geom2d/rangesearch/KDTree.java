@@ -1,6 +1,6 @@
-package net.chaosworship.topuslib.math.rangesearch;
+package net.chaosworship.topuslib.geom2d.rangesearch;
 
-import net.chaosworship.topuslib.math.Rectangle;
+import net.chaosworship.topuslib.geom2d.Rectangle;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import net.chaosworship.topuslib.math.rangesearch.KDTree;
-import net.chaosworship.topuslib.math.rangesearch.RectangularSearch;
+import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
+import net.chaosworship.topuslib.geom2d.rangesearch.RectangularSearch;
 
 
 @SuppressLint({"SetTextI18n", "DefaultLocale"})

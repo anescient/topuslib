@@ -1,5 +1,7 @@
-package net.chaosworship.topuslib.math;
+package net.chaosworship.topuslib.geom2d;
 
+
+import net.chaosworship.topuslib.math.Spline;
 
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue", "SameParameterValue"})
 public class Vec2 {

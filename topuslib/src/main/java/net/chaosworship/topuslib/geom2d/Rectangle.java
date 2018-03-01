@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib.math;
+package net.chaosworship.topuslib.geom2d;
 
 
 public class Rectangle {

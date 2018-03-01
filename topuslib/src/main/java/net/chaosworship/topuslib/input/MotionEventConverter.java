@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.chaosworship.topuslib.BuildConfig;
-import net.chaosworship.topuslib.math.Vec2;
+import net.chaosworship.topuslib.geom2d.Vec2;
 
 
 // consumes MotionEvents and makes better sense of them

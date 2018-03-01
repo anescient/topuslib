@@ -1,6 +1,6 @@
-package net.chaosworship.topuslib.math.rangesearch;
+package net.chaosworship.topuslib.geom2d.rangesearch;
 
-import net.chaosworship.topuslib.math.Vec2;
+import net.chaosworship.topuslib.geom2d.Vec2;
 
 import java.util.Comparator;
 
