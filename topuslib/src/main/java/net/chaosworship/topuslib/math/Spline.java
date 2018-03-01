@@ -2,7 +2,7 @@ package net.chaosworship.topuslib.math;
 
 
 @SuppressWarnings("WeakerAccess")
-public class Spline {
+public abstract class Spline {
 
     private static final float OVER2 = 1.0f / 2.0f;
     private static final float OVER6 = 1.0f / 6.0f;
