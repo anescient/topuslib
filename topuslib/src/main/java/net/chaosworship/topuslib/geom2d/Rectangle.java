@@ -12,6 +12,13 @@ public class Rectangle {
         minx = maxx = miny = maxy = 0;
     }
 
+    public Rectangle(Rectangle source) {
+        minx = source.minx;
+        miny = source.miny;
+        maxx = source.maxx;
+        maxy = source.maxy;
+    }
+
     public Rectangle(float minx, float miny, float maxx, float maxy) {
         this.minx = minx;
         this.miny = miny;
