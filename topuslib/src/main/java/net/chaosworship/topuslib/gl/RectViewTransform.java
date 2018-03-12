@@ -70,11 +70,12 @@ public class RectViewTransform implements ViewTransform {
         mViewWorldTransformer = new ViewWorldTransformer();
     }
 
+    @Override
     public boolean isDegenerate() {
         return mViewportWidth <= 0 || mViewportHeight <= 0;
     }
 
-    // return true if view actually changes
+    @Override
     public boolean setViewport(int width, int height) {
         if(width <= 0 || height <= 0) {
             throw new IllegalArgumentException();
@@ -90,17 +91,20 @@ public class RectViewTransform implements ViewTransform {
         return true;
     }
 
+    @Override
     public void callGlViewport() {
         glViewport(0, 0, mViewportWidth, mViewportHeight);
     }
 
+    @Override
     public int getViewportWidth() {
         return mViewportWidth;
     }
 
+    @Override
     public int getViewportHeight() {
         return mViewportHeight;
-    };
+    }
 
     // please do not modify returned object
     public RectF getVisibleRect() {
@@ -108,11 +112,13 @@ public class RectViewTransform implements ViewTransform {
         return mVisibleRect;
     }
 
+    @Override
     public float[] getViewMatrix() {
         updateTransform();
         return mViewMatrix;
     }
 
+    @Override
     public Vec2Transformer getViewToWorldTransformer() {
         updateTransform();
         return mViewWorldTransformer;
