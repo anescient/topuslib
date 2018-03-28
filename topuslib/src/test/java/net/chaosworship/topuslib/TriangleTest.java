@@ -53,4 +53,47 @@ public class TriangleTest {
             }
         }
     }
+
+    @Test
+    public void area() {
+        Triangle t = new Triangle();
+
+        t.pointA.set(0, 0);
+        t.pointB.set(1, 0);
+        t.pointC.set(1, 1);
+        assertTrue(softEquals(t.area(), 0.5f, 0.000001f));
+
+        Random random = new Random(1234);
+        t.pointA.set(0, 0);
+        for(int i = 0; i < 100; i++) {
+            float width = 10 * random.nextFloat();
+            float height = 10 * random.nextFloat();
+            t.pointC.set(width, 0);
+            t.pointB.set(random.nextFloat() * width, height);
+            assertTrue(softEquals(t.area(), width * height / 2, 0.001f));
+        }
+    }
+
+    @Test
+    public void areaEquilateralRotateOffset() {
+        Triangle t = new Triangle();
+        Random random = new Random(1234);
+        Vec2 origin = new Vec2();
+        float unitArea = (float)(Math.sqrt(3) / 4);
+        for(int i = 0; i < 100; i++) {
+            origin.set(100 * (random.nextFloat() - 0.5f), 100 * (random.nextFloat() - 0.5f));
+            double triangleRotation = random.nextDouble() * 2 * Math.PI;
+            float triangleRadius = 1 + 9 * random.nextFloat();
+            t.pointA.setUnit(triangleRotation).scale(triangleRadius).add(origin);
+            t.pointB.setUnit(triangleRotation + 2 * Math.PI / 3).scale(triangleRadius).add(origin);
+            t.pointC.setUnit(triangleRotation + 4 * Math.PI / 3).scale(triangleRadius).add(origin);
+            float sideLength = Vec2.distance(t.pointA, t.pointB);
+            float expectedArea = unitArea * sideLength * sideLength;
+            assertTrue(softEquals(expectedArea, t.area(), 0.001f));
+        }
+    }
+
+    private static boolean softEquals(float a, float b, float delta) {
+        return Math.abs(a - b) < delta;
+    }
 }

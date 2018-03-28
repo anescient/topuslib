@@ -43,4 +43,14 @@ public class Triangle {
         boolean PAB = ABx * APy - ABy * APx > 0;
         return (ACx * APy - ACy * APx > 0 != PAB) && (BCx * BPy - BCy * BPx > 0 == PAB);
     }
+
+    public float area() {
+        return Math.abs(
+                -pointB.x * pointA.y
+                + pointC.x * pointA.y
+                + pointA.x * pointB.y
+                - pointC.x * pointB.y
+                - pointA.x * pointC.y
+                + pointB.x * pointC.y) * 0.5f;
+    }
 }
