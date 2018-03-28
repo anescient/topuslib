@@ -23,7 +23,7 @@ public class SuperRandomTest {
     }
 
     private static void assertApproxGaussianSane(float mean, float stddev, int samples) {
-        int n = 100;
+        int n = 1000;
         ArrayList<Float> values = new ArrayList<>();
         for(int i = 0; i < n; i++) {
             values.add(sSuperRandom.approximateGaussianFloat(mean, stddev, samples));
