@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class RectangleTest {
 
     @Test
-    public void degenerate() throws Exception {
+    public void degenerate() {
         float x = (float)Math.PI;
         float y = -x;
         Rectangle r = new Rectangle(x, y, x, y);
@@ -23,7 +23,7 @@ public class RectangleTest {
     }
 
     @Test
-    public void contains() throws Exception {
+    public void contains() {
         Rectangle r = new Rectangle(-1, -2, 3, 4);
         Vec2 p = new Vec2();
 
@@ -45,7 +45,7 @@ public class RectangleTest {
     }
 
     @Test
-    public void setCenter() throws Exception {
+    public void setCenter() {
         Rectangle r = new Rectangle();
 
         r.setWithCenter(new Vec2(100, 200), 10, 20);
