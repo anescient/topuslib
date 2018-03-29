@@ -32,6 +32,38 @@ public class TriangleTest {
         assertTrue(t.contains(new Vec2(3, 3)));
     }
 
+    // Triangle's "contains" method is inconsistent when query point lies on an edge.
+    // This test is here to catch any change in behavior, not to verify correctness.
+    @Test
+    public void containsOnEdgeIsBroken() {
+        Vec2 a = new Vec2(0, 0);
+        Vec2 b = new Vec2(3, 3);
+        Vec2 c = new Vec2(7, 1);
+        Vec2 m_ab = Vec2.midpoint(a, b);
+        Vec2 m_bc = Vec2.midpoint(b, c);
+
+        Triangle abc = new Triangle(a, b, c);
+        Triangle acb = new Triangle(a, c, b);
+        Triangle bac = new Triangle(b, a, c);
+        Triangle bca = new Triangle(b, c, a);
+        Triangle cab = new Triangle(c, a, b);
+        Triangle cba = new Triangle(c, b, a);
+
+        assertTrue(abc.contains(m_ab));
+        assertTrue(acb.contains(m_ab));
+        assertFalse(bac.contains(m_ab));
+        assertFalse(bca.contains(m_ab));
+        assertTrue(cab.contains(m_ab));
+        assertFalse(cba.contains(m_ab));
+
+        assertTrue(abc.contains(m_bc));
+        assertFalse(acb.contains(m_bc));
+        assertTrue(bac.contains(m_bc));
+        assertTrue(bca.contains(m_bc));
+        assertFalse(cab.contains(m_bc));
+        assertFalse(cba.contains(m_bc));
+    }
+
     @Test
     public void containsRotateOffset() {
         Triangle t = new Triangle();
