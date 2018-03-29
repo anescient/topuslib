@@ -11,7 +11,7 @@ import static junit.framework.Assert.assertTrue;
 
 public class SuperRandomTest {
 
-    private static final SuperRandom sSuperRandom = new SuperRandom();
+    private static final SuperRandom sSuperRandom = new SuperRandom(1234);
 
     @Test
     public void approxGaussianSane() {
@@ -50,5 +50,19 @@ public class SuperRandomTest {
         }
         int maxUnbalance = n / 4;
         assertTrue(balance > -maxUnbalance && balance < maxUnbalance);
+    }
+
+    @Test
+    public void shuffle() {
+        ArrayList<Object> values = new ArrayList<>();
+        for(int i = 0; i < 50; i++) {
+            values.add(new Object());
+        }
+        for(int i = 0; i < 10; i++) {
+            values.add(values.get(i));
+        }
+        ArrayList<Object> shuffled = new ArrayList<>(values);
+        sSuperRandom.shuffle(shuffled);
+        assertTrue(CollectionTester.unorderedReferencesEqual(values, shuffled));
     }
 }

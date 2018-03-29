@@ -2,6 +2,7 @@ package net.chaosworship.topuslib.random;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
 
+import java.util.List;
 import java.util.Random;
 
 
@@ -9,6 +10,10 @@ public class SuperRandom extends Random {
 
     public SuperRandom() {
         super();
+    }
+
+    public SuperRandom(long seed) {
+        super(seed);
     }
 
     public float approximateGaussianFloat(float mean, float stddev, int samples) {
@@ -28,5 +33,15 @@ public class SuperRandom extends Random {
     public void uniformInCircle(Vec2 v, float radius) {
         uniformUnit(v);
         v.scale(radius * (float)Math.sqrt(nextDouble()));
+    }
+
+    public <E> void shuffle(List<E> list) {
+        int n = list.size();
+        for(int i = 0; i < n - 1; i++) {
+            int j = i + nextInt(n - i);
+            E temp = list.get(i);
+            list.set(i, list.get(j));
+            list.set(j, temp);
+        }
     }
 }
