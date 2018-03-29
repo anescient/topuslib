@@ -1,7 +1,7 @@
 package net.chaosworship.topuslib.geom2d;
 
-
 import net.chaosworship.topuslib.math.Spline;
+
 
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue", "SameParameterValue"})
 public class Vec2 {
@@ -43,6 +43,10 @@ public class Vec2 {
     @Override
     public int hashCode() {
         return Float.floatToIntBits(x) ^ Float.floatToIntBits(y);
+    }
+
+    public boolean epsilonEquals(Vec2 rhs, float epsilon) {
+        return Math.abs(x - rhs.x) < epsilon && Math.abs(y - rhs.y) < epsilon;
     }
 
     public boolean lessThanXY(Vec2 rhs) {
