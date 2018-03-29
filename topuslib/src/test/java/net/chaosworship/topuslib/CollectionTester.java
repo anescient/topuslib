@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib;
 
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -40,5 +41,28 @@ class CollectionTester {
             }
         }
         return true;
+    }
+
+    static boolean intSetsEqual(Iterable<Integer> a, Iterable<Integer> b) {
+        HashSet<Integer> aSet = new HashSet<>();
+        for(Integer aInt : a) {
+            if(aSet.contains(aInt)) {
+                return false; // not a set
+            }
+            aSet.add(aInt);
+        }
+
+        HashSet<Integer> bSet = new HashSet<>();
+        for(Integer bInt : b) {
+            if(bSet.contains(bInt)) {
+                return false; // not a set
+            }
+            if(!aSet.contains(bInt)) {
+                return false;
+            }
+            bSet.add(bInt);
+        }
+
+        return aSet.size() == bSet.size();
     }
 }

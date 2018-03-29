@@ -57,4 +57,35 @@ public class CollectionTesterTest {
         list1.add(list1.get(0));
         assertFalse(unorderedReferencesEqual(list1, list2));
     }
+
+    @Test
+    public void intSetsEqualTest() {
+        ArrayList<Integer> a = new ArrayList<>();
+        ArrayList<Integer> b = new ArrayList<>();
+        assertTrue(intSetsEqual(a, b));
+        a.add(1);
+        assertFalse(intSetsEqual(a, b));
+        b.add(1);
+        assertTrue(intSetsEqual(a, b));
+        a.add(1);
+        assertFalse(intSetsEqual(a, b));
+        b.add(1);
+        assertFalse(intSetsEqual(a, b));
+        a.clear();
+        b.clear();
+        a.add(1);
+        b.add(2);
+        assertFalse(intSetsEqual(a, b));
+        b.add(1);
+        assertFalse(intSetsEqual(a, b));
+        a.add(2);
+        assertTrue(intSetsEqual(a, b));
+        a.add(3);
+        assertFalse(intSetsEqual(a, b));
+        b.add(3);
+        a.add(4);
+        assertFalse(intSetsEqual(a, b));
+        b.add(4);
+        assertTrue(intSetsEqual(a, b));
+    }
 }
