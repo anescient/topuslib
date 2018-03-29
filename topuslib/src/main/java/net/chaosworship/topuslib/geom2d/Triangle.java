@@ -1,7 +1,6 @@
 package net.chaosworship.topuslib.geom2d;
 
 
-
 public class Triangle {
 
     public final Vec2 pointA;
@@ -46,11 +45,8 @@ public class Triangle {
 
     public float area() {
         return Math.abs(
-                -pointB.x * pointA.y
-                + pointC.x * pointA.y
-                + pointA.x * pointB.y
-                - pointC.x * pointB.y
-                - pointA.x * pointC.y
-                + pointB.x * pointC.y) * 0.5f;
+                pointA.y * (pointC.x - pointB.x)
+                + pointB.y * (pointA.x - pointC.x)
+                + pointC.y * (pointB.x - pointA.x)) * 0.5f;
     }
 }
