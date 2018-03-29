@@ -12,7 +12,7 @@ import static junit.framework.Assert.*;
 public class AngleTest {
 
     @Test
-    public void unloop() throws Exception {
+    public void unloop() {
         Random random = new Random(1234);
 
         for(int i = 0; i < 100; i++) {

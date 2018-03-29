@@ -21,14 +21,14 @@ public class KDTreeTest {
     private static final RectangularSearch<String> mStringTree = new KDTree<>();
 
     @Test
-    public void emptySet() throws Exception {
+    public void emptySet() {
         ArrayList<PointValuePair<String>> pointValues = new ArrayList<>();
         mStringTree.load(pointValues);
         assertTrue(mStringTree.search(new Rectangle(-1, -1, 1, 1)).isEmpty());
     }
 
     @Test
-    public void singlePoint() throws Exception {
+    public void singlePoint() {
         Vec2 point = new Vec2(12, 34);
         String value = "abc";
         ArrayList<PointValuePair<String>> pointValues = new ArrayList<>();
@@ -49,7 +49,7 @@ public class KDTreeTest {
     }
 
     @Test
-    public void randomWithReload() throws Exception {
+    public void randomWithReload() {
         Random random = new Random(1234);
         ArrayList<PointValuePair<String>> pointValues = new ArrayList<>();
         for(int i = 0; i < 100; i++) {
@@ -89,7 +89,7 @@ public class KDTreeTest {
     }
 
     @Test
-    public void duplicatePoints() throws Exception {
+    public void duplicatePoints() {
         PointValuePair<String> A = new PointValuePair<>(new Vec2(-1, -1), "a");
         PointValuePair<String> B = new PointValuePair<>(new Vec2(-1, -1), "b");
 
@@ -158,7 +158,7 @@ public class KDTreeTest {
     }
 
     @Test
-    public void closedBound() throws Exception {
+    public void closedBound() {
         PointValuePair<String> A = new PointValuePair<>(new Vec2(-1, 0), "a");
         PointValuePair<String> B = new PointValuePair<>(new Vec2(1, 0), "b");
         PointValuePair<String> C = new PointValuePair<>(new Vec2(0, -1), "c");

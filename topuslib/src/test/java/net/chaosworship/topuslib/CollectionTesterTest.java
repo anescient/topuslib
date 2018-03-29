@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class CollectionTesterTest {
 
     @Test
-    public void hasDuplicateReferencesTest() throws Exception {
+    public void hasDuplicateReferencesTest() {
         ArrayList<Object> list = new ArrayList<>();
         assertFalse(hasDuplicateReferences(list));
         list.add(new Object());
@@ -22,7 +22,7 @@ public class CollectionTesterTest {
     }
 
     @Test
-    public void countReferencesTest() throws Exception {
+    public void countReferencesTest() {
         ArrayList<Object> list = new ArrayList<>();
         Object a = new Object();
         Object b = new Object();
@@ -42,7 +42,7 @@ public class CollectionTesterTest {
     }
 
     @Test
-    public void unorderedReferencesEqualTest() throws Exception {
+    public void unorderedReferencesEqualTest() {
         ArrayList<Object> list1 = new ArrayList<>();
         ArrayList<Object> list2 = new ArrayList<>();
         assertTrue(unorderedReferencesEqual(list1, list2));
