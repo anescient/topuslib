@@ -233,10 +233,14 @@ public class Vec2 {
         return (float)Math.sqrt(magnitudeSq());
     }
 
-    public static float distance(Vec2 a, Vec2 b) {
+    public static float distanceSq(Vec2 a, Vec2 b) {
         float dx = a.x - b.x;
         float dy = a.y - b.y;
-        return (float)Math.sqrt(dx * dx + dy * dy);
+        return dx * dx + dy * dy;
+    }
+
+    public static float distance(Vec2 a, Vec2 b) {
+        return (float)Math.sqrt(distanceSq(a, b));
     }
 
     public float cross(Vec2 rhs) {
