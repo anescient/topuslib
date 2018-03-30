@@ -131,7 +131,12 @@ public class FlatViewTransform implements ViewTransform {
     }
 
     public void setViewZoom(float zoom) {
-        mZoom = zoom;
+        if(mZoom != zoom) {
+            mZoom = zoom;
+            mVisibleHeight = mViewportHeight / mZoom;
+            mVisibleWidth = mViewportWidth / mZoom;
+            setDirty();
+        }
     }
 
     public void setViewCenter(Vec2 worldCoord) {
