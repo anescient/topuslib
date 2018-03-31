@@ -120,10 +120,10 @@ public class ShapesBrush extends Brush {
         p = a.difference(unit);
         mVertexBuffer.put(p.x);
         mVertexBuffer.put(p.y);
-        p = b.sum(unit);
+        p = b.difference(unit);
         mVertexBuffer.put(p.x);
         mVertexBuffer.put(p.y);
-        p = b.difference(unit);
+        p = b.sum(unit);
         mVertexBuffer.put(p.x);
         mVertexBuffer.put(p.y);
 

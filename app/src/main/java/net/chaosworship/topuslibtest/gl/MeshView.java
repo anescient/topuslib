@@ -64,7 +64,7 @@ public class MeshView
                     33 * (random.nextFloat() - 0.5f)));
         }
 
-        mViewTransform.setVisibleRectangle(Rectangle.bound(points).scale(1.2f));
+        mViewTransform.setVisibleRectangle(Rectangle.bound(points).scale(1.07f));
         ShapesBrush brush = mLoader.getShapesBrush();
         brush.begin(mViewTransform.getViewMatrix());
 
@@ -74,7 +74,7 @@ public class MeshView
         }
 
         brush.setColor(Color.RED);
-        brush.drawRectangle(0.1f, Rectangle.bound(points));
+        brush.drawRectangle(0.2f, Rectangle.bound(points).scale(1.05f));
 
         brush.end();
     }
