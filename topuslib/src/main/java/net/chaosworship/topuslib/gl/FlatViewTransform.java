@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.gl;
 import android.opengl.Matrix;
 
 import net.chaosworship.topuslib.BuildConfig;
+import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.Vec2Transformer;
 
@@ -11,7 +12,7 @@ import static android.opengl.GLES20.glViewport;
 
 // handles the dirty work of viewing a 2D area in a GLSurfaceView
 // converts screen coords into world coords for doing input, etc.
-@SuppressWarnings({"SameParameterValue", "unused"})
+@SuppressWarnings({"SameParameterValue", "unused", "WeakerAccess"})
 public class FlatViewTransform implements ViewTransform {
 
     ///////////////////////////////////////////////////////////////
@@ -130,6 +131,23 @@ public class FlatViewTransform implements ViewTransform {
         return mViewportHeight;
     }
 
+    // center and zoom such that a given rectangular area is visible
+    // rectangle won't necessarily fill the viewport
+    public void setVisibleRectangle(Rectangle rect) {
+        if(rect.area() == 0) {
+            throw new IllegalArgumentException();
+        }
+        setViewRotationRadians(0);
+        setViewCenter(rect.center());
+        float viewAspect = (float)mViewportWidth / mViewportHeight;
+        float rectAspect = rect.width() / rect.height();
+        if(rectAspect > viewAspect) {
+            setVisibleWidth(rect.width());
+        } else {
+            setVisibleHeight(rect.height());
+        }
+    }
+
     public void setViewZoom(float zoom) {
         if(mZoom != zoom) {
             mZoom = zoom;
@@ -137,6 +155,20 @@ public class FlatViewTransform implements ViewTransform {
             mVisibleWidth = mViewportWidth / mZoom;
             setDirty();
         }
+    }
+
+    public void setVisibleWidth(float width) {
+        if(width <=0) {
+            throw new IllegalArgumentException();
+        }
+        setViewZoom(mViewportWidth / width);
+    }
+
+    public void setVisibleHeight(float height) {
+        if(height <= 0) {
+            throw new IllegalArgumentException();
+        }
+        setViewZoom(mViewportHeight / height);
     }
 
     public void setViewCenter(Vec2 worldCoord) {

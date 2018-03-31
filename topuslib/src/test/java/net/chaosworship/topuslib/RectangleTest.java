@@ -58,4 +58,16 @@ public class RectangleTest {
         assertTrue(r.containsClosed(new Vec2(7, 9)));
         assertFalse(r.containsOpen(new Vec2(7, 9)));
     }
+
+    @Test
+    public void scaleArea() {
+        Rectangle r = new Rectangle(1, 1, 2, 2);
+        assertTrue(r.area() == 1);
+        assertTrue(r.center().equals(new Vec2(1.5f, 1.5f)));
+        r.scale(2);
+        assertTrue(r.center().equals(new Vec2(1.5f, 1.5f)));
+        assertTrue(r.width() == 2);
+        assertTrue(r.height() == 2);
+        assertTrue(r.area() == 4);
+    }
 }
