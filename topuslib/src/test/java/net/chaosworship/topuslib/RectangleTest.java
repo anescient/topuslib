@@ -6,6 +6,8 @@ import net.chaosworship.topuslib.geom2d.Vec2;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 
@@ -69,5 +71,21 @@ public class RectangleTest {
         assertTrue(r.width() == 2);
         assertTrue(r.height() == 2);
         assertTrue(r.area() == 4);
+    }
+
+    @Test
+    public void bound() {
+        ArrayList<Vec2> points = new ArrayList<>();
+        points.add(new Vec2(1, 1));
+        assertTrue(Rectangle.bound(points).area() == 0);
+        points.add(new Vec2(3, 1));
+        assertTrue(Rectangle.bound(points).area() == 0);
+        points.add(new Vec2(-2, 1));
+        points.add(new Vec2(1, -2));
+        Rectangle r = Rectangle.bound(points);
+        assertTrue(r.minx == -2);
+        assertTrue(r.maxx == 3);
+        assertTrue(r.miny == -2);
+        assertTrue(r.maxy == 1);
     }
 }

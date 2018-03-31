@@ -1,6 +1,8 @@
 package net.chaosworship.topuslib.geom2d;
 
 
+import java.util.Iterator;
+
 @SuppressWarnings("UnusedReturnValue")
 public class Rectangle {
 
@@ -74,5 +76,22 @@ public class Rectangle {
         miny = center.y - newHeight * 0.5f;
         maxy = center.y + newHeight * 0.5f;
         return this;
+    }
+
+    public static Rectangle bound(Iterable<Vec2> points) {
+        Iterator<Vec2> pointsIt = points.iterator();
+        if(!pointsIt.hasNext()) {
+            throw new IllegalArgumentException();
+        }
+        Vec2 p = pointsIt.next();
+        Rectangle r = new Rectangle(p.x, p.y, p.x, p.y);
+        while(pointsIt.hasNext()) {
+            p = pointsIt.next();
+            r.minx = Math.min(r.minx, p.x);
+            r.maxx = Math.max(r.maxx, p.x);
+            r.miny = Math.min(r.miny, p.y);
+            r.maxy = Math.max(r.maxy, p.y);
+        }
+        return r;
     }
 }

@@ -50,8 +50,6 @@ public class MeshView
     public void onDrawFrame(GL10 gl10) {
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
-        //mViewTransform.setViewCenter(new Vec2(0, 0));
-        //mViewTransform.setViewZoom(100.0f);
         mViewTransform.setVisibleRectangle(new Rectangle(-1, -3, 1, 3));
         mViewTransform.callGlViewport();
         ShapesBrush brush = mLoader.getShapesBrush();
