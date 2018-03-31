@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "WeakerAccess"})
 @SuppressLint("UseSparseArrays")
 public class SimpleGraph {
 
@@ -106,6 +107,18 @@ public class SimpleGraph {
             }
         }
         return hasNeighbor;
+    }
+
+    public ArrayList<IntegerEdge> getEdges() {
+        ArrayList<IntegerEdge> edges = new ArrayList<>();
+        for(int a : mNeighborSets.keySet()) {
+            for(int b : mNeighborSets.get(a)) {
+                if(a < b) {
+                    edges.add(new IntegerEdge(a, b));
+                }
+            }
+        }
+        return edges;
     }
 
     public static SimpleGraph generateCompleteGraph(int vertexCount) {
