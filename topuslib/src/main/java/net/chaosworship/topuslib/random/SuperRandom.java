@@ -44,4 +44,11 @@ public class SuperRandom extends Random {
             list.set(j, temp);
         }
     }
+
+    public <E> E choice(List<E> list) {
+        if(list.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        return list.get(nextInt(list.size()));
+    }
 }
