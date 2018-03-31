@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 
 import net.chaosworship.topuslib.BuildConfig;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 
 @SuppressLint("UseSparseArrays")
@@ -15,7 +17,7 @@ public class SimpleGraph {
 
     // the keys here are the vertex collection
     // every edge is represented twice
-    private final HashMap<Integer, HashSet<Integer>> mNeighborSets;
+    final HashMap<Integer, HashSet<Integer>> mNeighborSets;
 
     public SimpleGraph() {
         mNextVertex = 1;
@@ -29,11 +31,21 @@ public class SimpleGraph {
 
     public int addVertex() {
         int vertex = mNextVertex++;
-        if(vertex < 0) {
-            throw new AssertionError();
+        while(mNeighborSets.containsKey(vertex)) {
+            vertex = mNextVertex++;
+            if (vertex < 0) {
+                throw new AssertionError();
+            }
+        }
+        addVertex(vertex);
+        return vertex;
+    }
+
+    public void addVertex(int vertex) {
+        if(mNeighborSets.containsKey(vertex)) {
+            throw new IllegalStateException("already have that vertex");
         }
         mNeighborSets.put(vertex, new HashSet<Integer>());
-        return vertex;
     }
 
     public void removeVertex(int vertex) {
@@ -43,16 +55,16 @@ public class SimpleGraph {
         mNeighborSets.remove(vertex);
     }
 
-    public Iterable<Integer> getVertices() {
+    public Set<Integer> getVertices() {
         return mNeighborSets.keySet();
     }
 
-    public Iterable<Integer> getNeighbors(int vertex) {
-        HashSet<Integer> neighborSet = mNeighborSets.get(vertex);
-        if(neighborSet == null) {
+    public Set<Integer> getNeighbors(int vertex) {
+        Set<Integer> neighbors = mNeighborSets.get(vertex);
+        if(neighbors == null) {
             throw new IllegalStateException("no such vertex");
         }
-        return neighborSet;
+        return neighbors;
     }
 
     public void addEdge(int a, int b) {
@@ -77,6 +89,10 @@ public class SimpleGraph {
         mNeighborSets.get(b).remove(a);
     }
 
+    public boolean hasVertex(int vertex) {
+        return mNeighborSets.containsKey(vertex);
+    }
+
     public boolean hasEdge(int a, int b) {
         HashSet<Integer> aNeighbors = mNeighborSets.get(a);
         HashSet<Integer> bNeighbors = mNeighborSets.get(b);
@@ -90,5 +106,18 @@ public class SimpleGraph {
             }
         }
         return hasNeighbor;
+    }
+
+    public static SimpleGraph generateCompleteGraph(int vertexCount) {
+        SimpleGraph g = new SimpleGraph();
+        ArrayList<Integer> vertices = new ArrayList<>();
+        for(int i = 0; i < vertexCount; i++) {
+            Integer v = g.addVertex();
+            for(Integer u : vertices) {
+                g.addEdge(v, u);
+            }
+            vertices.add(v);
+        }
+        return g;
     }
 }

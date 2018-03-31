@@ -124,4 +124,27 @@ public class SimpleGraphTest {
         expected.add(d);
         assertTrue(CollectionTester.intSetsEqual(g.getNeighbors(a), expected));
     }
+
+    @Test
+    public void completeGraph() {
+        SimpleGraph g;
+        g = SimpleGraph.generateCompleteGraph(0);
+        assertTrue(g.getVertices().isEmpty());
+        g = SimpleGraph.generateCompleteGraph(1);
+        int v = g.getVertices().iterator().next();
+        assertTrue(g.getNeighbors(v).isEmpty());
+        final int n = 7;
+        g = SimpleGraph.generateCompleteGraph(n);
+        for(int a : g.getVertices()) {
+            assertTrue(g.getNeighbors(a).size() == n - 1);
+        }
+        for(int a : g.getVertices()) {
+            for(int b : g.getVertices()) {
+                if(a != b) {
+                    assertTrue(g.hasEdge(a, b));
+                    assertTrue(g.hasEdge(b, a));
+                }
+            }
+        }
+    }
 }
