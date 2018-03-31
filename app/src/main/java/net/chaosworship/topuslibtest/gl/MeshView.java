@@ -8,8 +8,12 @@ import android.util.AttributeSet;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
+import net.chaosworship.topuslib.graph.IntegerEdge;
+import net.chaosworship.topuslib.graph.SimpleGraph;
+import net.chaosworship.topuslib.random.SuperRandom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -56,25 +60,37 @@ public class MeshView
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Random random = new Random();
-        ArrayList<Vec2> points = new ArrayList<>();
+        SuperRandom random = new SuperRandom();
+        HashMap<Integer, Vec2> points = new HashMap<>();
+        SimpleGraph graph = new SimpleGraph();
         for(int i = 0; i < 20; i++) {
-            points.add(new Vec2(
+            points.put(graph.addVertex(), new Vec2(
                     99 * (random.nextFloat() - 0.5f),
                     33 * (random.nextFloat() - 0.5f)));
         }
+        ArrayList<Integer> verts = new ArrayList<>(graph.getVertices());
+        for(int i = 0; i < verts.size() * 2; i++) {
+            int a = random.choice(verts);
+            int b = random.choice(verts);
+            if(a != b && !graph.hasEdge(a, b)) {
+                graph.addEdge(a, b);
+            }
+        }
 
-        mViewTransform.setVisibleRectangle(Rectangle.bound(points).scale(1.07f));
+        mViewTransform.setVisibleRectangle(Rectangle.bound(points.values()).scale(1.07f));
         ShapesBrush brush = mLoader.getShapesBrush();
         brush.begin(mViewTransform.getViewMatrix());
 
-        brush.setColor(Color.LTGRAY);
-        for(Vec2 p : points) {
-            brush.drawSpot(p, 0.5f);
+        brush.setColor(Color.RED);
+        for(IntegerEdge e : graph.getEdges()) {
+            brush.drawSegment(0.05f, points.get(e.a), points.get(e.b));
         }
 
-        brush.setColor(Color.RED);
-        brush.drawRectangle(0.2f, Rectangle.bound(points).scale(1.05f));
+        brush.setColor(Color.WHITE);
+        for(int v : graph.getVertices()) {
+            Vec2 p = points.get(v);
+            brush.drawSpot(p, 0.5f);
+        }
 
         brush.end();
     }
