@@ -1,6 +1,6 @@
 package net.chaosworship.topuslib;
 
-import net.chaosworship.topuslib.math.SimpleGraph;
+import net.chaosworship.topuslib.graph.SimpleGraph;
 
 import org.junit.Test;
 
