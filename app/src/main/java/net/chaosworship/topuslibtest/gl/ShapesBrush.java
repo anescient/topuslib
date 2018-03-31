@@ -1,5 +1,9 @@
 package net.chaosworship.topuslibtest.gl;
 
+import android.graphics.Color;
+import android.support.annotation.ColorInt;
+
+import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.Brush;
 
@@ -39,6 +43,7 @@ public class ShapesBrush extends Brush {
 
     private final TestLoader mLoader;
     private boolean mBegun;
+    private final float[] mColor;
 
     private final int mMVPHandle;
     private final int mColorHandle;
@@ -51,6 +56,7 @@ public class ShapesBrush extends Brush {
     ShapesBrush(TestLoader loader) {
         mLoader = loader;
         mBegun = false;
+        mColor = new float[] { 1, 1, 1, 1 };
 
         int program = mLoader.useProgram("simple");
         mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
@@ -61,15 +67,11 @@ public class ShapesBrush extends Brush {
         mVertexBufferHandle = generateBuffer();
     }
 
-    void begin(float[] matPV, float[] color) {
+    void begin(float[] matPV) {
         if(mBegun) {
             throw new IllegalStateException();
         }
         mBegun = true;
-
-        if(color == null) {
-            color = new float[]{ 1, 1, 1, 1 };
-        }
 
         mLoader.useProgram("simple");
 
@@ -79,12 +81,22 @@ public class ShapesBrush extends Brush {
         glEnableVertexAttribArray(mPosHandle);
 
         glUniformMatrix4fv(mMVPHandle, 1, false, matPV, 0);
-        glUniform4fv(mColorHandle, 1, color, 0);
+        glUniform4fv(mColorHandle, 1, mColor, 0);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
+    }
+
+    void setColor(@ColorInt int color) {
+        mColor[0] = (float)Color.red(color) / 255;
+        mColor[1] = (float)Color.green(color) / 255;
+        mColor[2] = (float)Color.blue(color) / 255;
+        mColor[3] = (float)Color.alpha(color) / 255;
+        if(mBegun) {
+            glUniform4fv(mColorHandle, 1, mColor, 0);
+        }
     }
 
     void drawSpot(Vec2 position, float radius) {
@@ -99,9 +111,9 @@ public class ShapesBrush extends Brush {
         glDrawArrays(GL_TRIANGLE_FAN, 0, SPOTSEGMENTS);
     }
 
-    void drawSegment(float width, Vec2 a, Vec2 b) {
+    void drawSegment(float thickness, Vec2 a, Vec2 b) {
         mVertexBuffer.position(0);
-        Vec2 unit = Vec2.difference(a, b).normalize().scale(width).rotate90();
+        Vec2 unit = Vec2.difference(a, b).normalize().scale(thickness).rotate90();
         Vec2 p = a.sum(unit);
         mVertexBuffer.put(p.x);
         mVertexBuffer.put(p.y);
@@ -118,6 +130,17 @@ public class ShapesBrush extends Brush {
         mVertexBuffer.position(0);
         glBufferData(GL_ARRAY_BUFFER, 4 * VERTEXSIZE * FLOATSIZE, mVertexBuffer, GL_STREAM_DRAW);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
+
+    void drawRectangle(float thickness, Rectangle rect) {
+        Vec2 a = new Vec2(rect.minx, rect.miny);
+        Vec2 b = new Vec2(rect.minx, rect.maxy);
+        Vec2 c = new Vec2(rect.maxx, rect.maxy);
+        Vec2 d = new Vec2(rect.maxx, rect.miny);
+        drawSegment(thickness, a, b);
+        drawSegment(thickness, b, c);
+        drawSegment(thickness, c, d);
+        drawSegment(thickness, d, a);
     }
 
     void end() {

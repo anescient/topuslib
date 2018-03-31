@@ -1,12 +1,16 @@
 package net.chaosworship.topuslibtest.gl;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -48,16 +52,30 @@ public class MeshView
 
     @Override
     public void onDrawFrame(GL10 gl10) {
+        mViewTransform.callGlViewport();
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
-        mViewTransform.setVisibleRectangle(new Rectangle(-1, -3, 1, 3));
-        mViewTransform.callGlViewport();
+
+        Random random = new Random();
+        ArrayList<Vec2> points = new ArrayList<>();
+        for(int i = 0; i < 20; i++) {
+            points.add(new Vec2(
+                    99 * (random.nextFloat() - 0.5f),
+                    33 * (random.nextFloat() - 0.5f)));
+        }
+
+        mViewTransform.setVisibleRectangle(Rectangle.bound(points).scale(1.2f));
         ShapesBrush brush = mLoader.getShapesBrush();
-        brush.begin(mViewTransform.getViewMatrix(), null);
-        brush.drawSpot(new Vec2(-1, -3), 0.2f);
-        brush.drawSpot(new Vec2(-1, 3), 0.2f);
-        brush.drawSpot(new Vec2(1, -3), 0.2f);
-        brush.drawSpot(new Vec2(1, 3), 0.2f);
+        brush.begin(mViewTransform.getViewMatrix());
+
+        brush.setColor(Color.LTGRAY);
+        for(Vec2 p : points) {
+            brush.drawSpot(p, 0.5f);
+        }
+
+        brush.setColor(Color.RED);
+        brush.drawRectangle(0.1f, Rectangle.bound(points));
+
         brush.end();
     }
 }
