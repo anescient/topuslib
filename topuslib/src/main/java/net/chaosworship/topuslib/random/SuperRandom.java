@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 
+@SuppressWarnings("WeakerAccess")
 public class SuperRandom extends Random {
 
     public SuperRandom() {
@@ -28,6 +29,12 @@ public class SuperRandom extends Random {
 
     public void uniformUnit(Vec2 v) {
         v.setUnit(nextDouble() * Math.PI * 2);
+    }
+
+    public Vec2 uniformUnit() {
+        Vec2 v = new Vec2();
+        uniformUnit(v);
+        return v;
     }
 
     public void uniformInCircle(Vec2 v, float radius) {
