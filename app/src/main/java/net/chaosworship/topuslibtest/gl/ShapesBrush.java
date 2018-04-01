@@ -36,7 +36,7 @@ import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
 
-@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
+@SuppressWarnings({"WeakerAccess", "SameParameterValue", "unused"})
 public class ShapesBrush extends Brush {
 
     // floats per vertex
@@ -48,6 +48,7 @@ public class ShapesBrush extends Brush {
     private final TestLoader mLoader;
     private boolean mBegun;
     private final float[] mColor;
+    private float mLineWidth;
 
     private final int mMVPHandle;
     private final int mColorHandle;
@@ -61,6 +62,7 @@ public class ShapesBrush extends Brush {
         mLoader = loader;
         mBegun = false;
         mColor = new float[] { 1, 1, 1, 1 };
+        mLineWidth = 1;
 
         int program = mLoader.useProgram("simple");
         mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
@@ -93,6 +95,10 @@ public class ShapesBrush extends Brush {
         glDisable(GL_CULL_FACE);
     }
 
+    void setLineWidth(float lineWidth) {
+        mLineWidth = lineWidth;
+    }
+
     void setColor(@ColorInt int color) {
         mColor[0] = (float)Color.red(color) / 255;
         mColor[1] = (float)Color.green(color) / 255;
@@ -115,9 +121,9 @@ public class ShapesBrush extends Brush {
         glDrawArrays(GL_TRIANGLE_FAN, 0, SPOTSEGMENTS);
     }
 
-    void drawSegment(float thickness, Vec2 a, Vec2 b) {
+    void drawSegment(Vec2 a, Vec2 b) {
         mVertexBuffer.position(0);
-        Vec2 unit = Vec2.difference(a, b).normalize().scale(thickness).rotate90();
+        Vec2 unit = Vec2.difference(a, b).normalize().scale(mLineWidth * 0.5f).rotate90();
         Vec2 p = a.sum(unit);
         mVertexBuffer.put(p.x);
         mVertexBuffer.put(p.y);
@@ -136,27 +142,27 @@ public class ShapesBrush extends Brush {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 
-    void drawTriangle(float thickness, Triangle triangle) {
-        drawSegment(thickness, triangle.pointA, triangle.pointB);
-        drawSegment(thickness, triangle.pointB, triangle.pointC);
-        drawSegment(thickness, triangle.pointC, triangle.pointA);
+    void drawTriangle(Triangle triangle) {
+        drawSegment(triangle.pointA, triangle.pointB);
+        drawSegment(triangle.pointB, triangle.pointC);
+        drawSegment(triangle.pointC, triangle.pointA);
     }
 
-    void drawRectangle(float thickness, Rectangle rect) {
+    void drawRectangle(Rectangle rect) {
         Vec2 a = new Vec2(rect.minx, rect.miny);
         Vec2 b = new Vec2(rect.minx, rect.maxy);
         Vec2 c = new Vec2(rect.maxx, rect.maxy);
         Vec2 d = new Vec2(rect.maxx, rect.miny);
-        drawSegment(thickness, a, b);
-        drawSegment(thickness, b, c);
-        drawSegment(thickness, c, d);
-        drawSegment(thickness, d, a);
+        drawSegment(a, b);
+        drawSegment(b, c);
+        drawSegment(c, d);
+        drawSegment(d, a);
     }
 
-    void drawCircle(float thickness, Circle circle) {
+    void drawCircle(Circle circle) {
         List<Vec2> points = circle.getBoundPoints(33);
         for(int i = 0; i < points.size(); i++) {
-            drawSegment(thickness, points.get(i), points.get((i + 1) % points.size()));
+            drawSegment(points.get(i), points.get((i + 1) % points.size()));
         }
     }
 

@@ -1,5 +1,6 @@
 package net.chaosworship.topuslibtest.gl;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
@@ -24,6 +25,7 @@ import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
 
 
+@SuppressLint("UseSparseArrays")
 public class MeshView
         extends GLSurfaceView
         implements GLSurfaceView.Renderer {
@@ -86,10 +88,11 @@ public class MeshView
                 points.get(2),
                 points.get(3));
         brush.setColor(Color.RED);
-        brush.drawCircle(0.1f, c);
+        brush.setLineWidth(0.3f);
+        brush.drawCircle(c);
 
-        brush.drawTriangle(0.05f, c.getInscribedTriangle());
-        brush.drawTriangle(0.05f, c.getBoundingTriangle());
+        brush.drawTriangle(c.getInscribedTriangle());
+        brush.drawTriangle(c.getBoundingTriangle());
 
         brush.setColor(Color.WHITE);
         for(int v : graph.getVertices()) {
