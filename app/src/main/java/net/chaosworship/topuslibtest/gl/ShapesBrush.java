@@ -5,6 +5,7 @@ import android.support.annotation.ColorInt;
 
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
+import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.Brush;
 
@@ -35,6 +36,7 @@ import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
 
+@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
 public class ShapesBrush extends Brush {
 
     // floats per vertex
@@ -132,6 +134,12 @@ public class ShapesBrush extends Brush {
         mVertexBuffer.position(0);
         glBufferData(GL_ARRAY_BUFFER, 4 * VERTEXSIZE * FLOATSIZE, mVertexBuffer, GL_STREAM_DRAW);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
+
+    void drawTriangle(float thickness, Triangle triangle) {
+        drawSegment(thickness, triangle.pointA, triangle.pointB);
+        drawSegment(thickness, triangle.pointB, triangle.pointC);
+        drawSegment(thickness, triangle.pointC, triangle.pointA);
     }
 
     void drawRectangle(float thickness, Rectangle rect) {

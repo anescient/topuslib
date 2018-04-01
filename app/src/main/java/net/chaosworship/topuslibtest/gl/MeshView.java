@@ -10,13 +10,11 @@ import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
-import net.chaosworship.topuslib.graph.IntegerEdge;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -89,6 +87,9 @@ public class MeshView
                 points.get(3));
         brush.setColor(Color.RED);
         brush.drawCircle(0.1f, c);
+
+        brush.drawTriangle(0.05f, c.getInscribedTriangle());
+        brush.drawTriangle(0.05f, c.getBoundingTriangle());
 
         brush.setColor(Color.WHITE);
         for(int v : graph.getVertices()) {

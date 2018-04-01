@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class Circle {
 
+    private static final float CIRCLEOVER3 = (float)(2 * Math.PI / 3);
+
     public Vec2 center;
     public float radius;
 
@@ -32,5 +34,27 @@ public class Circle {
             points.add(Vec2.unit(a).scale(radius).add(center));
         }
         return points;
+    }
+
+    // generate an equilateral triangle that tightly fits inside the circle
+    public Triangle getInscribedTriangle() {
+        return new Triangle(
+                Vec2.unit(0).scale(radius).add(center),
+                Vec2.unit(CIRCLEOVER3).scale(radius).add(center),
+                Vec2.unit(2 * CIRCLEOVER3).scale(radius).add(center));
+    }
+
+    // generate an equilateral triangle that completely encloses the circle
+    // if scale > 1, triangle is larger
+    public Triangle getBoundingTriangle(float scale) {
+        final float r = 2 * radius * scale;
+        return new Triangle(
+                Vec2.unit(0).scale(r).add(center),
+                Vec2.unit(CIRCLEOVER3).scale(r).add(center),
+                Vec2.unit(2 * CIRCLEOVER3).scale(r).add(center));
+    }
+
+    public Triangle getBoundingTriangle() {
+        return getBoundingTriangle(1);
     }
 }
