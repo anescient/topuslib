@@ -3,11 +3,13 @@ package net.chaosworship.topuslibtest.gl;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
 
+import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.Brush;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_BLEND;
@@ -141,6 +143,13 @@ public class ShapesBrush extends Brush {
         drawSegment(thickness, b, c);
         drawSegment(thickness, c, d);
         drawSegment(thickness, d, a);
+    }
+
+    void drawCircle(float thickness, Circle circle) {
+        List<Vec2> points = circle.getBoundPoints(33);
+        for(int i = 0; i < points.size(); i++) {
+            drawSegment(thickness, points.get(i), points.get((i + 1) % points.size()));
+        }
     }
 
     void end() {

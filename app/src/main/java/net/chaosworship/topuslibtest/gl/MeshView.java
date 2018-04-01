@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
+import net.chaosworship.topuslib.geom2d.Circle;
+import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
@@ -63,7 +65,7 @@ public class MeshView
         SuperRandom random = new SuperRandom();
         HashMap<Integer, Vec2> points = new HashMap<>();
         SimpleGraph graph = new SimpleGraph();
-        for(int i = 0; i < 20; i++) {
+        for(int i = 0; i < 30; i++) {
             points.put(graph.addVertex(), new Vec2(
                     99 * (random.nextFloat() - 0.5f),
                     33 * (random.nextFloat() - 0.5f)));
@@ -81,14 +83,20 @@ public class MeshView
         ShapesBrush brush = mLoader.getShapesBrush();
         brush.begin(mViewTransform.getViewMatrix());
 
+        Circle c = Circumcircle.toCircle(
+                points.get(1),
+                points.get(2),
+                points.get(3));
         brush.setColor(Color.RED);
-        for(IntegerEdge e : graph.getEdges()) {
-            brush.drawSegment(0.05f, points.get(e.a), points.get(e.b));
-        }
+        brush.drawCircle(0.1f, c);
 
         brush.setColor(Color.WHITE);
         for(int v : graph.getVertices()) {
             Vec2 p = points.get(v);
+            if(c.contains(p))
+                brush.setColor(Color.WHITE);
+            else
+                brush.setColor(Color.DKGRAY);
             brush.drawSpot(p, 0.5f);
         }
 
