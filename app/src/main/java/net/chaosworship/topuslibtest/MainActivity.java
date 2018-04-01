@@ -15,19 +15,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
-            Thread.sleep(500);
-        } catch(InterruptedException ignored) {}
-        startTriangulation(null);
+        startDrawingBoard(null);
     }
 
-    public void startTriangulation(View view) {
-        Intent intent = new Intent(this, TriangulationActivity.class);
-        startActivity(intent);
+    public void startDrawingBoard(View view) {
+        startActivity(new Intent(this, DrawingBoardActivity.class));
     }
 
     public void startBenchmark(View view) {
-        Intent intent = new Intent(this, BenchmarkActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, BenchmarkActivity.class));
     }
 }

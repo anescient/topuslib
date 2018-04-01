@@ -26,14 +26,14 @@ import static android.opengl.GLES20.glClearColor;
 
 
 @SuppressLint("UseSparseArrays")
-public class MeshView
+public class DrawingBoard
         extends GLSurfaceView
         implements GLSurfaceView.Renderer {
 
     private final TestLoader mLoader;
     private final FlatViewTransform mViewTransform;
 
-    public MeshView(Context context, AttributeSet attrs) {
+    public DrawingBoard(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mLoader = new TestLoader(context);

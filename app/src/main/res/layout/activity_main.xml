@@ -14,8 +14,8 @@
         android:layout_height="wrap_content"
         android:paddingTop="50dp"
         android:paddingBottom="50dp"
-        android:text="triangulation"
-        android:onClick="startTriangulation"/>
+        android:text="drawing board"
+        android:onClick="startDrawingBoard"/>
 
     <Button
         android:layout_width="match_parent"

@@ -5,9 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="net.chaosworship.topuslibtest.TriangulationActivity">
+    tools:context="net.chaosworship.topuslibtest.DrawingBoardActivity">
 
-    <net.chaosworship.topuslibtest.gl.MeshView
+    <net.chaosworship.topuslibtest.gl.DrawingBoard
         android:id="@+id/triangulation_meshview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
