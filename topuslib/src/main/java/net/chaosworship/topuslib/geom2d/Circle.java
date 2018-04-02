@@ -75,31 +75,21 @@ public class Circle {
             if(c.contains(pi)) {
                 continue;
             }
-            c = minimumBound(points, i, pi);
-        }
-        return c;
-    }
-
-    private static Circle minimumBound(List<Vec2> points, int count, Vec2 q) {
-        Circle c = Circumcircle.toCircle(points.get(0), q);
-        for(int j = 1; j < count; j++) {
-            Vec2 pj = points.get(j);
-            if(c.contains(pj)) {
-                continue;
+            c = Circumcircle.toCircle(p1, pi);
+            for(int j = 1; j < i; j++) {
+                Vec2 pj = points.get(j);
+                if(c.contains(pj)) {
+                    continue;
+                }
+                c = Circumcircle.toCircle(pi, pj);
+                for(int k = 0; k < j; k++) {
+                    Vec2 pk = points.get(k);
+                    if(c.contains(pk)) {
+                        continue;
+                    }
+                    c = Circumcircle.toCircle(pi, pj, pk);
+                }
             }
-            c = minimumBound(points, j, pj, q);
-        }
-        return c;
-    }
-
-    private static Circle minimumBound(List<Vec2> points, int count, Vec2 q1, Vec2 q2) {
-        Circle c = Circumcircle.toCircle(q1, q2);
-        for(int k = 0; k < count; k++) {
-            Vec2 pk = points.get(k);
-            if(c.contains(pk)) {
-                continue;
-            }
-            c = Circumcircle.toCircle(q1, q2, pk);
         }
         return c;
     }
