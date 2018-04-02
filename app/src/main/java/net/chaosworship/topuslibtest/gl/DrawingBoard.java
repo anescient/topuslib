@@ -63,7 +63,7 @@ public class DrawingBoard
         ArrayList<Vec2> points = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
             //points.add(random.uniformUnit().scale(44 * random.nextFloat()));
-            points.add(new Vec2(i, i));
+            points.add(new Vec2(0, i));
         }
 
         mViewTransform.setVisibleRectangle(Rectangle.bound(points).scale(2));

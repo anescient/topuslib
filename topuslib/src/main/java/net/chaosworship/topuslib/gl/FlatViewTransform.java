@@ -134,6 +134,11 @@ public class FlatViewTransform implements ViewTransform {
     // center and zoom such that a given rectangular area is visible
     // rectangle won't necessarily fill the viewport
     public void setVisibleRectangle(Rectangle rect) {
+        if(rect.width() == 0 || rect.height() == 0) {
+            float size = Math.max(rect.width(), rect.height());
+            rect = new Rectangle(rect);
+            rect.setWithCenter(rect.center(), size, size);
+        }
         if(rect.area() == 0) {
             throw new IllegalArgumentException();
         }
