@@ -276,18 +276,16 @@ public class Vec2 {
         return this;
     }
 
-    public static Vec2 unit(float radians) {
-        return new Vec2().setUnit(radians);
+    public double atan2() {
+        if(x == 0 && y == 0) {
+            return 0;
+        }
+        // match angle to unit() methods
+        return Math.atan2(y, x);
     }
 
     public static Vec2 unit(double radians) {
         return new Vec2().setUnit(radians);
-    }
-
-    public Vec2 setUnit(float radians) {
-        x = (float)Math.cos(radians);
-        y = (float)Math.sin(radians);
-        return this;
     }
 
     public Vec2 setUnit(double radians) {
