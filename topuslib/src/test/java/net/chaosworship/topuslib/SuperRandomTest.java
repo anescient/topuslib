@@ -5,6 +5,7 @@ import net.chaosworship.topuslib.random.SuperRandom;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -53,15 +54,35 @@ public class SuperRandomTest {
     }
 
     @Test
-    public void shuffle() {
+    public void shuffleList() {
         ArrayList<Object> values = new ArrayList<>();
         for(int i = 0; i < 50; i++) {
             values.add(new Object());
         }
+
+        // add some duplicates
         for(int i = 0; i < 10; i++) {
             values.add(values.get(i));
         }
+
         ArrayList<Object> shuffled = new ArrayList<>(values);
+        sSuperRandom.shuffle(shuffled);
+        assertTrue(CollectionTester.unorderedReferencesEqual(values, shuffled));
+    }
+
+    @Test
+    public void shuffleArray() {
+        Object[] values = new Object[60];
+        for(int i = 0; i < 50; i++) {
+            values[i] = new Object();
+        }
+
+        // add some duplicates
+        for(int i = 50; i < 60; i++) {
+            values[i] = values[i % 50];
+        }
+
+        Object[] shuffled = Arrays.copyOf(values, values.length);
         sSuperRandom.shuffle(shuffled);
         assertTrue(CollectionTester.unorderedReferencesEqual(values, shuffled));
     }

@@ -42,6 +42,15 @@ public class SuperRandom extends Random {
         v.scale(radius * (float)Math.sqrt(nextDouble()));
     }
 
+    public <E> void shuffle(E[] array) {
+        for(int i = 0; i < array.length - 1; i++) {
+            int j = i + nextInt(array.length - i);
+            E temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
     public <E> void shuffle(List<E> list) {
         int n = list.size();
         for(int i = 0; i < n - 1; i++) {

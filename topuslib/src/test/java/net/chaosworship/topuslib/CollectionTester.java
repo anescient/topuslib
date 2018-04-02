@@ -1,5 +1,7 @@
 package net.chaosworship.topuslib;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -41,6 +43,11 @@ class CollectionTester {
             }
         }
         return true;
+    }
+
+    // check that two arrays have identical contents regardless of order
+    static <T> boolean unorderedReferencesEqual(T[] a, T[] b) {
+        return unorderedReferencesEqual(Arrays.asList(a), Arrays.asList(b));
     }
 
     static boolean intSetsEqual(Iterable<Integer> a, Iterable<Integer> b) {
