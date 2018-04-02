@@ -3,6 +3,12 @@ package net.chaosworship.topuslib.geom2d;
 
 public class Circumcircle {
 
+    public static Circle toCircle(Vec2 a, Vec2 b) {
+        Vec2 center = Vec2.midpoint(a, b);
+        float radius = Vec2.distance(center, a);
+        return new Circle(center, radius);
+    }
+
     public static Circle toCircle(Vec2 a, Vec2 b, Vec2 c) {
         Vec2 center;
         float radius;

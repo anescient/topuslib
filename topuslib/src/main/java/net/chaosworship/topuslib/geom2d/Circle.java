@@ -2,6 +2,7 @@ package net.chaosworship.topuslib.geom2d;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Circle {
 
@@ -56,5 +57,50 @@ public class Circle {
 
     public Triangle getBoundingTriangle() {
         return getBoundingTriangle(1);
+    }
+
+    // a random distribution of points is best, this does not shuffle them
+    public static Circle minimumBound(List<Vec2> points) {
+        if(points.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        Vec2 p1 = points.get(0);
+        if(points.size() == 1) {
+            return new Circle(p1, 0);
+        }
+        Vec2 p2 = points.get(1);
+        Circle c = Circumcircle.toCircle(p1, p2);
+        for(int i = 2; i < points.size(); i++) {
+            Vec2 pi = points.get(i);
+            if(c.contains(pi)) {
+                continue;
+            }
+            c = minimumBound(points, i, pi);
+        }
+        return c;
+    }
+
+    private static Circle minimumBound(List<Vec2> points, int count, Vec2 q) {
+        Circle c = Circumcircle.toCircle(points.get(0), q);
+        for(int j = 1; j < count; j++) {
+            Vec2 pj = points.get(j);
+            if(c.contains(pj)) {
+                continue;
+            }
+            c = minimumBound(points, j, pj, q);
+        }
+        return c;
+    }
+
+    private static Circle minimumBound(List<Vec2> points, int count, Vec2 q1, Vec2 q2) {
+        Circle c = Circumcircle.toCircle(q1, q2);
+        for(int k = 0; k < count; k++) {
+            Vec2 pk = points.get(k);
+            if(c.contains(pk)) {
+                continue;
+            }
+            c = Circumcircle.toCircle(q1, q2, pk);
+        }
+        return c;
     }
 }

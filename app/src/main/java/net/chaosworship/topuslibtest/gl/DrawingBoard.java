@@ -7,15 +7,12 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 import net.chaosworship.topuslib.geom2d.Circle;
-import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
-import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -63,44 +60,23 @@ public class DrawingBoard
         glClear(GL_COLOR_BUFFER_BIT);
 
         SuperRandom random = new SuperRandom();
-        HashMap<Integer, Vec2> points = new HashMap<>();
-        SimpleGraph graph = new SimpleGraph();
-        for(int i = 0; i < 30; i++) {
-            points.put(graph.addVertex(), new Vec2(
-                    99 * (random.nextFloat() - 0.5f),
-                    33 * (random.nextFloat() - 0.5f)));
-        }
-        ArrayList<Integer> verts = new ArrayList<>(graph.getVertices());
-        for(int i = 0; i < verts.size() * 2; i++) {
-            int a = random.choice(verts);
-            int b = random.choice(verts);
-            if(a != b && !graph.hasEdge(a, b)) {
-                graph.addEdge(a, b);
-            }
+        ArrayList<Vec2> points = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            //points.add(random.uniformUnit().scale(44 * random.nextFloat()));
+            points.add(new Vec2(i, i));
         }
 
-        mViewTransform.setVisibleRectangle(Rectangle.bound(points.values()).scale(1.07f));
+        mViewTransform.setVisibleRectangle(Rectangle.bound(points).scale(2));
         ShapesBrush brush = mLoader.getShapesBrush();
         brush.begin(mViewTransform.getViewMatrix());
 
-        Circle c = Circumcircle.toCircle(
-                points.get(1),
-                points.get(2),
-                points.get(3));
+        Circle c = Circle.minimumBound(points);
         brush.setColor(Color.RED);
         brush.setLineWidth(0.3f);
         brush.drawCircle(c);
 
-        brush.drawTriangle(c.getInscribedTriangle());
-        brush.drawTriangle(c.getBoundingTriangle());
-
         brush.setColor(Color.WHITE);
-        for(int v : graph.getVertices()) {
-            Vec2 p = points.get(v);
-            if(c.contains(p))
-                brush.setColor(Color.WHITE);
-            else
-                brush.setColor(Color.DKGRAY);
+        for(Vec2 p : points) {
             brush.drawSpot(p, 0.5f);
         }
 
