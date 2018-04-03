@@ -3,8 +3,8 @@ package net.chaosworship.topuslib;
 
 public class IntPair implements Cloneable {
 
-    final int a;
-    final int b;
+    public final int a;
+    public final int b;
     private final int hashcode;
 
     public IntPair(int a, int b) {

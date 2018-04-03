@@ -3,9 +3,9 @@ package net.chaosworship.topuslib;
 
 public class IntTriple implements Cloneable {
 
-    final int a;
-    final int b;
-    final int c;
+    public final int a;
+    public final int b;
+    public final int c;
     private final int hashcode;
 
     public IntTriple(int a, int b, int c) {
