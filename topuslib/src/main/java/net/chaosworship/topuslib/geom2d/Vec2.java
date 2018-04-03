@@ -4,7 +4,7 @@ import net.chaosworship.topuslib.math.Spline;
 
 
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue", "SameParameterValue"})
-public class Vec2 {
+public class Vec2 implements Cloneable {
 
     public float x;
     public float y;
