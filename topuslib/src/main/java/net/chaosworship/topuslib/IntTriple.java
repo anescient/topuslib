@@ -71,4 +71,19 @@ public class IntTriple implements Cloneable {
             ((b == pair.a) && (a == pair.b || c == pair.b)) ||
             ((c == pair.a) && (a == pair.b || b == pair.b));
     }
+
+    public int getThird(IntPair firstAndSecond) {
+        if(!includesPair(firstAndSecond)) {
+            throw new IllegalArgumentException();
+        }
+        if(firstAndSecond.a == a) {
+            return firstAndSecond.b == b ? c : b;
+        } else if(firstAndSecond.a == b) {
+            return firstAndSecond.b == a ? c : a;
+        } else if(firstAndSecond.a == c) {
+            return firstAndSecond.b == a ? b : a;
+        } else {
+            throw new AssertionError();
+        }
+    }
 }
