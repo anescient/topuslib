@@ -60,4 +60,15 @@ public class IntTriple implements Cloneable {
     public int hashCode() {
         return hashcode;
     }
+
+    public boolean includes(int x) {
+        return a == x || b == x || c == x;
+    }
+
+    public boolean includesPair(IntPair pair) {
+        return
+            ((a == pair.a) && (b == pair.b || c == pair.b)) ||
+            ((b == pair.a) && (a == pair.b || c == pair.b)) ||
+            ((c == pair.a) && (a == pair.b || b == pair.b));
+    }
 }

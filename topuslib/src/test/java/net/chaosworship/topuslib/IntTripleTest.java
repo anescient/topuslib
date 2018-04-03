@@ -29,6 +29,21 @@ public class IntTripleTest {
         assertTrue(isSorted(IntTriple.sorted(3, 1, 2)));
     }
 
+    @Test
+    public void includesPair() {
+        IntTriple t = new IntTriple(4, 5, 6);
+        assertFalse(t.includesPair(new IntPair(4, 4)));
+        assertTrue(t.includesPair(new IntPair(4, 5)));
+        assertTrue(t.includesPair(new IntPair(5, 4)));
+        assertTrue(t.includesPair(new IntPair(4, 6)));
+        assertTrue(t.includesPair(new IntPair(6, 4)));
+        assertTrue(t.includesPair(new IntPair(5, 6)));
+        assertTrue(t.includesPair(new IntPair(6, 5)));
+        t = new IntTriple(4, 4, 5);
+        assertTrue(t.includesPair(new IntPair(4, 4)));
+        assertFalse(t.includesPair(new IntPair(5, 5)));
+    }
+
     private static boolean isSorted(IntTriple intTriple) {
         return intTriple.a <= intTriple.b && intTriple.b <= intTriple.c;
     }

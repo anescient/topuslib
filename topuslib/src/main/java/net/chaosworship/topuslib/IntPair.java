@@ -42,4 +42,8 @@ public class IntPair implements Cloneable {
     public int hashCode() {
         return hashcode;
     }
+
+    public boolean includes(int x) {
+        return a == x || b == x;
+    }
 }
