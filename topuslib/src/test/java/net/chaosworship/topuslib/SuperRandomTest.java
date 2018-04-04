@@ -86,4 +86,26 @@ public class SuperRandomTest {
         sSuperRandom.shuffle(shuffled);
         assertTrue(CollectionTester.unorderedReferencesEqual(values, shuffled));
     }
+
+    @Test
+    public void subShuffleArray() {
+        int n = 50;
+        Object[] values = new Object[n];
+        for(int i = 0; i < n; i++) {
+            values[i] = new Object();
+        }
+        Object a = values[0];
+        Object b = values[1];
+        Object x = values[n - 1];
+        Object y = values[n - 2];
+        Object z = values[n - 3];
+        for(int i = 0; i < 20; i++) {
+            sSuperRandom.subShuffle(values, 2, n - 5);
+            assertTrue(a == values[0]);
+            assertTrue(b == values[1]);
+            assertTrue(x == values[n - 1]);
+            assertTrue(y == values[n - 2]);
+            assertTrue(z == values[n - 3]);
+        }
+    }
 }
