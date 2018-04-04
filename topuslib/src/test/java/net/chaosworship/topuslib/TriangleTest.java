@@ -95,6 +95,13 @@ public class TriangleTest {
         t.pointC.set(1, 1);
         assertTrue(softEquals(t.area(), 0.5f, 0.000001f));
 
+        t.pointB.set(0, 0);
+        assertTrue(t.isDegenerate());
+        assertTrue(t.area() == 0);
+        t.pointB.set(1, 1);
+        assertTrue(t.isDegenerate());
+        assertTrue(t.area() == 0);
+
         Random random = new Random(1234);
         t.pointA.set(0, 0);
         for(int i = 0; i < 100; i++) {

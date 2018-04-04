@@ -36,6 +36,10 @@ public class Triangle {
         return contains(pointA, pointB, pointC, point);
     }
 
+    public boolean isDegenerate() {
+        return pointA.equals(pointB) || pointB.equals(pointC) || pointC.equals(pointA);
+    }
+
     public float area() {
         return area(pointA, pointB, pointC);
     }
