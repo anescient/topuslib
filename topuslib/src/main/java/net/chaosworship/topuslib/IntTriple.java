@@ -1,6 +1,7 @@
 package net.chaosworship.topuslib;
 
 
+@SuppressWarnings("WeakerAccess")
 public class IntTriple implements Cloneable {
 
     public final int a;
@@ -66,22 +67,30 @@ public class IntTriple implements Cloneable {
     }
 
     public boolean includesPair(IntPair pair) {
+        return includesPair(pair.a, pair.b);
+    }
+
+    public boolean includesPair(int i, int j) {
         return
-            ((a == pair.a) && (b == pair.b || c == pair.b)) ||
-            ((b == pair.a) && (a == pair.b || c == pair.b)) ||
-            ((c == pair.a) && (a == pair.b || b == pair.b));
+            ((a == i) && (b == j || c == j)) ||
+            ((b == i) && (a == j || c == j)) ||
+            ((c == i) && (a == j || b == j));
     }
 
     public int getThird(IntPair firstAndSecond) {
-        if(!includesPair(firstAndSecond)) {
+        return getThird(firstAndSecond.a, firstAndSecond.b);
+    }
+
+    public int getThird(int first, int second) {
+        if(!includesPair(first, second)) {
             throw new IllegalArgumentException();
         }
-        if(firstAndSecond.a == a) {
-            return firstAndSecond.b == b ? c : b;
-        } else if(firstAndSecond.a == b) {
-            return firstAndSecond.b == a ? c : a;
-        } else if(firstAndSecond.a == c) {
-            return firstAndSecond.b == a ? b : a;
+        if(first == a) {
+            return second == b ? c : b;
+        } else if(first == b) {
+            return second == a ? c : a;
+        } else if(first == c) {
+            return second == a ? b : a;
         } else {
             throw new AssertionError();
         }

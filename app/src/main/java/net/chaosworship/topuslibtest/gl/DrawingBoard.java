@@ -8,7 +8,9 @@ import android.util.AttributeSet;
 
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
+import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.geom2d.triangulation.Triangulation;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
 import net.chaosworship.topuslib.random.SuperRandom;
 
@@ -61,9 +63,8 @@ public class DrawingBoard
 
         SuperRandom random = new SuperRandom();
         ArrayList<Vec2> points = new ArrayList<>();
-        for(int i = 0; i < 10; i++) {
-            //points.add(random.uniformUnit().scale(44 * random.nextFloat()));
-            points.add(new Vec2(0, i));
+        for(int i = 0; i < 20; i++) {
+            points.add(random.uniformUnit().scale(44 * random.nextFloat()));
         }
 
         mViewTransform.setVisibleRectangle(Rectangle.bound(points).scale(2));
@@ -74,6 +75,12 @@ public class DrawingBoard
         brush.setColor(Color.RED);
         brush.setLineWidth(0.3f);
         brush.drawCircle(c);
+
+        brush.setColor(Color.LTGRAY);
+        Triangulation triangulation = new Triangulation(points);
+        for(Triangle t : triangulation.resolveTriangles()) {
+            brush.drawTriangle(t);
+        }
 
         brush.setColor(Color.WHITE);
         for(Vec2 p : points) {
