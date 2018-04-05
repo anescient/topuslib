@@ -4,7 +4,7 @@ import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulation;
+import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulator;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import org.junit.Test;
@@ -20,12 +20,14 @@ public class DelaunayTest {
     public void isDelaunay() {
         SuperRandom random = new SuperRandom(1234);
         ArrayList<Vec2> points = new ArrayList<>();
+        DelaunayTriangulator triangulator = new DelaunayTriangulator();
         for(int pointCount = 3; pointCount < 50; pointCount++) {
             points.clear();
             for(int i = 0; i < pointCount; i++) {
                 points.add(new Vec2(random.nextFloat(), random.nextFloat()));
             }
-            ArrayList<Triangle> triangles = new DelaunayTriangulation(points).getTriangles();
+            triangulator.triangulate(points);
+            ArrayList<Triangle> triangles = triangulator.getTriangles();
             assertTrue(triangles.size() >= pointCount - 2);
             for(Triangle t : triangles) {
                 Circle c = Circumcircle.toCircle(t);

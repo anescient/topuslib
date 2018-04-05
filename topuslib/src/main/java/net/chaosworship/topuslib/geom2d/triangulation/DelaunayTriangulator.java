@@ -7,10 +7,11 @@ import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 
-public class DelaunayTriangulation {
+public class DelaunayTriangulator {
 
     private static final boolean DEBUG_VALIDATEADJACENT = false;
 
@@ -18,7 +19,7 @@ public class DelaunayTriangulation {
 
     private class TriangleNode {
 
-        private final IntTriple vertices;
+        private IntTriple vertices;
         private Triangle triangle;
         private final TriangleNode[] children;
         private TriangleNode adjacentAB; // node with triangle sharing edge AB
@@ -29,13 +30,25 @@ public class DelaunayTriangulation {
         // some nodes have multiple parents
         private boolean breakLeafIteration;
 
-        private TriangleNode(int a, int b, int c) {
-            vertices = new IntTriple(a, b, c);
-            triangle = new Triangle(
-                    mPoints[vertices.a],
-                    mPoints[vertices.b],
-                    mPoints[vertices.c]);
+        private TriangleNode() {
+            vertices = null;
+            triangle = null;
             children = new TriangleNode[3];
+        }
+
+        private TriangleNode set(int a, int b, int c) {
+            vertices = new IntTriple(a, b, c);
+            if(triangle == null) {
+                triangle = new Triangle(
+                        mPoints[vertices.a],
+                        mPoints[vertices.b],
+                        mPoints[vertices.c]);
+            } else {
+                triangle.set(
+                        mPoints[vertices.a],
+                        mPoints[vertices.b],
+                        mPoints[vertices.c]);
+            }
             children[0] = null;
             children[1] = null;
             children[2] = null;
@@ -43,6 +56,7 @@ public class DelaunayTriangulation {
             adjacentBC = null;
             adjacentCA = null;
             breakLeafIteration = false;
+            return this;
         }
 
         private void validateAdjacent() {
@@ -115,9 +129,9 @@ public class DelaunayTriangulation {
 
         private void insertPoint(int pr) {
             if(isLeaf()) {
-                TriangleNode childAB = children[0] = new TriangleNode(vertices.a, vertices.b, pr);
-                TriangleNode childBC = children[1] = new TriangleNode(pr, vertices.b, vertices.c);
-                TriangleNode childCA = children[2] = new TriangleNode(vertices.a, pr, vertices.c);
+                TriangleNode childAB = children[0] = getTriangleNode().set(vertices.a, vertices.b, pr);
+                TriangleNode childBC = children[1] = getTriangleNode().set(pr, vertices.b, vertices.c);
+                TriangleNode childCA = children[2] = getTriangleNode().set(vertices.a, pr, vertices.c);
 
                 if(adjacentAB != null) {
                     adjacentAB.replaceAdjacent(this, childAB);
@@ -177,8 +191,8 @@ public class DelaunayTriangulation {
                 // assert not tn_i_j_k.isLeaf()
                 // assert not tn_r_i_j.isLeaf()
 
-                TriangleNode tn_r_i_k = new TriangleNode(pr, pi, pk);
-                TriangleNode tn_r_j_k = new TriangleNode(pr, pj, pk);
+                TriangleNode tn_r_i_k = getTriangleNode().set(pr, pi, pk);
+                TriangleNode tn_r_j_k = getTriangleNode().set(pr, pj, pk);
 
                 tn_r_i_k.setAdjacent(pr, pk, tn_r_j_k);
                 tn_r_i_k.setAdjacent(pr, pi, adjacentHavingEdge(pr, pi));
@@ -274,6 +288,7 @@ public class DelaunayTriangulation {
                     return child;
                 }
             }
+
             // otherwise, no luck. the point must be on an unlucky boundary or something.
             // todo: expose this case in a test and then deal with it here
             // for now just use closest-to-bound
@@ -297,14 +312,34 @@ public class DelaunayTriangulation {
 
     private static final SuperRandom sRandom = new SuperRandom();
 
-    private final Vec2[] mPoints;
-    private final TriangleNode mTriangulationRoot;
+    private Vec2[] mPoints;
+    private TriangleNode mTriangulationRoot;
 
-    public DelaunayTriangulation(Collection<Vec2> points) {
+    private TriangleNode[] mNodePool;
+    private int mNextNodeFromPool;
+
+    public DelaunayTriangulator() {
+        mNodePool = new TriangleNode[0];
+        mNextNodeFromPool = 0;
+    }
+
+    private TriangleNode getTriangleNode() {
+        if(mNextNodeFromPool >= mNodePool.length) {
+            TriangleNode[] newPool = Arrays.copyOf(mNodePool, mNodePool.length + 32);
+            for(int i = mNodePool.length; i < newPool.length; i++) {
+                newPool[i] = new TriangleNode();
+            }
+            mNodePool = newPool;
+        }
+        return mNodePool[mNextNodeFromPool++];
+    }
+
+    public void triangulate(Collection<Vec2> points) {
         int n = points.size();
         if(n < 3) {
             throw new IllegalArgumentException();
         }
+        mNextNodeFromPool = 0;
         mPoints = new Vec2[n + 3];
         int i = 0;
         float max = 0;
@@ -321,7 +356,7 @@ public class DelaunayTriangulation {
 
         sRandom.subShuffle(mPoints, 0, n);
 
-        mTriangulationRoot = new TriangleNode(n, n + 1, n + 2);
+        mTriangulationRoot = getTriangleNode().set(n, n + 1, n + 2);
         if(DEBUG_VALIDATEADJACENT)
             mTriangulationRoot.validateAdjacent();
         for(int j = 0; j < n; j++) {

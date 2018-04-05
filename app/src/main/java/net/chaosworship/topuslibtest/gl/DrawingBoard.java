@@ -10,8 +10,7 @@ import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulation;
-import net.chaosworship.topuslib.geom2d.triangulation.Triangulation;
+import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulator;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
 import net.chaosworship.topuslib.random.SuperRandom;
 
@@ -93,7 +92,8 @@ public class DrawingBoard
 
         brush.setColor(Color.LTGRAY);
         brush.setAlpha(0.2f);
-        DelaunayTriangulation dt = new DelaunayTriangulation(points);
+        DelaunayTriangulator dt = new DelaunayTriangulator();
+        dt.triangulate(points);
         ArrayList<Triangle> triangles = dt.getTriangles();
         for(Triangle t : triangles) {
             brush.drawTriangle(t);
