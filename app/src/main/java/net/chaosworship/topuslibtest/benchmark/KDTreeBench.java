@@ -1,9 +1,10 @@
-package net.chaosworship.topuslibtest;
+package net.chaosworship.topuslibtest.benchmark;
 
 import android.os.SystemClock;
 
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
 import net.chaosworship.topuslib.geom2d.rangesearch.PointValuePair;
 import net.chaosworship.topuslib.geom2d.rangesearch.RectangularSearch;
 
@@ -11,17 +12,18 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-public class KDTreeBench {
+public class KDTreeBench extends TimedRunner {
     private static final int POINTCOUNT = 2000;
     private static final int SEARCHCOUNT = 300;
     private static final int ROUNDCOUNT = 2000;
 
     private static final Random sRandom = new Random(1234);
 
-    ArrayList<PointValuePair<String>> mPointValues;
-    ArrayList<Rectangle> mSearchAreas;
+    private ArrayList<PointValuePair<String>> mPointValues;
+    private ArrayList<Rectangle> mSearchAreas;
+    private RectangularSearch<String> mSearch;
 
-    KDTreeBench() {
+    public KDTreeBench() {
         mPointValues = new ArrayList<>();
         for(int i = 0; i < POINTCOUNT; i++) {
             mPointValues.add(new PointValuePair<>(
@@ -37,17 +39,16 @@ public class KDTreeBench {
             float maxy = miny + sRandom.nextFloat() * 0.02f;
             mSearchAreas.add(new Rectangle(minx, miny, maxx, maxy));
         }
+
+        mSearch = new KDTree<>();
     }
 
-    // return ms
-    long timedTest(RectangularSearch<String> search) {
-        long start = SystemClock.uptimeMillis();
+    public void run() {
         for(int round = 0; round < ROUNDCOUNT; round++) {
-            search.load(mPointValues);
+            mSearch.load(mPointValues);
             for(Rectangle area : mSearchAreas) {
-                search.search(area);
+                mSearch.search(area);
             }
         }
-        return SystemClock.uptimeMillis() - start;
     }
 }

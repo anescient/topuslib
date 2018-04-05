@@ -8,27 +8,28 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
-import net.chaosworship.topuslib.geom2d.rangesearch.RectangularSearch;
+import net.chaosworship.topuslibtest.benchmark.DelaunayBench;
+import net.chaosworship.topuslibtest.benchmark.KDTreeBench;
+import net.chaosworship.topuslibtest.benchmark.TimedRunner;
 
-import java.util.Random;
 
 public class BenchmarkActivity extends AppCompatActivity {
-
-    private static final Random sRandom = new Random();
 
     private TextView mTextOutput;
     private Button mButtonGo;
 
     ////////////////////////////////////////////////////
 
-    private class KDTreeBenchTask extends AsyncTask<Void, Void, String> {
+    private class BenchmarkTask extends AsyncTask<Void, Void, String> {
 
         @SuppressLint("DefaultLocale")
         @Override
         protected String doInBackground(Void... voids) {
-            RectangularSearch<String> tree = new KDTree<>();
-            long ms = new KDTreeBench().timedTest(tree);
+
+            //TimedRunner testRunner = new KDTreeBench();
+            TimedRunner testRunner = new DelaunayBench();
+
+            long ms = testRunner.timedRun();
             return String.format("%dms", ms);
         }
 
@@ -54,7 +55,7 @@ public class BenchmarkActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mButtonGo.setEnabled(false);
-                new BenchmarkActivity.KDTreeBenchTask().execute();
+                new BenchmarkTask().execute();
             }
         });
 
