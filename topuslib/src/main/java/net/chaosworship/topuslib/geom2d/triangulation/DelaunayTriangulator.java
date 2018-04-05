@@ -116,6 +116,23 @@ public class DelaunayTriangulator {
             }
         }
 
+        private void getLeafTriangles(Triangulation triangulation, int maxVertex) {
+            if(breakLeafIteration)
+                return;
+            if(isLeaf()) {
+                if(vertexA <= maxVertex && vertexB <= maxVertex && vertexC <= maxVertex) {
+                    triangulation.addTriangle(vertexA, vertexB, vertexC);
+                }
+            } else {
+                for(int childi = 0; childi < 3; childi++) {
+                    TriangleNode child = children[childi];
+                    if(child != null) {
+                        child.getLeafTriangles(triangulation, maxVertex);
+                    }
+                }
+            }
+        }
+
         private void replaceAdjacent(TriangleNode was, TriangleNode is) {
             // assert was != is
             if(adjacentAB == was) {
@@ -335,6 +352,7 @@ public class DelaunayTriangulator {
 
     private Vec2[] mPoints;
     private TriangleNode mTriangulationRoot;
+    private Triangulation mTriangulation;
 
     private TriangleNode[] mNodePool;
     private int mNextNodeFromPool;
@@ -342,6 +360,7 @@ public class DelaunayTriangulator {
     public DelaunayTriangulator() {
         mNodePool = new TriangleNode[0];
         mNextNodeFromPool = 0;
+        mTriangulation = null;
     }
 
     private TriangleNode getTriangleNode() {
@@ -385,6 +404,8 @@ public class DelaunayTriangulator {
             if(DEBUG_VALIDATEADJACENT)
                 mTriangulationRoot.validateAdjacent();
         }
+
+        mTriangulation = null;
     }
 
     /*
@@ -414,5 +435,14 @@ public class DelaunayTriangulator {
         ArrayList<Triangle> triangles = new ArrayList<>();
         mTriangulationRoot.getLeafTriangles(triangles, mPoints.length - 4);
         return triangles;
+    }
+
+    public Triangulation getTriangulation() {
+        if(mTriangulation == null) {
+            mTriangulation = new Triangulation(mPoints);
+            mTriangulationRoot.getLeafTriangles(mTriangulation, mPoints.length - 4);
+        }
+
+        return mTriangulation;
     }
 }

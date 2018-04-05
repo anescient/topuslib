@@ -8,9 +8,11 @@ import android.util.AttributeSet;
 
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
+import net.chaosworship.topuslib.geom2d.Segment;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulator;
+import net.chaosworship.topuslib.geom2d.triangulation.Triangulation;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
 import net.chaosworship.topuslib.random.SuperRandom;
 
@@ -94,9 +96,9 @@ public class DrawingBoard
         brush.setAlpha(0.2f);
         DelaunayTriangulator dt = new DelaunayTriangulator();
         dt.triangulate(points);
-        ArrayList<Triangle> triangles = dt.getTriangles();
-        for(Triangle t : triangles) {
-            brush.drawTriangle(t);
+        Triangulation triangulation = dt.getTriangulation();
+        for(Segment s : triangulation.resolveSegments()) {
+            brush.drawSegment(s);
         }
 
         brush.setColor(Color.WHITE);

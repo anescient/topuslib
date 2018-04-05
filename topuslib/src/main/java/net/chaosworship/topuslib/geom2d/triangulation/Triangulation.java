@@ -2,6 +2,7 @@ package net.chaosworship.topuslib.geom2d.triangulation;
 
 import net.chaosworship.topuslib.IntPair;
 import net.chaosworship.topuslib.IntTriple;
+import net.chaosworship.topuslib.geom2d.Segment;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 
@@ -22,6 +23,12 @@ public class Triangulation {
         for(Vec2 p : points) {
             mPoints[i++] = p;
         }
+        mTriangles = new HashSet<>();
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public Triangulation(Vec2[] points) {
+        mPoints = points;
         mTriangles = new HashSet<>();
     }
 
@@ -71,20 +78,11 @@ public class Triangulation {
         return triangles;
     }
 
-    public IntPair getOppositePair(IntPair edge) {
-        int x1 = -1;
-        int x2 = -1;
-        for(IntTriple triple : mTriangles) {
-            if(triple.includesPair(edge)) {
-                int x = triple.getThird(edge);
-                if(x1 < 0) {
-                    x1 = x;
-                } else {
-                    x2 = x;
-                    break;
-                }
-            }
+    public ArrayList<Segment> resolveSegments() {
+        ArrayList<Segment> segments = new ArrayList<>();
+        for(IntPair vertexPair : getEdges()) {
+            segments.add(new Segment(mPoints[vertexPair.a], mPoints[vertexPair.b]));
         }
-        return x1 >= 0 && x2 >= 0 ? new IntPair(x1, x2) : null;
+        return segments;
     }
 }
