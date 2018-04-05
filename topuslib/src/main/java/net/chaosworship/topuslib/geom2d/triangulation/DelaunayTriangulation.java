@@ -40,12 +40,16 @@ public class DelaunayTriangulation {
 
         private void validateAdjacent() {
             if(adjacentAB != null) {
+                if(adjacentAB == adjacentBC || adjacentAB == adjacentCA)
+                    throw new AssertionError();
                 if(adjacentHavingEdge(vertices.a, vertices.b) != adjacentAB)
                     throw new AssertionError();
                 if(adjacentAB.adjacentHavingEdge(vertices.a, vertices.b) != this)
                     throw new AssertionError();
             }
             if(adjacentBC != null) {
+                if(adjacentBC == adjacentCA)
+                    throw new AssertionError();
                 if(adjacentHavingEdge(vertices.b, vertices.c) != adjacentBC)
                     throw new AssertionError();
                 if(adjacentBC.adjacentHavingEdge(vertices.b, vertices.c) != this)
@@ -88,9 +92,15 @@ public class DelaunayTriangulation {
         }
 
         private void replaceAdjacent(TriangleNode was, TriangleNode is) {
+            if(was == is)
+                throw new AssertionError();
             if(adjacentAB == was) {
+                if(adjacentBC == is)
+                    throw new AssertionError();
                 adjacentAB = is;
             } else if(adjacentBC == was) {
+                if(adjacentAB == is)
+                    throw new AssertionError();
                 adjacentBC = is;
             } else if(adjacentCA == was) {
                 adjacentCA = is;
@@ -99,7 +109,7 @@ public class DelaunayTriangulation {
             }
         }
 
-        private TriangleNode insertPoint(int pr) {
+        private void insertPoint(int pr) {
             if(isLeaf()) {
                 TriangleNode childAB = children[0] = new TriangleNode(vertices.a, vertices.b, pr);
                 TriangleNode childBC = children[1] = new TriangleNode(pr, vertices.b, vertices.c);
@@ -127,26 +137,25 @@ public class DelaunayTriangulation {
                 childCA.adjacentBC = childBC;
                 childCA.adjacentCA = adjacentCA;
 
-                if(adjacentAB != null) {
-                    childAB.legalizeEdge(pr, vertices.a, vertices.b, adjacentAB);
-                }
-
-                if(adjacentBC != null) {
-                    childBC.legalizeEdge(pr, vertices.b, vertices.c, adjacentBC);
-                }
-
-                if(adjacentCA != null) {
-                    childCA.legalizeEdge(pr, vertices.c, vertices.a, adjacentCA);
-                }
-
                 // now internal
                 adjacentAB = null;
                 adjacentBC = null;
                 adjacentCA = null;
 
-                return this;
+                if(childAB.adjacentAB != null) {
+                    childAB.legalizeEdge(pr, vertices.a, vertices.b, childAB.adjacentAB);
+                }
+
+                if(childBC.adjacentBC != null) {
+                    childBC.legalizeEdge(pr, vertices.b, vertices.c, childBC.adjacentBC);
+                }
+
+                if(childCA.adjacentCA != null) {
+                    childCA.legalizeEdge(pr, vertices.c, vertices.a, childCA.adjacentCA);
+                }
+
             } else {
-                return childContainingPoint(pr).insertPoint(pr);
+                childContainingPoint(pr).insertPoint(pr);
             }
         }
 
@@ -192,30 +201,29 @@ public class DelaunayTriangulation {
                 if(tn_r_i_j__r_j != null)
                     tn_r_i_j__r_j.replaceAdjacent(tn_r_i_j, tn_r_j_k);
 
-                tn_i_j_k.children[0] = tn_r_i_k;
-                tn_i_j_k.children[1] = tn_r_j_k;
-                if(tn_i_j_k.children[2] != null)
-                    throw new AssertionError();
-
+                // now internal
+                tn_r_i_j.adjacentAB = null;
+                tn_r_i_j.adjacentBC = null;
+                tn_r_i_j.adjacentCA = null;
                 tn_r_i_j.children[0] = tn_r_i_k;
                 tn_r_i_j.children[1] = tn_r_j_k;
                 if(tn_r_i_j.children[2] != null)
                     throw new AssertionError();
 
                 // now internal
-                tn_r_i_j.adjacentAB = null;
-                tn_r_i_j.adjacentBC = null;
-                tn_r_i_j.adjacentCA = null;
-
-                // now internal
                 tn_i_j_k.adjacentAB = null;
                 tn_i_j_k.adjacentBC = null;
                 tn_i_j_k.adjacentCA = null;
+                tn_i_j_k.children[0] = tn_r_i_k;
+                tn_i_j_k.children[1] = tn_r_j_k;
+                if(tn_i_j_k.children[2] != null)
+                    throw new AssertionError();
 
-                if(adjacentHavingEdge(pj, pk) != null)
-                    legalizeEdge(pr, pj, pk, adjacentHavingEdge(pj, pk));
-                if(adjacentHavingEdge(pi, pk) != null)
-                    legalizeEdge(pr, pi, pk, adjacentHavingEdge(pi, pk));
+                if(tn_i_j_k__k_j != null)
+                    tn_r_j_k.legalizeEdge(pr, pj, pk, tn_i_j_k__k_j);
+
+                if(tn_i_j_k__k_i != null)
+                    tn_r_i_k.legalizeEdge(pr, pi, pk, tn_i_j_k__k_i);
             }
         }
 
@@ -269,8 +277,20 @@ public class DelaunayTriangulation {
             }
             // otherwise, no luck. the point must be on an unlucky boundary or something.
             // todo: expose this case in a test and then deal with it here
-            // probably use closest-to-bound
-            throw new AssertionError();
+            // for now just use closest-to-bound
+            Vec2 p = mPoints[pi];
+            int closesti = 0;
+            float closestDist = children[0].triangle.distanceSquaredFromBound(p);
+            for(int childi = 1; childi < 3; childi++) {
+                if(children[childi] == null)
+                    break;
+                float dist = children[childi].triangle.distanceSquaredFromBound(p);
+                if(dist < closestDist) {
+                    closestDist = dist;
+                    closesti = childi;
+                }
+            }
+            return children[closesti];
         }
     }
 
@@ -295,9 +315,10 @@ public class DelaunayTriangulation {
             max = Math.max(max, Math.abs(point.y));
         }
 
-        mPoints[n] = new Vec2(9999 * max, 0);
-        mPoints[n + 1] = new Vec2(0, 9999 * max);
-        mPoints[n + 2] = new Vec2(-9999 * max, -9999 * max);
+        float boundScale = 4;
+        mPoints[n] = new Vec2(boundScale * max, 0);
+        mPoints[n + 1] = new Vec2(0, boundScale * max);
+        mPoints[n + 2] = new Vec2(-boundScale * max, -boundScale * max);
 
         sRandom.subShuffle(mPoints, 0, n);
 
@@ -306,7 +327,6 @@ public class DelaunayTriangulation {
         for(int j = 0; j < n; j++) {
             mTriangulationRoot.insertPoint(j);
             mTriangulationRoot.validateAdjacent();
-            // check and flip
         }
     }
 
@@ -335,7 +355,7 @@ public class DelaunayTriangulation {
 
     public ArrayList<Triangle> getTriangles() {
         ArrayList<Triangle> triangles = new ArrayList<>();
-        mTriangulationRoot.getLeafTriangles(triangles, mPoints.length - 4);
+        mTriangulationRoot.getLeafTriangles(triangles, mPoints.length);// - 4);
         return triangles;
     }
 }

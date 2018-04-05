@@ -42,7 +42,8 @@ public class DrawingBoard
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
         setRenderer(this);
-        setRenderMode(RENDERMODE_WHEN_DIRTY);
+        //setRenderMode(RENDERMODE_WHEN_DIRTY);
+        setRenderMode(RENDERMODE_CONTINUOUSLY);
     }
 
     @Override
@@ -64,10 +65,21 @@ public class DrawingBoard
 
         SuperRandom random = new SuperRandom();
         ArrayList<Vec2> points = new ArrayList<>();
+
         for(int i = 0; i < 20; i++) {
             points.add(random.uniformUnit().scale(44 * random.nextFloat()));
         }
 
+        /*
+        for(int i = 0; i < 7; i++) {
+            for(int j = 0; j < 7; j++) {
+                points.add(new Vec2(
+                        i * 10 + 0.00f * random.nextFloat(),
+                        j * 10 + 0.00f * random.nextFloat() + (i % 2) * 5));
+                //points.add(new Vec2(i * 10 + 0.01f * random.nextFloat(), j * 10 + 0.01f * random.nextFloat()));
+            }
+        }
+*/
         mViewTransform.setVisibleRectangle(Rectangle.bound(points).scale(2));
         ShapesBrush brush = mLoader.getShapesBrush();
         brush.begin(mViewTransform.getViewMatrix());
@@ -85,7 +97,7 @@ public class DrawingBoard
 
         brush.setColor(Color.WHITE);
         for(Vec2 p : points) {
-            brush.drawSpot(p, 0.5f);
+            brush.drawSpot(p, 1.0f);
         }
 
         brush.end();
