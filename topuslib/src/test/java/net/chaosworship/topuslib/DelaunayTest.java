@@ -18,7 +18,7 @@ public class DelaunayTest {
 
     @Test
     public void isDelaunay() {
-        SuperRandom random = new SuperRandom();
+        SuperRandom random = new SuperRandom(1234);
         ArrayList<Vec2> points = new ArrayList<>();
         for(int pointCount = 3; pointCount < 50; pointCount++) {
             points.clear();
