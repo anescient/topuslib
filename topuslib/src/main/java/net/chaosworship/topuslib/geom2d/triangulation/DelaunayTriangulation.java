@@ -12,6 +12,8 @@ import java.util.Collection;
 
 public class DelaunayTriangulation {
 
+    private static final boolean DEBUG_VALIDATEADJACENT = false;
+
     ////////////////////////////////////////////////
 
     private class TriangleNode {
@@ -99,15 +101,10 @@ public class DelaunayTriangulation {
         }
 
         private void replaceAdjacent(TriangleNode was, TriangleNode is) {
-            if(was == is)
-                throw new AssertionError();
+            // assert was != is
             if(adjacentAB == was) {
-                if(adjacentBC == is)
-                    throw new AssertionError();
                 adjacentAB = is;
             } else if(adjacentBC == was) {
-                if(adjacentAB == is)
-                    throw new AssertionError();
                 adjacentBC = is;
             } else if(adjacentCA == was) {
                 adjacentCA = is;
@@ -174,12 +171,11 @@ public class DelaunayTriangulation {
                 // call legalize for edges j-k and i-k
 
                 int pk = tn_i_j_k.vertices.getThird(pi, pj);
-                TriangleNode tn_r_i_j = tn_i_j_k.adjacentHavingEdge(pi, pj);
-                if(tn_r_i_j != this)
-                    throw new AssertionError();
+                TriangleNode tn_r_i_j = this;
+                // assert tn_r_i_j = tn_i_j_k.adjacentHavingEdge(pi, pj);
 
-                if(!tn_i_j_k.isLeaf() || !tn_r_i_j.isLeaf())
-                    throw new AssertionError();
+                // assert not tn_i_j_k.isLeaf()
+                // assert not tn_r_i_j.isLeaf()
 
                 TriangleNode tn_r_i_k = new TriangleNode(pr, pi, pk);
                 TriangleNode tn_r_j_k = new TriangleNode(pr, pj, pk);
@@ -214,8 +210,7 @@ public class DelaunayTriangulation {
                 tn_r_i_j.adjacentCA = null;
                 tn_r_i_j.children[0] = tn_r_i_k;
                 tn_r_i_j.children[1] = tn_r_j_k;
-                if(tn_r_i_j.children[2] != null)
-                    throw new AssertionError();
+                // assert tn_r_i_j.children[2] == null
 
                 // now internal
                 tn_i_j_k.adjacentAB = null;
@@ -223,8 +218,7 @@ public class DelaunayTriangulation {
                 tn_i_j_k.adjacentCA = null;
                 tn_i_j_k.children[0] = tn_r_i_k;
                 tn_i_j_k.children[1] = tn_r_j_k;
-                if(tn_i_j_k.children[2] != null)
-                    throw new AssertionError();
+                // assert tn_i_j_k.children[2] == null
                 tn_i_j_k.breakLeafIteration = true;
 
                 if(tn_i_j_k__k_j != null)
@@ -237,20 +231,17 @@ public class DelaunayTriangulation {
 
         private void setAdjacent(int pi, int pj, TriangleNode tn) {
             if(pi == vertices.a && pj == vertices.b || pi == vertices.b && pj == vertices.a) {
-                if(adjacentAB != null)
-                    throw new AssertionError();
+                // assert adjacentAB == null
                 adjacentAB = tn;
                 return;
             }
             if(pi == vertices.b && pj == vertices.c || pi == vertices.c && pj == vertices.b) {
-                if(adjacentBC != null)
-                    throw new AssertionError();
+                // assert adjacentBC == null
                 adjacentBC = tn;
                 return;
             }
             if(pi == vertices.c && pj == vertices.a || pi == vertices.a && pj == vertices.c) {
-                if(adjacentCA != null)
-                    throw new AssertionError();
+                // assert adjacentCA == null
                 adjacentCA = tn;
                 return;
             }
@@ -274,9 +265,9 @@ public class DelaunayTriangulation {
             if(pi < 0) {
                 throw new IllegalArgumentException();
             }
-            if(isLeaf()) {
-                throw new AssertionError();
-            }
+
+            // assert not a leaf
+
             for(int childi = 0; childi < 3; childi++) {
                 TriangleNode child = children[childi];
                 if(child != null && child.contains(pi)) {
@@ -331,10 +322,12 @@ public class DelaunayTriangulation {
         sRandom.subShuffle(mPoints, 0, n);
 
         mTriangulationRoot = new TriangleNode(n, n + 1, n + 2);
-        //mTriangulationRoot.validateAdjacent();
+        if(DEBUG_VALIDATEADJACENT)
+            mTriangulationRoot.validateAdjacent();
         for(int j = 0; j < n; j++) {
             mTriangulationRoot.insertPoint(j);
-            //mTriangulationRoot.validateAdjacent();
+            if(DEBUG_VALIDATEADJACENT)
+                mTriangulationRoot.validateAdjacent();
         }
     }
 
