@@ -1,6 +1,5 @@
 package net.chaosworship.topuslib.geom2d.triangulation;
 
-import net.chaosworship.topuslib.IntTriple;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
@@ -19,7 +18,9 @@ public class DelaunayTriangulator {
 
     private class TriangleNode {
 
-        private IntTriple vertices;
+        private int vertexA;
+        private int vertexB;
+        private int vertexC;
         private Triangle triangle;
         private final TriangleNode[] children;
         private TriangleNode adjacentAB; // node with triangle sharing edge AB
@@ -31,23 +32,24 @@ public class DelaunayTriangulator {
         private boolean breakLeafIteration;
 
         private TriangleNode() {
-            vertices = null;
             triangle = null;
             children = new TriangleNode[3];
         }
 
         private TriangleNode set(int a, int b, int c) {
-            vertices = new IntTriple(a, b, c);
+            vertexA = a;
+            vertexB = b;
+            vertexC = c;
             if(triangle == null) {
                 triangle = new Triangle(
-                        mPoints[vertices.a],
-                        mPoints[vertices.b],
-                        mPoints[vertices.c]);
+                        mPoints[vertexA],
+                        mPoints[vertexB],
+                        mPoints[vertexC]);
             } else {
                 triangle.set(
-                        mPoints[vertices.a],
-                        mPoints[vertices.b],
-                        mPoints[vertices.c]);
+                        mPoints[vertexA],
+                        mPoints[vertexB],
+                        mPoints[vertexC]);
             }
             children[0] = null;
             children[1] = null;
@@ -63,23 +65,23 @@ public class DelaunayTriangulator {
             if(adjacentAB != null) {
                 if(adjacentAB == adjacentBC || adjacentAB == adjacentCA)
                     throw new AssertionError();
-                if(adjacentHavingEdge(vertices.a, vertices.b) != adjacentAB)
+                if(adjacentHavingEdge(vertexA, vertexB) != adjacentAB)
                     throw new AssertionError();
-                if(adjacentAB.adjacentHavingEdge(vertices.a, vertices.b) != this)
+                if(adjacentAB.adjacentHavingEdge(vertexA, vertexB) != this)
                     throw new AssertionError();
             }
             if(adjacentBC != null) {
                 if(adjacentBC == adjacentCA)
                     throw new AssertionError();
-                if(adjacentHavingEdge(vertices.b, vertices.c) != adjacentBC)
+                if(adjacentHavingEdge(vertexB, vertexC) != adjacentBC)
                     throw new AssertionError();
-                if(adjacentBC.adjacentHavingEdge(vertices.b, vertices.c) != this)
+                if(adjacentBC.adjacentHavingEdge(vertexB, vertexC) != this)
                     throw new AssertionError();
             }
             if(adjacentCA != null) {
-                if(adjacentHavingEdge(vertices.a, vertices.c) != adjacentCA)
+                if(adjacentHavingEdge(vertexA, vertexC) != adjacentCA)
                     throw new AssertionError();
-                if(adjacentCA.adjacentHavingEdge(vertices.a, vertices.c) != this)
+                if(adjacentCA.adjacentHavingEdge(vertexA, vertexC) != this)
                     throw new AssertionError();
             }
             for(TriangleNode child : children) {
@@ -101,7 +103,7 @@ public class DelaunayTriangulator {
             if(breakLeafIteration)
                 return;
             if(isLeaf()) {
-                if(!vertices.includesAnyOver(maxVertex)) {
+                if(vertexA <= maxVertex && vertexB <= maxVertex && vertexC <= maxVertex) {
                     triangles.add(triangle);
                 }
             } else {
@@ -129,9 +131,9 @@ public class DelaunayTriangulator {
 
         private void insertPoint(int pr) {
             if(isLeaf()) {
-                TriangleNode childAB = children[0] = getTriangleNode().set(vertices.a, vertices.b, pr);
-                TriangleNode childBC = children[1] = getTriangleNode().set(pr, vertices.b, vertices.c);
-                TriangleNode childCA = children[2] = getTriangleNode().set(vertices.a, pr, vertices.c);
+                TriangleNode childAB = children[0] = getTriangleNode().set(vertexA, vertexB, pr);
+                TriangleNode childBC = children[1] = getTriangleNode().set(pr, vertexB, vertexC);
+                TriangleNode childCA = children[2] = getTriangleNode().set(vertexA, pr, vertexC);
 
                 if(adjacentAB != null) {
                     adjacentAB.replaceAdjacent(this, childAB);
@@ -161,19 +163,33 @@ public class DelaunayTriangulator {
                 adjacentCA = null;
 
                 if(childAB.adjacentAB != null) {
-                    childAB.legalizeEdge(pr, vertices.a, vertices.b, childAB.adjacentAB);
+                    childAB.legalizeEdge(pr, vertexA, vertexB, childAB.adjacentAB);
                 }
 
                 if(childBC.adjacentBC != null) {
-                    childBC.legalizeEdge(pr, vertices.b, vertices.c, childBC.adjacentBC);
+                    childBC.legalizeEdge(pr, vertexB, vertexC, childBC.adjacentBC);
                 }
 
                 if(childCA.adjacentCA != null) {
-                    childCA.legalizeEdge(pr, vertices.c, vertices.a, childCA.adjacentCA);
+                    childCA.legalizeEdge(pr, vertexC, vertexA, childCA.adjacentCA);
                 }
 
             } else {
                 childContainingPoint(pr).insertPoint(pr);
+            }
+        }
+
+        private int getThirdVertex(int a, int b) {
+            // assert includes vertices a and b
+            // assert vertices distinct
+            if(vertexA == a) {
+                return vertexB == b ? vertexC : vertexB;
+            } else if(vertexB == a) {
+                return vertexA == b ? vertexC : vertexA;
+            } else if(vertexC == a) {
+                return vertexA == b ? vertexB : vertexA;
+            } else {
+                throw new AssertionError();
             }
         }
 
@@ -184,7 +200,7 @@ public class DelaunayTriangulator {
                 // create triangles r-i-k and r-j-k
                 // call legalize for edges j-k and i-k
 
-                int pk = tn_i_j_k.vertices.getThird(pi, pj);
+                int pk = tn_i_j_k.getThirdVertex(pi, pj);
                 TriangleNode tn_r_i_j = this;
                 // assert tn_r_i_j = tn_i_j_k.adjacentHavingEdge(pi, pj);
 
@@ -244,17 +260,17 @@ public class DelaunayTriangulator {
         }
 
         private void setAdjacent(int pi, int pj, TriangleNode tn) {
-            if(pi == vertices.a && pj == vertices.b || pi == vertices.b && pj == vertices.a) {
+            if(pi == vertexA && pj == vertexB || pi == vertexB && pj == vertexA) {
                 // assert adjacentAB == null
                 adjacentAB = tn;
                 return;
             }
-            if(pi == vertices.b && pj == vertices.c || pi == vertices.c && pj == vertices.b) {
+            if(pi == vertexB && pj == vertexC || pi == vertexC && pj == vertexB) {
                 // assert adjacentBC == null
                 adjacentBC = tn;
                 return;
             }
-            if(pi == vertices.c && pj == vertices.a || pi == vertices.a && pj == vertices.c) {
+            if(pi == vertexC && pj == vertexA || pi == vertexA && pj == vertexC) {
                 // assert adjacentCA == null
                 adjacentCA = tn;
                 return;
@@ -262,14 +278,19 @@ public class DelaunayTriangulator {
             throw new AssertionError();
         }
 
+        private boolean includesVertices(int a, int b) {
+            return (vertexA == a || vertexB == a || vertexC == a) &&
+                    (vertexA == b || vertexB == b || vertexC == b);
+        }
+
         private TriangleNode adjacentHavingEdge(int pi, int pj) {
-            if(adjacentAB != null && adjacentAB.vertices.includesPair(pi, pj)) {
+            if(adjacentAB != null && adjacentAB.includesVertices(pi, pj)) {
                 return adjacentAB;
             }
-            if(adjacentBC != null && adjacentBC.vertices.includesPair(pi, pj)) {
+            if(adjacentBC != null && adjacentBC.includesVertices(pi, pj)) {
                 return adjacentBC;
             }
-            if(adjacentCA != null && adjacentCA.vertices.includesPair(pi, pj)) {
+            if(adjacentCA != null && adjacentCA.includesVertices(pi, pj)) {
                 return adjacentCA;
             }
             return null;
