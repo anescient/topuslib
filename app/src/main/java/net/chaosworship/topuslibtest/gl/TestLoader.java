@@ -10,7 +10,7 @@ public class TestLoader extends Loader {
     private ShapesBrush mShapesBrush;
     private TrianglesBrush mTrianglesBrush;
 
-    public TestLoader(Context context) {
+    TestLoader(Context context) {
         super(context);
         invalidateAll();
     }

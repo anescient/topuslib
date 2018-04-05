@@ -9,31 +9,7 @@ import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.Brush;
 
-import java.nio.FloatBuffer;
 import java.util.List;
-
-import static android.opengl.GLES20.GL_ARRAY_BUFFER;
-import static android.opengl.GLES20.GL_BLEND;
-import static android.opengl.GLES20.GL_CULL_FACE;
-import static android.opengl.GLES20.GL_DEPTH_TEST;
-import static android.opengl.GLES20.GL_FLOAT;
-import static android.opengl.GLES20.GL_ONE_MINUS_SRC_ALPHA;
-import static android.opengl.GLES20.GL_SRC_ALPHA;
-import static android.opengl.GLES20.GL_STREAM_DRAW;
-import static android.opengl.GLES20.GL_TRIANGLE_FAN;
-import static android.opengl.GLES20.glBindBuffer;
-import static android.opengl.GLES20.glBlendFunc;
-import static android.opengl.GLES20.glBufferData;
-import static android.opengl.GLES20.glDisable;
-import static android.opengl.GLES20.glDisableVertexAttribArray;
-import static android.opengl.GLES20.glDrawArrays;
-import static android.opengl.GLES20.glEnable;
-import static android.opengl.GLES20.glEnableVertexAttribArray;
-import static android.opengl.GLES20.glGetAttribLocation;
-import static android.opengl.GLES20.glGetUniformLocation;
-import static android.opengl.GLES20.glUniform4fv;
-import static android.opengl.GLES20.glUniformMatrix4fv;
-import static android.opengl.GLES20.glVertexAttribPointer;
 
 
 @SuppressWarnings({"WeakerAccess", "SameParameterValue", "unused"})
@@ -41,7 +17,6 @@ public class ShapesBrush extends Brush {
 
     private static final int SPOTSEGMENTS = 13;
 
-    private final TestLoader mLoader;
     private final float[] mColor;
     private float mLineWidth;
     private final TrianglesBrush mTrianglesBrush;
@@ -49,10 +24,9 @@ public class ShapesBrush extends Brush {
     private final Vec2[] mSpotVerts;
 
     ShapesBrush(TestLoader loader) {
-        mLoader = loader;
         mColor = new float[] { 1, 1, 1, 1 };
         mLineWidth = 1;
-        mTrianglesBrush = mLoader.getTrianglesBrush();
+        mTrianglesBrush = loader.getTrianglesBrush();
 
         mSpotVerts = new Vec2[SPOTSEGMENTS];
         for(int i = 0; i < SPOTSEGMENTS; i++) {

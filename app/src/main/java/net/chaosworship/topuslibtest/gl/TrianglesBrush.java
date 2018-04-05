@@ -115,11 +115,12 @@ public class TrianglesBrush extends Brush {
         mVertexPreBuffer[i++] = color[0];
         mVertexPreBuffer[i++] = color[1];
         mVertexPreBuffer[i++] = color[2];
-        mVertexPreBuffer[i++] = color[3];
+        mVertexPreBuffer[i] = color[3];
 
         mTrianglesBuffered++;
     }
 
+    @SuppressWarnings("unused")
     void addTriangle(Triangle triangle, float[] color) {
         addTriangle(triangle.pointA, triangle.pointB, triangle.pointC, color);
     }
