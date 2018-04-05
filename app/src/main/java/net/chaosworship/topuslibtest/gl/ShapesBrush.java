@@ -39,60 +39,25 @@ import static android.opengl.GLES20.glVertexAttribPointer;
 @SuppressWarnings({"WeakerAccess", "SameParameterValue", "unused"})
 public class ShapesBrush extends Brush {
 
-    // floats per vertex
-    // x, y
-    private static final int VERTEXSIZE = 2;
-
     private static final int SPOTSEGMENTS = 13;
 
     private final TestLoader mLoader;
-    private boolean mBegun;
     private final float[] mColor;
     private float mLineWidth;
+    private final TrianglesBrush mTrianglesBrush;
 
-    private final int mMVPHandle;
-    private final int mColorHandle;
-    private final int mPosHandle;
-
-    private final FloatBuffer mVertexBuffer;
-    private final int mVertexBufferHandle;
-
+    private final Vec2[] mSpotVerts;
 
     ShapesBrush(TestLoader loader) {
         mLoader = loader;
-        mBegun = false;
         mColor = new float[] { 1, 1, 1, 1 };
         mLineWidth = 1;
+        mTrianglesBrush = mLoader.getTrianglesBrush();
 
-        int program = mLoader.useProgram("simple");
-        mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
-        mColorHandle = glGetUniformLocation(program, "uColor");
-        mPosHandle = glGetAttribLocation(program, "aPos");
-
-        mVertexBuffer = makeFloatBuffer(VERTEXSIZE * SPOTSEGMENTS);
-        mVertexBufferHandle = generateBuffer();
-    }
-
-    void begin(float[] matPV) {
-        if(mBegun) {
-            throw new IllegalStateException();
+        mSpotVerts = new Vec2[SPOTSEGMENTS];
+        for(int i = 0; i < SPOTSEGMENTS; i++) {
+            mSpotVerts[i] = Vec2.unit((double)i / SPOTSEGMENTS * 2 * Math.PI);
         }
-        mBegun = true;
-
-        mLoader.useProgram("simple");
-
-        glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
-        final int stride = VERTEXSIZE * FLOATSIZE;
-        glVertexAttribPointer(mPosHandle, 2, GL_FLOAT, false, stride, 0);
-        glEnableVertexAttribArray(mPosHandle);
-
-        glUniformMatrix4fv(mMVPHandle, 1, false, matPV, 0);
-        glUniform4fv(mColorHandle, 1, mColor, 0);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
     }
 
     void setLineWidth(float lineWidth) {
@@ -104,42 +69,28 @@ public class ShapesBrush extends Brush {
         mColor[1] = (float)Color.green(color) / 255;
         mColor[2] = (float)Color.blue(color) / 255;
         mColor[3] = (float)Color.alpha(color) / 255;
-        if(mBegun) {
-            glUniform4fv(mColorHandle, 1, mColor, 0);
-        }
+    }
+
+    void begin(float[] matPV) {
+        mTrianglesBrush.begin(matPV);
     }
 
     void drawSpot(Vec2 position, float radius) {
-        mVertexBuffer.position(0);
         for(int i = 0; i < SPOTSEGMENTS; i++) {
-            Vec2 v = Vec2.unit((double)i / SPOTSEGMENTS * 2 * Math.PI).scale(radius).add(position);
-            mVertexBuffer.put(v.x);
-            mVertexBuffer.put(v.y);
+            Vec2 a = mSpotVerts[i].scaled(radius).add(position);
+            Vec2 b = mSpotVerts[(i + 1) % SPOTSEGMENTS].scaled(radius).add(position);
+            mTrianglesBrush.addTriangle(position, a, b, mColor);
         }
-        mVertexBuffer.position(0);
-        glBufferData(GL_ARRAY_BUFFER, SPOTSEGMENTS * VERTEXSIZE * FLOATSIZE, mVertexBuffer, GL_STREAM_DRAW);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, SPOTSEGMENTS);
     }
 
     void drawSegment(Vec2 a, Vec2 b) {
-        mVertexBuffer.position(0);
         Vec2 unit = Vec2.difference(a, b).normalize().scale(mLineWidth * 0.5f).rotate90();
-        Vec2 p = a.sum(unit);
-        mVertexBuffer.put(p.x);
-        mVertexBuffer.put(p.y);
-        p = a.difference(unit);
-        mVertexBuffer.put(p.x);
-        mVertexBuffer.put(p.y);
-        p = b.difference(unit);
-        mVertexBuffer.put(p.x);
-        mVertexBuffer.put(p.y);
-        p = b.sum(unit);
-        mVertexBuffer.put(p.x);
-        mVertexBuffer.put(p.y);
-
-        mVertexBuffer.position(0);
-        glBufferData(GL_ARRAY_BUFFER, 4 * VERTEXSIZE * FLOATSIZE, mVertexBuffer, GL_STREAM_DRAW);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        Vec2 a1 = a.sum(unit);
+        Vec2 a2 = a.difference(unit);
+        Vec2 b1 = b.sum(unit);
+        Vec2 b2 = b.difference(unit);
+        mTrianglesBrush.addTriangle(a1, a2, b1, mColor);
+        mTrianglesBrush.addTriangle(a2, b1, b2, mColor);
     }
 
     void drawTriangle(Triangle triangle) {
@@ -167,11 +118,6 @@ public class ShapesBrush extends Brush {
     }
 
     void end() {
-        if(!mBegun) {
-            throw new IllegalStateException();
-        }
-        mBegun = false;
-        glDisableVertexAttribArray(mPosHandle);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        mTrianglesBrush.end();
     }
 }
