@@ -77,6 +77,10 @@ public class IntTriple implements Cloneable {
             ((c == i) && (a == j || b == j));
     }
 
+    public boolean includesAnyOver(int n) {
+        return a > n || b > n || c > n;
+    }
+
     public int getThird(IntPair firstAndSecond) {
         return getThird(firstAndSecond.a, firstAndSecond.b);
     }
