@@ -32,6 +32,10 @@ public class Triangle {
         return closestPointOnBound(pointA, pointB, pointC, point);
     }
 
+    public float distanceSquaredFromBound(Vec2 point) {
+        return distanceSquaredFromBound(pointA, pointB, pointC, point);
+    }
+
     public boolean contains(Vec2 point) {
         return contains(pointA, pointB, pointC, point);
     }
@@ -61,19 +65,21 @@ public class Triangle {
         return closest;
     }
 
-    public static boolean contains(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
-        float APx = p.x - a.x;
-        float APy = p.y - a.y;
-        float ABx = b.x - a.x;
-        float ABy = b.y - a.y;
-        float ACx = c.x - a.x;
-        float ACy = c.y - a.y;
-        float BCx = c.x - b.x;
-        float BCy = c.y - b.y;
-        float BPx = p.x - b.x;
-        float BPy = p.y - b.y;
-        boolean PAB = ABx * APy - ABy * APx > 0;
-        return (ACx * APy - ACy * APx > 0 != PAB) && (BCx * BPy - BCy * BPx > 0 == PAB);
+    public static float distanceSquaredFromBound(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
+        Vec2 closest = closestPointOnBound(a, b, c, p).getClosestOnAB();
+        return closest.subtract(p).magnitudeSq();
+    }
+
+
+    private static boolean inHalfPlane(Vec2 p, Vec2 a, Vec2 b) {
+        return ((p.x - b.x) * (a.y - b.y) - (a.x - b.x) * (p.y - b.y)) < 0;
+    }
+
+    private static boolean contains(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
+        boolean b1 = inHalfPlane(p, a, b);
+        boolean b2 = inHalfPlane(p, b, c);
+        boolean b3 = inHalfPlane(p, c, a);
+        return (b1 == b2) && (b2 == b3);
     }
 
     @SuppressWarnings("WeakerAccess")

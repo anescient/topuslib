@@ -15,53 +15,51 @@ public class TriangleTest {
     @Test
     public void contains() {
         Triangle t = new Triangle(new Vec2(1, 2), new Vec2(3, 4), new Vec2(5, -1));
-        assertFalse(t.contains(new Vec2(1.999999f, 3)));
-        assertTrue(t.contains(new Vec2(2.0000001f, 3)));
-        assertFalse(t.contains(new Vec2(0, 0)));
-        assertFalse(t.contains(new Vec2(1, 3)));
-        assertFalse(t.contains(new Vec2(3, 0)));
-        assertFalse(t.contains(new Vec2(4, -1)));
-        assertFalse(t.contains(new Vec2(4, 2)));
-        assertFalse(t.contains(new Vec2(4, 5)));
-        assertFalse(t.contains(new Vec2(5, -2)));
-        assertTrue(t.contains(new Vec2(3, 1)));
-        assertTrue(t.contains(new Vec2(2, 2)));
-        assertTrue(t.contains(new Vec2(3, 2)));
-        assertTrue(t.contains(new Vec2(4, 0)));
-        assertTrue(t.contains(new Vec2(4, 1)));
-        assertTrue(t.contains(new Vec2(3, 3)));
+        assertFalse(checkedContains(t, new Vec2(1.999999f, 3)));
+        assertTrue(checkedContains(t, new Vec2(2.000001f, 3)));
+        assertFalse(checkedContains(t, new Vec2(0, 0)));
+        assertFalse(checkedContains(t, new Vec2(1, 3)));
+        assertFalse(checkedContains(t, new Vec2(3, 0)));
+        assertFalse(checkedContains(t, new Vec2(4, -1)));
+        assertFalse(checkedContains(t, new Vec2(4, 2)));
+        assertFalse(checkedContains(t, new Vec2(4, 5)));
+        assertFalse(checkedContains(t, new Vec2(5, -2)));
+        assertTrue(checkedContains(t, new Vec2(3, 1)));
+        assertTrue(checkedContains(t, new Vec2(2, 2)));
+        assertTrue(checkedContains(t, new Vec2(3, 2)));
+        assertTrue(checkedContains(t, new Vec2(4, 0)));
+        assertTrue(checkedContains(t, new Vec2(4, 1)));
+        assertTrue(checkedContains(t, new Vec2(3, 3)));
     }
 
-    // Triangle's "contains" method is inconsistent when query point lies on an edge.
-    // This test is here to catch any change in behavior, not to verify correctness.
     @Test
-    public void containsOnEdgeIsBroken() {
+    public void containsOnEdge() {
         Vec2 a = new Vec2(0, 0);
         Vec2 b = new Vec2(3, 3);
         Vec2 c = new Vec2(7, 1);
         Vec2 m_ab = Vec2.midpoint(a, b);
         Vec2 m_bc = Vec2.midpoint(b, c);
 
-        Triangle abc = new Triangle(a, b, c);
-        Triangle acb = new Triangle(a, c, b);
-        Triangle bac = new Triangle(b, a, c);
-        Triangle bca = new Triangle(b, c, a);
-        Triangle cab = new Triangle(c, a, b);
-        Triangle cba = new Triangle(c, b, a);
+        Triangle cw_abc = new Triangle(a, b, c);
+        Triangle cw_bca = new Triangle(b, c, a);
+        Triangle cw_cab = new Triangle(c, a, b);
+        Triangle ccw_acb = new Triangle(a, c, b);
+        Triangle ccw_bac = new Triangle(b, a, c);
+        Triangle ccw_cba = new Triangle(c, b, a);
 
-        assertTrue(abc.contains(m_ab));
-        assertTrue(acb.contains(m_ab));
-        assertFalse(bac.contains(m_ab));
-        assertFalse(bca.contains(m_ab));
-        assertTrue(cab.contains(m_ab));
-        assertFalse(cba.contains(m_ab));
+        assertFalse(cw_abc.contains(m_ab));
+        assertFalse(cw_bca.contains(m_ab));
+        assertFalse(cw_cab.contains(m_ab));
+        assertTrue(ccw_acb.contains(m_ab));
+        assertTrue(ccw_bac.contains(m_ab));
+        assertTrue(ccw_cba.contains(m_ab));
 
-        assertTrue(abc.contains(m_bc));
-        assertFalse(acb.contains(m_bc));
-        assertTrue(bac.contains(m_bc));
-        assertTrue(bca.contains(m_bc));
-        assertFalse(cab.contains(m_bc));
-        assertFalse(cba.contains(m_bc));
+        assertFalse(cw_abc.contains(m_bc));
+        assertFalse(cw_bca.contains(m_bc));
+        assertFalse(cw_cab.contains(m_bc));
+        assertTrue(ccw_acb.contains(m_bc));
+        assertTrue(ccw_bac.contains(m_bc));
+        assertTrue(ccw_cba.contains(m_bc));
     }
 
     @Test
@@ -79,9 +77,9 @@ public class TriangleTest {
             t.pointC.setUnit(triangleRotation + 4 * Math.PI / 3).scale(triangleRadius).add(origin);
             for(double pointRotation = 0; pointRotation < 2 * Math.PI; pointRotation += 0.03) {
                 p.setUnit(pointRotation).scale(triangleRadius * 1.001f).add(origin);
-                assertFalse(t.contains(p));
+                assertFalse(checkedContains(t, p));
                 p.setUnit(pointRotation).scale(triangleRadius * 0.28f).add(origin);
-                assertTrue(t.contains(p));
+                assertTrue(checkedContains(t, p));
             }
         }
     }
@@ -159,5 +157,46 @@ public class TriangleTest {
 
     private static boolean softEquals(float a, float b, float delta) {
         return Math.abs(a - b) < delta;
+    }
+
+    private static boolean checkedContains(Triangle t, Vec2 p) {
+        boolean contains = t.contains(p);
+        boolean shouldContain = containsReferenceBarycentric(t, p);
+        assertTrue(contains == shouldContain);
+        return contains;
+    }
+
+    private static boolean containsReferenceBarycentric(Triangle tt, Vec2 p)
+    {
+        Vec2 p0 = tt.pointA;
+        Vec2 p1 = tt.pointB;
+        Vec2 p2 = tt.pointC;
+        float s = p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y) * p.x + (p0.x - p2.x) * p.y;
+        float t = p0.x * p1.y - p0.y * p1.x + (p0.y - p1.y) * p.x + (p1.x - p0.x) * p.y;
+
+        if ((s < 0) != (t < 0))
+            return false;
+
+        float A = -p1.y * p2.x + p0.y * (p2.x - p1.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y;
+        if (A < 0.0)
+        {
+            s = -s;
+            t = -t;
+            A = -A;
+        }
+        return s > 0 && t > 0 && (s + t) <= A;
+    }
+
+    private static boolean containsReferenceCross(Triangle t, Vec2 p) {
+        Vec2 pa = t.pointA.difference(p);
+        Vec2 pb = t.pointB.difference(p);
+        Vec2 pc = t.pointC.difference(p);
+        Vec2 ab = t.pointB.difference(t.pointA);
+        Vec2 bc = t.pointC.difference(t.pointB);
+        Vec2 ca = t.pointA.difference(t.pointC);
+        float abcross = ab.cross(pa);
+        float bccross = bc.cross(pb);
+        float cacross = ca.cross(pc);
+        return abcross < 0 == bccross < 0 && bccross < 0 == cacross < 0;
     }
 }
