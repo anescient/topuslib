@@ -3,9 +3,9 @@ package net.chaosworship.topuslib.geom2d;
 
 public class Triangle {
 
-    public final Vec2 pointA;
-    public final Vec2 pointB;
-    public final Vec2 pointC;
+    public Vec2 pointA;
+    public Vec2 pointB;
+    public Vec2 pointC;
 
     public Triangle() {
         pointA = new Vec2();
@@ -23,9 +23,9 @@ public class Triangle {
     }
 
     public void set(Vec2 a, Vec2 b, Vec2 c) {
-        pointA.set(a);
-        pointB.set(b);
-        pointC.set(c);
+        pointA = a;
+        pointB = b;
+        pointC = c;
     }
 
     public ClosestPointOnLine closestPointOnBound(Vec2 point) {
@@ -69,7 +69,6 @@ public class Triangle {
         Vec2 closest = closestPointOnBound(a, b, c, p).getClosestOnAB();
         return closest.subtract(p).magnitudeSq();
     }
-
 
     private static boolean inHalfPlane(Vec2 p, Vec2 a, Vec2 b) {
         return ((p.x - b.x) * (a.y - b.y) - (a.x - b.x) * (p.y - b.y)) < 0;
