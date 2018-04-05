@@ -323,7 +323,7 @@ public class DelaunayTriangulation {
             max = Math.max(max, Math.abs(point.y));
         }
 
-        float boundScale = 4;
+        float boundScale = 9999;
         mPoints[n] = new Vec2(boundScale * max, 0);
         mPoints[n + 1] = new Vec2(0, boundScale * max);
         mPoints[n + 2] = new Vec2(-boundScale * max, -boundScale * max);
@@ -331,10 +331,10 @@ public class DelaunayTriangulation {
         sRandom.subShuffle(mPoints, 0, n);
 
         mTriangulationRoot = new TriangleNode(n, n + 1, n + 2);
-        mTriangulationRoot.validateAdjacent();
+        //mTriangulationRoot.validateAdjacent();
         for(int j = 0; j < n; j++) {
             mTriangulationRoot.insertPoint(j);
-            mTriangulationRoot.validateAdjacent();
+            //mTriangulationRoot.validateAdjacent();
         }
     }
 
@@ -363,7 +363,7 @@ public class DelaunayTriangulation {
 
     public ArrayList<Triangle> getTriangles() {
         ArrayList<Triangle> triangles = new ArrayList<>();
-        mTriangulationRoot.getLeafTriangles(triangles, mPoints.length);// - 4);
+        mTriangulationRoot.getLeafTriangles(triangles, mPoints.length - 4);
         return triangles;
     }
 }

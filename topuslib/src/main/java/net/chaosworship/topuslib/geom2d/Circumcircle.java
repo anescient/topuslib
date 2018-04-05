@@ -36,6 +36,10 @@ public class Circumcircle {
         return new Circle(center, radius);
     }
 
+    public static Circle toCircle(Triangle abc) {
+        return toCircle(abc.pointA, abc.pointB, abc.pointC);
+    }
+
     // test if circumcircle abc contains p
     public static boolean contains(Triangle abc, Vec2 p) {
         return contains(abc.pointA, abc.pointB, abc.pointC, p);
