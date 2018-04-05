@@ -71,6 +71,10 @@ public class ShapesBrush extends Brush {
         mColor[3] = (float)Color.alpha(color) / 255;
     }
 
+    void setAlpha(float alpha) {
+        mColor[3] = alpha;
+    }
+
     void begin(float[] matPV) {
         mTrianglesBrush.begin(matPV);
     }

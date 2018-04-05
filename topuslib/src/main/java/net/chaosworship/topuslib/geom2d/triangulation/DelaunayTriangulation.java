@@ -23,6 +23,10 @@ public class DelaunayTriangulation {
         private TriangleNode adjacentBC;
         private TriangleNode adjacentCA;
 
+        // do not descend this when iterating leaf triangles
+        // some nodes have multiple parents
+        private boolean breakLeafIteration;
+
         private TriangleNode(int a, int b, int c) {
             vertices = new IntTriple(a, b, c);
             triangle = new Triangle(
@@ -36,6 +40,7 @@ public class DelaunayTriangulation {
             adjacentAB = null;
             adjacentBC = null;
             adjacentCA = null;
+            breakLeafIteration = false;
         }
 
         private void validateAdjacent() {
@@ -77,6 +82,8 @@ public class DelaunayTriangulation {
         }
 
         private void getLeafTriangles(Collection<Triangle> triangles, int maxVertex) {
+            if(breakLeafIteration)
+                return;
             if(isLeaf()) {
                 if(!vertices.includesAnyOver(maxVertex)) {
                     triangles.add(triangle);
@@ -218,6 +225,7 @@ public class DelaunayTriangulation {
                 tn_i_j_k.children[1] = tn_r_j_k;
                 if(tn_i_j_k.children[2] != null)
                     throw new AssertionError();
+                tn_i_j_k.breakLeafIteration = true;
 
                 if(tn_i_j_k__k_j != null)
                     tn_r_j_k.legalizeEdge(pr, pj, pk, tn_i_j_k__k_j);

@@ -90,14 +90,16 @@ public class DrawingBoard
         brush.drawCircle(c);
 
         brush.setColor(Color.LTGRAY);
+        brush.setAlpha(0.2f);
         DelaunayTriangulation dt = new DelaunayTriangulation(points);
-        for(Triangle t : dt.getTriangles()) {
+        ArrayList<Triangle> triangles = dt.getTriangles();
+        for(Triangle t : triangles) {
             brush.drawTriangle(t);
         }
 
         brush.setColor(Color.WHITE);
         for(Vec2 p : points) {
-            brush.drawSpot(p, 1.0f);
+            brush.drawSpot(p, 0.7f);
         }
 
         brush.end();
