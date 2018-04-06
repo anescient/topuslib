@@ -51,6 +51,15 @@ public class SuperRandom extends Random {
         }
     }
 
+    public void shuffle(int[] array) {
+        for(int i = 0; i < array.length - 1; i++) {
+            int j = i + nextInt(array.length - i);
+            int temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
     public <E> void subShuffle(E[] array, int skip) {
         subShuffle(array, skip, array.length - skip);
     }

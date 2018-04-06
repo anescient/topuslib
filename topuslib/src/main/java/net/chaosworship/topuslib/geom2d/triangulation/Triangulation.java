@@ -57,6 +57,7 @@ public class Triangulation {
         return mPoints;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public HashSet<IntPair> getEdges() {
         HashSet<IntPair> edges = new HashSet<>();
         for(IntTriple triple : mTriangles) {

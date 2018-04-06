@@ -351,6 +351,7 @@ public class DelaunayTriangulator {
     private static final SuperRandom sRandom = new SuperRandom();
 
     private Vec2[] mPoints;
+    private int[] mPointsInsertOrder;
     private TriangleNode mTriangulationRoot;
     private Triangulation mTriangulation;
 
@@ -358,6 +359,8 @@ public class DelaunayTriangulator {
     private int mNextNodeFromPool;
 
     public DelaunayTriangulator() {
+        mPoints = new Vec2[0];
+        mPointsInsertOrder = new int[0];
         mNodePool = new TriangleNode[0];
         mNextNodeFromPool = 0;
         mTriangulation = null;
@@ -379,8 +382,11 @@ public class DelaunayTriangulator {
         if(n < 3) {
             throw new IllegalArgumentException();
         }
+
         mNextNodeFromPool = 0;
-        mPoints = new Vec2[n + 3];
+        if(mPoints.length != n + 3) {
+            mPoints = new Vec2[n + 3];
+        }
         int i = 0;
         float max = 0;
         for(Vec2 point : points) {
@@ -389,18 +395,26 @@ public class DelaunayTriangulator {
             max = Math.max(max, Math.abs(point.y));
         }
 
+        // todo: make the bounds symbolic and infinitely distant
         float boundScale = 9999;
         mPoints[n] = new Vec2(boundScale * max, 0);
         mPoints[n + 1] = new Vec2(0, boundScale * max);
         mPoints[n + 2] = new Vec2(-boundScale * max, -boundScale * max);
 
-        sRandom.subShuffle(mPoints, 0, n);
+        if(mPointsInsertOrder.length != n) {
+            mPointsInsertOrder = new int[n];
+            for(i = 0; i < n; i++) {
+                mPointsInsertOrder[i] = i;
+            }
+        }
+        sRandom.shuffle(mPointsInsertOrder);
 
         mTriangulationRoot = getTriangleNode().set(n, n + 1, n + 2);
         if(DEBUG_VALIDATEADJACENT)
             mTriangulationRoot.validateAdjacent();
-        for(int j = 0; j < n; j++) {
-            mTriangulationRoot.insertPoint(j);
+        for(int orderi : mPointsInsertOrder) {
+            int pi = mPointsInsertOrder[orderi];
+            mTriangulationRoot.insertPoint(pi);
             if(DEBUG_VALIDATEADJACENT)
                 mTriangulationRoot.validateAdjacent();
         }
