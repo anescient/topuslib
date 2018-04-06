@@ -56,7 +56,8 @@ public class SimpleGraphTest {
             g.addEdge(a, bbb.get(0));
             fail();
         } catch (IllegalStateException ignored) {}
-        g.addEdge(a, bbb.get(1));
+        assertFalse(g.tryAddEdge(a, bbb.get(0)));
+        assertTrue(g.tryAddEdge(a, bbb.get(1)));
         g.addEdge(a, bbb.get(2));
         assertTrue(CollectionTester.intSetsEqual(g.getNeighbors(a), bbb));
         ArrayList<Integer> aSingle = new ArrayList<>();

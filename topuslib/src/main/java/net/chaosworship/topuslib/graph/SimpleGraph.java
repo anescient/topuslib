@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "WeakerAccess"})
+@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "WeakerAccess", "unused"})
 @SuppressLint("UseSparseArrays")
 public class SimpleGraph {
 
@@ -78,6 +78,18 @@ public class SimpleGraph {
         }
         mNeighborSets.get(a).add(b);
         mNeighborSets.get(b).add(a);
+    }
+
+    public boolean tryAddEdge(int a, int b) {
+        if(a == b) {
+            throw new IllegalArgumentException("no loops");
+        }
+        boolean newEdge = !hasEdge(a, b);
+        if(newEdge) {
+            mNeighborSets.get(a).add(b);
+            mNeighborSets.get(b).add(a);
+        }
+        return newEdge;
     }
 
     public void removeEdge(int a, int b) {
