@@ -1,7 +1,9 @@
 package net.chaosworship.topuslib.geom2d;
 
+import android.graphics.RectF;
 
 import java.util.Iterator;
+
 
 @SuppressWarnings("UnusedReturnValue")
 public class Rectangle {
@@ -22,11 +24,39 @@ public class Rectangle {
         maxy = source.maxy;
     }
 
+    public Rectangle(RectF source) {
+        minx = source.left;
+        miny = source.top;
+        maxx = source.right;
+        maxy = source.bottom;
+    }
+
     public Rectangle(float minx, float miny, float maxx, float maxy) {
         this.minx = minx;
         this.miny = miny;
         this.maxx = maxx;
         this.maxy = maxy;
+    }
+
+    @Override
+    public boolean equals(Object rhs) {
+        if(rhs == null || !this.getClass().equals(rhs.getClass())) {
+            return false;
+        }
+
+        Rectangle rhsRect = (Rectangle)rhs;
+        return minx == rhsRect.minx &&
+                miny == rhsRect.miny &&
+                maxx == rhsRect.maxx &&
+                maxy == rhsRect.maxy;
+    }
+
+    @Override
+    public int hashCode() {
+        return Float.floatToIntBits(minx)
+                ^ Float.floatToIntBits(miny)
+                ^ Float.floatToIntBits(maxx)
+                ^ Float.floatToIntBits(maxy);
     }
 
     public void setWithCenter(Vec2 center, float width, float height) {
@@ -37,6 +67,10 @@ public class Rectangle {
         maxx = minx + width;
         miny = center.y - height / 2;
         maxy = miny + height;
+    }
+
+    public RectF asRectF() {
+        return new RectF(minx, miny, maxx, maxy);
     }
 
     public float width() {

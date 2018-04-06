@@ -1,11 +1,11 @@
 package net.chaosworship.topuslib.gl;
 
-import android.graphics.RectF;
 import android.opengl.Matrix;
 
 import static android.opengl.GLES20.glViewport;
 
 import net.chaosworship.topuslib.BuildConfig;
+import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.Vec2Transformer;
 
@@ -56,7 +56,7 @@ public class RectViewTransform implements ViewTransform {
 
     // visible rectangle is abused as a "dirty" flag
     // if this reference is null everything needs to be calculated, this rect, view matrix, etc.
-    private RectF mVisibleRect;
+    private Rectangle mVisibleRect;
 
     private final float[] mViewMatrix;
 
@@ -107,7 +107,7 @@ public class RectViewTransform implements ViewTransform {
     }
 
     // please do not modify returned object
-    public RectF getVisibleRect() {
+    public Rectangle getVisibleRect() {
         updateTransform();
         return mVisibleRect;
     }
@@ -143,7 +143,7 @@ public class RectViewTransform implements ViewTransform {
             halfVisibleWidth = halfVisibleHeight * mViewportWidth / (float)mViewportHeight;
         }
 
-        mVisibleRect = new RectF(-halfVisibleWidth, -halfVisibleHeight, halfVisibleWidth, halfVisibleHeight);
+        mVisibleRect = new Rectangle(-halfVisibleWidth, -halfVisibleHeight, halfVisibleWidth, halfVisibleHeight);
 
         synchronized(mViewMatrix) {
             Matrix.orthoM(mViewMatrix, 0, -halfVisibleWidth, halfVisibleWidth, -halfVisibleHeight, halfVisibleHeight, -1, 1);
