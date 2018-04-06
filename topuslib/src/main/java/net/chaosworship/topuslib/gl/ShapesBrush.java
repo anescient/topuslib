@@ -18,14 +18,12 @@ public class ShapesBrush extends Brush {
     private static final int SPOTSEGMENTS = 13;
 
     private final float[] mColor;
-    private float mLineWidth;
     private final TrianglesBrush mTrianglesBrush;
 
     private final Vec2[] mSpotVerts;
 
     ShapesBrush(Loader loader) {
         mColor = new float[] { 1, 1, 1, 1 };
-        mLineWidth = 1;
         mTrianglesBrush = loader.getTrianglesBrush();
 
         mSpotVerts = new Vec2[SPOTSEGMENTS];
@@ -34,15 +32,11 @@ public class ShapesBrush extends Brush {
         }
     }
 
-    public void setLineWidth(float lineWidth) {
-        mLineWidth = lineWidth;
-    }
-
     public void setColor(@ColorInt int color) {
         mColor[0] = (float)Color.red(color) / 255;
         mColor[1] = (float)Color.green(color) / 255;
         mColor[2] = (float)Color.blue(color) / 255;
-        mColor[3] = (float)Color.alpha(color) / 255;
+        //mColor[3] = (float)Color.alpha(color) / 255;
     }
 
     public void setAlpha(float alpha) {
@@ -61,8 +55,8 @@ public class ShapesBrush extends Brush {
         }
     }
 
-    public void drawSegment(Vec2 a, Vec2 b) {
-        Vec2 unit = Vec2.difference(a, b).normalize().scale(mLineWidth * 0.5f).rotate90();
+    public void drawSegment(Vec2 a, Vec2 b, float width) {
+        Vec2 unit = Vec2.difference(a, b).normalize().scale(width * 0.5f).rotate90();
         Vec2 a1 = a.sum(unit);
         Vec2 a2 = a.difference(unit);
         Vec2 b1 = b.sum(unit);
@@ -71,31 +65,31 @@ public class ShapesBrush extends Brush {
         mTrianglesBrush.addTriangle(a2, b1, b2, mColor);
     }
 
-    public void drawSegment(Segment s) {
-        drawSegment(s.a, s.b);
+    public void drawSegment(Segment s, float width) {
+        drawSegment(s.a, s.b, width);
     }
 
-    public void drawTriangle(Triangle triangle) {
-        drawSegment(triangle.pointA, triangle.pointB);
-        drawSegment(triangle.pointB, triangle.pointC);
-        drawSegment(triangle.pointC, triangle.pointA);
+    public void drawTriangle(Triangle triangle, float lineWidth) {
+        drawSegment(triangle.pointA, triangle.pointB, lineWidth);
+        drawSegment(triangle.pointB, triangle.pointC, lineWidth);
+        drawSegment(triangle.pointC, triangle.pointA, lineWidth);
     }
 
-    public void drawRectangle(Rectangle rect) {
+    public void drawRectangle(Rectangle rect, float lineWidth) {
         Vec2 a = new Vec2(rect.minx, rect.miny);
         Vec2 b = new Vec2(rect.minx, rect.maxy);
         Vec2 c = new Vec2(rect.maxx, rect.maxy);
         Vec2 d = new Vec2(rect.maxx, rect.miny);
-        drawSegment(a, b);
-        drawSegment(b, c);
-        drawSegment(c, d);
-        drawSegment(d, a);
+        drawSegment(a, b, lineWidth);
+        drawSegment(b, c, lineWidth);
+        drawSegment(c, d, lineWidth);
+        drawSegment(d, a, lineWidth);
     }
 
-    public void drawCircle(Circle circle) {
+    public void drawCircle(Circle circle, float lineWidth) {
         List<Vec2> points = circle.getBoundPoints(33);
         for(int i = 0; i < points.size(); i++) {
-            drawSegment(points.get(i), points.get((i + 1) % points.size()));
+            drawSegment(points.get(i), points.get((i + 1) % points.size()), lineWidth);
         }
     }
 

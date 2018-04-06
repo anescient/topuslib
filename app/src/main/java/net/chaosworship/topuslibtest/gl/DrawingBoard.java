@@ -89,8 +89,7 @@ public class DrawingBoard
 
         Circle c = Circle.minimumBound(points);
         brush.setColor(Color.RED);
-        brush.setLineWidth(0.3f);
-        brush.drawCircle(c);
+        brush.drawCircle(c, 0.3f);
 
         brush.setColor(Color.LTGRAY);
         brush.setAlpha(0.2f);
@@ -98,10 +97,11 @@ public class DrawingBoard
         dt.triangulate(points);
         Triangulation triangulation = dt.getTriangulation();
         for(Segment s : triangulation.resolveSegments()) {
-            brush.drawSegment(s);
+            brush.drawSegment(s, 0.3f);
         }
 
         brush.setColor(Color.WHITE);
+        brush.setAlpha(1);
         for(Vec2 p : points) {
             brush.drawSpot(p, 0.7f);
         }
