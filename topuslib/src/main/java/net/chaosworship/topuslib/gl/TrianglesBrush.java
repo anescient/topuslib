@@ -1,4 +1,4 @@
-package net.chaosworship.topuslibtest.gl;
+package net.chaosworship.topuslib.gl;
 
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
@@ -57,7 +57,7 @@ public class TrianglesBrush extends Brush {
             "}\n";
     private static final Loader.LiteralProgram mProgram = new Loader.LiteralProgram(SHADER_V, SHADER_F);
 
-    private final TestLoader mLoader;
+    private final Loader mLoader;
 
     private final int mMVPHandle;
     private final int mPosHandle;
@@ -68,7 +68,7 @@ public class TrianglesBrush extends Brush {
     private final float[] mVertexPreBuffer;
     private int mTrianglesBuffered;
 
-    TrianglesBrush(TestLoader loader) {
+    TrianglesBrush(Loader loader) {
         mLoader = loader;
 
         int program = mLoader.useProgram(mProgram);
@@ -90,7 +90,7 @@ public class TrianglesBrush extends Brush {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    void begin(float[] matPV) {
+    public void begin(float[] matPV) {
         mLoader.useProgram(mProgram);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
@@ -108,7 +108,7 @@ public class TrianglesBrush extends Brush {
         glDisable(GL_CULL_FACE);
     }
 
-    void addTriangle(Vec2 a, Vec2 b, Vec2 c, float[] color) {
+    public void addTriangle(Vec2 a, Vec2 b, Vec2 c, float[] color) {
         if(mTrianglesBuffered >= BATCHSIZE) {
             flush();
         }
@@ -139,7 +139,7 @@ public class TrianglesBrush extends Brush {
     }
 
     @SuppressWarnings("unused")
-    void addTriangle(Triangle triangle, float[] color) {
+    public void addTriangle(Triangle triangle, float[] color) {
         addTriangle(triangle.pointA, triangle.pointB, triangle.pointC, color);
     }
 
@@ -152,7 +152,7 @@ public class TrianglesBrush extends Brush {
         mTrianglesBuffered = 0;
     }
 
-    void end() {
+    public void end() {
         flush();
         glDisableVertexAttribArray(mPosHandle);
         glDisableVertexAttribArray(mColorHandle);

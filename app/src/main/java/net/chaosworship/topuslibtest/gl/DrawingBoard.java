@@ -9,11 +9,11 @@ import android.util.AttributeSet;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Segment;
-import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulator;
 import net.chaosworship.topuslib.geom2d.triangulation.Triangulation;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
+import net.chaosworship.topuslib.gl.ShapesBrush;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import java.util.ArrayList;

@@ -96,6 +96,9 @@ public class Loader {
     private final HashMap<Integer, Integer> mTextures;
     private final HashMap<String, FrameBuffer> mFrameBuffers;
 
+    private ShapesBrush mShapesBrush;
+    private TrianglesBrush mTrianglesBrush;
+
     @SuppressLint("UseSparseArrays")
     public Loader(Context context) {
         mContext = context;
@@ -111,6 +114,8 @@ public class Loader {
         mLiteralPrograms.clear();
         mTextures.clear();
         mFrameBuffers.clear();
+        mShapesBrush = null;
+        mTrianglesBrush = null;
     }
 
     public int useProgram(String name) {
@@ -181,6 +186,20 @@ public class Loader {
             }
         }
         return mTextures.get(resourceId);
+    }
+
+    public ShapesBrush getShapesBrush() {
+        if(mShapesBrush == null) {
+            mShapesBrush = new ShapesBrush(this);
+        }
+        return mShapesBrush;
+    }
+
+    public TrianglesBrush getTrianglesBrush() {
+        if(mTrianglesBrush == null) {
+            mTrianglesBrush = new TrianglesBrush(this);
+        }
+        return mTrianglesBrush;
     }
 
     private int loadProgram(String shader_v, String shader_f) throws LoaderException {
