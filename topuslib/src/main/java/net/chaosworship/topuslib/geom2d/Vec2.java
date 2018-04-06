@@ -187,6 +187,12 @@ public class Vec2 implements Cloneable {
         return this;
     }
 
+    public Vec2 scale(float xscale, float yscale) {
+        x *= xscale;
+        y *= yscale;
+        return this;
+    }
+
     public Vec2 scaleInverse(float divisor) {
         x /= divisor;
         y /= divisor;

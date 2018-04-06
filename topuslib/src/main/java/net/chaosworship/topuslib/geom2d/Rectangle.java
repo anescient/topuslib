@@ -73,6 +73,10 @@ public class Rectangle {
         return new RectF(minx, miny, maxx, maxy);
     }
 
+    public boolean isDegenerate() {
+        return minx == maxx || miny == maxy;
+    }
+
     public float width() {
         return maxx - minx;
     }
