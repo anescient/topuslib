@@ -3,7 +3,6 @@ package net.chaosworship.topuslib;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
-import net.chaosworship.topuslib.geom2d.rangesearch.PointValuePair;
 import net.chaosworship.topuslib.geom2d.rangesearch.RectangularSearch;
 
 import org.junit.Test;

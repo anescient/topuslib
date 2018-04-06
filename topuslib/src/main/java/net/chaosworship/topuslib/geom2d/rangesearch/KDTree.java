@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib.geom2d.rangesearch;
 
+import net.chaosworship.topuslib.PointValuePair;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 
 import java.util.ArrayList;
