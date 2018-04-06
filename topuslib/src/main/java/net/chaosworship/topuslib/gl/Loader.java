@@ -47,14 +47,52 @@ public class Loader {
     protected static final int INVALIDPROGRAM = 0;
     protected static final int INVALIDTEXTURE = 0;
 
+    /////////////////////////////////////////////
+
     public static class LoaderException extends Exception {
         LoaderException(String message) {
             super(message);
         }
     }
 
+    /////////////////////////////////////////////
+
+    public static class LiteralProgram {
+
+        private final String mShaderV;
+        private final String mShaderF;
+        private final int mHashcode;
+
+        public LiteralProgram(String shader_v, String shader_f) {
+            mShaderV = shader_v;
+            mShaderF = shader_f;
+            mHashcode = mShaderV.hashCode() ^ mShaderF.hashCode();
+        }
+
+
+        @Override
+        public boolean equals(Object rhs) {
+            if(rhs == null || !this.getClass().equals(rhs.getClass())) {
+                return false;
+            }
+
+            LiteralProgram rhsProgram = (LiteralProgram)rhs;
+            return mHashcode == rhsProgram.mHashcode
+                    && mShaderV.equals(rhsProgram.mShaderV)
+                    && mShaderF.equals(rhsProgram.mShaderF);
+        }
+
+        @Override
+        public int hashCode() {
+            return mHashcode;
+        }
+    }
+
+    /////////////////////////////////////////////
+
     protected final Context mContext;
     private final HashMap<String, Integer> mPrograms;
+    private final HashMap<LiteralProgram, Integer> mLiteralPrograms;
     private final HashMap<Integer, Integer> mTextures;
     private final HashMap<String, FrameBuffer> mFrameBuffers;
 
@@ -62,6 +100,7 @@ public class Loader {
     public Loader(Context context) {
         mContext = context;
         mPrograms = new HashMap<>();
+        mLiteralPrograms = new HashMap<>();
         mTextures = new HashMap<>();
         mFrameBuffers = new HashMap<>();
         invalidateAll();
@@ -69,6 +108,7 @@ public class Loader {
 
     public void invalidateAll() {
         mPrograms.clear();
+        mLiteralPrograms.clear();
         mTextures.clear();
         mFrameBuffers.clear();
     }
@@ -91,7 +131,23 @@ public class Loader {
         if(program != INVALIDPROGRAM) {
             glUseProgram(program);
         }
+        return program;
+    }
 
+    public int useProgram(LiteralProgram literalProgram) {
+        if(!mLiteralPrograms.containsKey(literalProgram)) {
+            try {
+                mLiteralPrograms.put(literalProgram, loadProgram(literalProgram));
+            } catch(LoaderException e) {
+                e.printStackTrace();
+                mLiteralPrograms.put(literalProgram, INVALIDPROGRAM); // don't try more than once
+            }
+        }
+
+        int program = mLiteralPrograms.get(literalProgram);
+        if(program != INVALIDPROGRAM) {
+            glUseProgram(program);
+        }
         return program;
     }
 
@@ -112,7 +168,6 @@ public class Loader {
         if(frameBuffer != null && !frameBuffer.isSize(width, height)) {
             throw new LoaderException("possible frame buffer name collision");
         }
-
         return frameBuffer;
     }
 
@@ -128,15 +183,15 @@ public class Loader {
         return mTextures.get(resourceId);
     }
 
-    private int loadProgram(String shaderBaseName) throws LoaderException {
+    private int loadProgram(String shader_v, String shader_f) throws LoaderException {
 
         int vertShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertShader, readShaderAsset(shaderBaseName + "_v"));
+        glShaderSource(vertShader, shader_v);
         glCompileShader(vertShader);
         checkShaderCompile(vertShader);
 
         int fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragShader, readShaderAsset(shaderBaseName + "_f"));
+        glShaderSource(fragShader, shader_f);
         glCompileShader(fragShader);
         checkShaderCompile(fragShader);
 
@@ -147,6 +202,16 @@ public class Loader {
         checkProgramLink(program);
 
         return program;
+    }
+
+    private int loadProgram(LiteralProgram literalProgram) throws LoaderException {
+        return loadProgram(literalProgram.mShaderV, literalProgram.mShaderF);
+    }
+
+    private int loadProgram(String shaderBaseName) throws LoaderException {
+        return loadProgram(
+                readShaderAsset(shaderBaseName + "_v"),
+                readShaderAsset(shaderBaseName + "_f"));
     }
 
     private static void checkShaderCompile(int shader) throws LoaderException {

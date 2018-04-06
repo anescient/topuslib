@@ -3,6 +3,7 @@ package net.chaosworship.topuslibtest.gl;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.Brush;
+import net.chaosworship.topuslib.gl.Loader;
 
 import java.nio.FloatBuffer;
 
@@ -39,6 +40,23 @@ public class TrianglesBrush extends Brush {
 
     private static final int BATCHSIZE = 500;
 
+    private static final String SHADER_V =
+            "uniform mat4 uMVPMatrix;\n" +
+            "attribute vec2 aPos;\n" +
+            "attribute vec4 aColor;\n" +
+            "varying vec4 vColor;\n" +
+            "void main() {\n" +
+            "    vColor = aColor;\n" +
+            "    gl_Position = uMVPMatrix * vec4(aPos, 0.0, 1.0);\n" +
+            "}";
+    private static final String SHADER_F =
+            "precision mediump float;\n" +
+            "varying vec4 vColor;\n" +
+            "void main() {\n" +
+            "    gl_FragColor = vColor;\n" +
+            "}\n";
+    private static final Loader.LiteralProgram mProgram = new Loader.LiteralProgram(SHADER_V, SHADER_F);
+
     private final TestLoader mLoader;
 
     private final int mMVPHandle;
@@ -53,7 +71,7 @@ public class TrianglesBrush extends Brush {
     TrianglesBrush(TestLoader loader) {
         mLoader = loader;
 
-        int program = mLoader.useProgram("triangles");
+        int program = mLoader.useProgram(mProgram);
         mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
         mPosHandle = glGetAttribLocation(program, "aPos");
         mColorHandle = glGetAttribLocation(program, "aColor");
@@ -73,7 +91,7 @@ public class TrianglesBrush extends Brush {
     }
 
     void begin(float[] matPV) {
-        mLoader.useProgram("triangles");
+        mLoader.useProgram(mProgram);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
         final int stride = VERTEXSIZE * FLOATSIZE;

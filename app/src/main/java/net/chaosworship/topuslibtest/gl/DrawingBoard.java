@@ -67,7 +67,7 @@ public class DrawingBoard
         SuperRandom random = new SuperRandom();
         ArrayList<Vec2> points = new ArrayList<>();
 
-        for(int i = 0; i < 50; i++) {
+        for(int i = 0; i < 20; i++) {
             float r = random.nextFloat();
             points.add(random.uniformUnit().scale(44 * (1 - r * r)));
         }
