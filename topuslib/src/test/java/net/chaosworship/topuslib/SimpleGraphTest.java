@@ -1,6 +1,6 @@
 package net.chaosworship.topuslib;
 
-import net.chaosworship.topuslib.graph.SimpleGraph;
+import net.chaosworship.topuslib.graph.HashSimpleGraph;
 
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ public class SimpleGraphTest {
 
     @Test
     public void emptyGraph() {
-        SimpleGraph g = new SimpleGraph();
+        HashSimpleGraph g = new HashSimpleGraph();
         try {
             g.hasEdge(1, 2);
             fail();
@@ -30,7 +30,7 @@ public class SimpleGraphTest {
 
     @Test
     public void noLoops() {
-        SimpleGraph g = new SimpleGraph();
+        HashSimpleGraph g = new HashSimpleGraph();
         int a = g.addVertex();
         try {
             g.addEdge(a, a);
@@ -40,7 +40,7 @@ public class SimpleGraphTest {
 
     @Test
     public void edges() {
-        SimpleGraph g = new SimpleGraph();
+        HashSimpleGraph g = new HashSimpleGraph();
         int a = g.addVertex();
         ArrayList<Integer> bbb = new ArrayList<>();
         bbb.add(g.addVertex());
@@ -88,7 +88,7 @@ public class SimpleGraphTest {
 
     @Test
     public void removeVertex() {
-        SimpleGraph g = new SimpleGraph();
+        HashSimpleGraph g = new HashSimpleGraph();
         int a = g.addVertex();
         int b = g.addVertex();
         int c = g.addVertex();
@@ -128,14 +128,14 @@ public class SimpleGraphTest {
 
     @Test
     public void completeGraph() {
-        SimpleGraph g;
-        g = SimpleGraph.generateCompleteGraph(0);
+        HashSimpleGraph g;
+        g = HashSimpleGraph.generateCompleteGraph(0);
         assertTrue(g.getVertices().isEmpty());
-        g = SimpleGraph.generateCompleteGraph(1);
+        g = HashSimpleGraph.generateCompleteGraph(1);
         int v = g.getVertices().iterator().next();
         assertTrue(g.getNeighbors(v).isEmpty());
         final int n = 7;
-        g = SimpleGraph.generateCompleteGraph(n);
+        g = HashSimpleGraph.generateCompleteGraph(n);
         for(int a : g.getVertices()) {
             assertTrue(g.getNeighbors(a).size() == n - 1);
         }
