@@ -12,7 +12,7 @@ import java.util.Collection;
 
 public class DelaunayTriangulator {
 
-    private static final boolean DEBUG_VALIDATEADJACENT = false;
+    private static final boolean DEBUG_VALIDATEADJACENT = true;
 
     ////////////////////////////////////////////////
 
@@ -41,15 +41,9 @@ public class DelaunayTriangulator {
             vertexB = b;
             vertexC = c;
             if(triangle == null) {
-                triangle = new Triangle(
-                        mPoints[vertexA],
-                        mPoints[vertexB],
-                        mPoints[vertexC]);
+                triangle = new Triangle(mPoints[vertexA], mPoints[vertexB], mPoints[vertexC]);
             } else {
-                triangle.set(
-                        mPoints[vertexA],
-                        mPoints[vertexB],
-                        mPoints[vertexC]);
+                triangle.set(mPoints[vertexA], mPoints[vertexB], mPoints[vertexC]);
             }
             children[0] = null;
             children[1] = null;
@@ -62,6 +56,10 @@ public class DelaunayTriangulator {
         }
 
         private void validateAdjacent() {
+            validateAdjacent(new ArrayList<TriangleNode>());
+        }
+
+        private void validateAdjacent(ArrayList<TriangleNode> visited) {
             if(adjacentAB != null) {
                 if(adjacentAB == adjacentBC || adjacentAB == adjacentCA)
                     throw new AssertionError();
@@ -84,9 +82,10 @@ public class DelaunayTriangulator {
                 if(adjacentCA.adjacentHavingEdge(vertexA, vertexC) != this)
                     throw new AssertionError();
             }
+            visited.add(this);
             for(TriangleNode child : children) {
-                if(child != null)
-                    child.validateAdjacent();
+                if(child != null && !visited.contains(child))
+                    child.validateAdjacent(visited);
             }
         }
 
