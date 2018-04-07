@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import static junit.framework.Assert.*;
 
 
-public class SimpleGraphTest {
+public class HashSimpleGraphTest {
 
     @Test
     public void emptyGraph() {

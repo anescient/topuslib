@@ -5,8 +5,8 @@ import net.chaosworship.topuslib.IntTriple;
 import net.chaosworship.topuslib.geom2d.Segment;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.graph.HashSimpleGraph;
 import net.chaosworship.topuslib.graph.SimpleGraph;
+import net.chaosworship.topuslib.graph.SparseSimpleGraph;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +71,7 @@ public class Triangulation {
     }
 
     public SimpleGraph getGraph() {
-        SimpleGraph graph = new HashSimpleGraph();
+        SimpleGraph graph = new SparseSimpleGraph();
         for(int i = 0; i < mPoints.length; i++) {
             graph.addVertex(i);
         }
