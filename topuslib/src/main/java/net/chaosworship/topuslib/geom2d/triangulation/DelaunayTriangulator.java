@@ -12,7 +12,7 @@ import java.util.Collection;
 
 public class DelaunayTriangulator {
 
-    private static final boolean DEBUG_VALIDATEADJACENT = true;
+    private static final boolean DEBUG_VALIDATEADJACENT = false;
 
     ////////////////////////////////////////////////
 
@@ -367,13 +367,20 @@ public class DelaunayTriangulator {
 
     private TriangleNode getTriangleNode() {
         if(mNextNodeFromPool >= mNodePool.length) {
-            TriangleNode[] newPool = Arrays.copyOf(mNodePool, mNodePool.length + 32);
-            for(int i = mNodePool.length; i < newPool.length; i++) {
-                newPool[i] = new TriangleNode();
-            }
-            mNodePool = newPool;
+            growNodePool(mNodePool.length + 32);
         }
         return mNodePool[mNextNodeFromPool++];
+    }
+
+    private void growNodePool(int size) {
+        if(size <= mNodePool.length) {
+            return;
+        }
+        TriangleNode[] newPool = Arrays.copyOf(mNodePool, size);
+        for(int i = mNodePool.length; i < newPool.length; i++) {
+            newPool[i] = new TriangleNode();
+        }
+        mNodePool = newPool;
     }
 
     public void triangulate(Collection<Vec2> points) {
@@ -382,7 +389,10 @@ public class DelaunayTriangulator {
             throw new IllegalArgumentException();
         }
 
+        // uniform random points uses approx. 7 nodes per point
+        growNodePool(7 * points.size());
         mNextNodeFromPool = 0;
+
         if(mPoints.length != n + 3) {
             mPoints = new Vec2[n + 3];
         }
