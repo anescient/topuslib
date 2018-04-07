@@ -140,6 +140,20 @@ public class SparseSimpleGraph implements SimpleGraph {
         return edges;
     }
 
+    @Override
+    public void putEdges(GraphEdgeConsumer consumer) {
+        for(int i = 0; i < mNeighborSets.size(); i++) {
+            int a = mNeighborSets.keyAt(i);
+            SparseBooleanArray aNeighbors = mNeighborSets.valueAt(i);
+            for(int j = 0; j < mNeighborSets.size(); j++) {
+                int b = aNeighbors.keyAt(j);
+                if(a < b) {
+                    consumer.putGraphEdge(a, b);
+                }
+            }
+        }
+    }
+
     public static SimpleGraph generateCompleteGraph(int vertexCount) {
         SimpleGraph g = new SparseSimpleGraph();
         ArrayList<Integer> vertices = new ArrayList<>();

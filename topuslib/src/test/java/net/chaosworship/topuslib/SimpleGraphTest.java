@@ -1,10 +1,12 @@
 package net.chaosworship.topuslib;
 
+import net.chaosworship.topuslib.graph.GraphEdgeConsumer;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static junit.framework.Assert.*;
 
@@ -109,11 +111,12 @@ public abstract class SimpleGraphTest {
         g.addEdge(d, b);
         g.addEdge(d, e);
         g.addEdge(c, b);
+        assertTrue(CollectionTester.intPairSetsEqual(g.getEdges(), consumeEdges(g)));
         expected.clear();
         expected.add(b);
         expected.add(c);
         expected.add(d);
-        //assertTrue(CollectionTester.intSetsEqual(g.getNeighbors(a), expected));
+        assertTrue(CollectionTester.intSetsEqual(g.getNeighbors(a), expected));
         assertTrue(g.hasEdge(a, b));
         assertTrue(g.hasEdge(d, b));
         assertTrue(g.hasEdge(c, b));
@@ -126,6 +129,18 @@ public abstract class SimpleGraphTest {
         expected.add(c);
         expected.add(d);
         assertTrue(CollectionTester.intSetsEqual(g.getNeighbors(a), expected));
+    }
+
+    private static HashSet<IntPair> consumeEdges(SimpleGraph g) {
+        final HashSet<IntPair> pairs = new HashSet<>();
+        GraphEdgeConsumer consumer = new GraphEdgeConsumer() {
+            @Override
+            public void putGraphEdge(int a, int b) {
+                pairs.add(new IntPair(a, b));
+            }
+        };
+        g.putEdges(consumer);
+        return pairs;
     }
 
     /*

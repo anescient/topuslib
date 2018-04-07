@@ -31,4 +31,6 @@ public interface SimpleGraph {
     boolean hasEdge(int a, int b);
 
     ArrayList<IntPair> getEdges();
+
+    void putEdges(GraphEdgeConsumer consumer);
 }

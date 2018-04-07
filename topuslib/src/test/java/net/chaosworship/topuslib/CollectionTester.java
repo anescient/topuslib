@@ -72,4 +72,16 @@ class CollectionTester {
 
         return aSet.size() == bSet.size();
     }
+
+    static boolean intPairSetsEqual(Iterable<IntPair> pa, Iterable<IntPair> pb) {
+        HashSet<IntPair> aSet = new HashSet<>();
+        HashSet<IntPair> bSet = new HashSet<>();
+        for(IntPair p : pa) {
+            aSet.add(p);
+        }
+        for(IntPair p : pb) {
+            bSet.add(p);
+        }
+        return aSet.equals(bSet);
+    }
 }

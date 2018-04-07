@@ -146,6 +146,17 @@ public class HashSimpleGraph implements SimpleGraph {
         return edges;
     }
 
+    @Override
+    public void putEdges(GraphEdgeConsumer consumer) {
+        for(int a : mNeighborSets.keySet()) {
+            for(int b : mNeighborSets.get(a)) {
+                if(a < b) {
+                    consumer.putGraphEdge(a, b);
+                }
+            }
+        }
+    }
+
     public static HashSimpleGraph generateCompleteGraph(int vertexCount) {
         HashSimpleGraph g = new HashSimpleGraph();
         ArrayList<Integer> vertices = new ArrayList<>();

@@ -155,7 +155,22 @@ public class MatrixSimpleGraph implements SimpleGraph {
                 edges.add(new IntPair(a, b));
                 b = aNeighbors.nextSetBit(b + 1);
             }
+            a = mVertices.nextSetBit(a + 1);
         }
         return edges;
+    }
+
+    @Override
+    public void putEdges(GraphEdgeConsumer consumer) {
+        int a = mVertices.nextSetBit(0);
+        while(a >= 0) {
+            BitSet aNeighbors = mNeighborSets[a];
+            int b = aNeighbors.nextSetBit(a + 1);
+            while(b >= 0) {
+                consumer.putGraphEdge(a, b);
+                b = aNeighbors.nextSetBit(b + 1);
+            }
+            a = mVertices.nextSetBit(a + 1);
+        }
     }
 }
