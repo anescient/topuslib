@@ -3,7 +3,7 @@ package net.chaosworship.topuslib.graph;
 import android.annotation.SuppressLint;
 
 import net.chaosworship.topuslib.BuildConfig;
-import net.chaosworship.topuslib.IntPair;
+import net.chaosworship.topuslib.UnorderedIntPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,6 +80,17 @@ public class SimpleGraph {
         mNeighborSets.get(b).add(a);
     }
 
+    // also create any vertices needed
+    public void addEdgeAndVertices(int a, int b) {
+        if(!hasVertex(a)) {
+            addVertex(a);
+        }
+        if(!hasVertex(b)) {
+            addVertex(b);
+        }
+        addEdge(a, b);
+    }
+
     public boolean tryAddEdge(int a, int b) {
         if(a == b) {
             throw new IllegalArgumentException("no loops");
@@ -122,12 +133,12 @@ public class SimpleGraph {
         return hasNeighbor;
     }
 
-    public ArrayList<IntPair> getEdges() {
-        ArrayList<IntPair> edges = new ArrayList<>();
+    public ArrayList<UnorderedIntPair> getEdges() {
+        ArrayList<UnorderedIntPair> edges = new ArrayList<>();
         for(int a : mNeighborSets.keySet()) {
             for(int b : mNeighborSets.get(a)) {
                 if(a < b) {
-                    edges.add(new IntPair(a, b));
+                    edges.add(new UnorderedIntPair(a, b));
                 }
             }
         }
