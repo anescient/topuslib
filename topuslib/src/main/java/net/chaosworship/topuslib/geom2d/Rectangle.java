@@ -59,6 +59,13 @@ public class Rectangle {
                 ^ Float.floatToIntBits(maxy);
     }
 
+    public void set(Rectangle source) {
+        minx = source.minx;
+        miny = source.miny;
+        maxx = source.maxx;
+        maxy = source.maxy;
+    }
+
     public void setWithCenter(Vec2 center, float width, float height) {
         if(width < 0 || height < 0) {
             throw new IllegalArgumentException();

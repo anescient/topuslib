@@ -1,5 +1,11 @@
 package net.chaosworship.topuslib.gl;
 
+import android.content.Context;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
+
+import net.chaosworship.topuslib.BuildConfig;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -28,5 +34,18 @@ public abstract class Brush {
 
     protected static ShortBuffer makeShortBuffer(int n) {
         return ByteBuffer.allocateDirect(SHORTSIZE * n).order(ByteOrder.nativeOrder()).asShortBuffer();
+    }
+
+    protected static float getScreenDensity(Context context) {
+        WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        if(windowManager == null) {
+            if(BuildConfig.DEBUG) {
+                throw new AssertionError();
+            }
+            return 300;
+        }
+        DisplayMetrics metrics = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+        return (metrics.xdpi + metrics.ydpi) / 2;
     }
 }

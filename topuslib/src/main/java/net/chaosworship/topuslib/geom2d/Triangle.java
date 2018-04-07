@@ -28,6 +28,20 @@ public class Triangle {
         pointC = c;
     }
 
+
+    @Override
+    public boolean equals(Object rhs) {
+        if(rhs == null || !this.getClass().equals(rhs.getClass())) {
+            return false;
+        }
+
+        // this isn't guaranteed correct if either is degenerate
+        Triangle rhsTriangle = (Triangle)rhs;
+        return rhsTriangle.contains(pointA) &&
+                rhsTriangle.contains(pointB) &&
+                rhsTriangle.contains(pointC);
+    }
+
     public ClosestPointOnLine closestPointOnBound(Vec2 point) {
         return closestPointOnBound(pointA, pointB, pointC, point);
     }
