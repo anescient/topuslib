@@ -1,7 +1,7 @@
 package net.chaosworship.topuslibtest.benchmark;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulator;
+import net.chaosworship.topuslib.geom2d.mesh.DelaunayTriangulator;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import java.util.ArrayList;

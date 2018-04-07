@@ -4,7 +4,7 @@ import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulator;
+import net.chaosworship.topuslib.geom2d.mesh.DelaunayTriangulator;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib.geom2d.triangulation;
+package net.chaosworship.topuslib.geom2d.mesh;
 
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
