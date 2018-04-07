@@ -360,9 +360,9 @@ public class DelaunayTriangulator {
     public DelaunayTriangulator() {
         mPoints = new Vec2[0];
         mPointsInsertOrder = new int[0];
+        mTriangulation = null;
         mNodePool = new TriangleNode[0];
         mNextNodeFromPool = 0;
-        mTriangulation = null;
     }
 
     private TriangleNode getTriangleNode() {

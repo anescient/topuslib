@@ -3,7 +3,7 @@ package net.chaosworship.topuslib.graph;
 import android.annotation.SuppressLint;
 
 import net.chaosworship.topuslib.BuildConfig;
-import net.chaosworship.topuslib.UnorderedIntPair;
+import net.chaosworship.topuslib.IntPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,12 +133,12 @@ public class SimpleGraph {
         return hasNeighbor;
     }
 
-    public ArrayList<UnorderedIntPair> getEdges() {
-        ArrayList<UnorderedIntPair> edges = new ArrayList<>();
+    public ArrayList<IntPair> getEdges() {
+        ArrayList<IntPair> edges = new ArrayList<>();
         for(int a : mNeighborSets.keySet()) {
             for(int b : mNeighborSets.get(a)) {
                 if(a < b) {
-                    edges.add(new UnorderedIntPair(a, b));
+                    edges.add(new IntPair(a, b));
                 }
             }
         }

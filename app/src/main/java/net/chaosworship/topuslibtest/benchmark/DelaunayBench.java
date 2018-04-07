@@ -20,7 +20,7 @@ public class DelaunayBench extends TimedRunner {
         for(int i = 0; i < 400; i++) {
             points.add(randomPoint());
             triangulator.triangulate(points);
-            triangulator.getTriangles();
+            triangulator.getTriangulation().getEdges();
         }
     }
 
