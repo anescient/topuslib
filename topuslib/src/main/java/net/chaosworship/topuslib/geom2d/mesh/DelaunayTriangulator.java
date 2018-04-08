@@ -456,16 +456,19 @@ public class DelaunayTriangulator {
 
     public ArrayList<Triangle> getTriangles() {
         ArrayList<Triangle> triangles = new ArrayList<>();
-        mTriangulationRoot.getLeafTriangles(triangles, mPoints.length - 4);
+        if(mTriangulationRoot != null) {
+            mTriangulationRoot.getLeafTriangles(triangles, mPoints.length - 4);
+        }
         return triangles;
     }
 
     public Triangulation getTriangulation() {
         if(mTriangulation == null) {
-            mTriangulation = new Triangulation(mPoints);
-            mTriangulationRoot.getLeafTriangles(mTriangulation, mPoints.length - 4);
+            if(mTriangulationRoot != null) {
+                mTriangulation = new Triangulation(mPoints);
+                mTriangulationRoot.getLeafTriangles(mTriangulation, mPoints.length - 4);
+            }
         }
-
         return mTriangulation;
     }
 }
