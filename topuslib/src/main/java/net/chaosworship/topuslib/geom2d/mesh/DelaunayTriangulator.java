@@ -264,50 +264,51 @@ public class DelaunayTriangulator {
             if(Circumcircle.contains(tn_i_j_k.triangle, mPoints[pr])) {
 
                 // internalize triangles r-i-j and i-j-k
-                // create triangles r-i-k and r-j-k
+                // create triangles i-k-r and r-k-j
                 // call legalize for edges j-k and i-k
 
                 int pk = tn_i_j_k.getThirdVertex(pi, pj);
-                TriangleNode tn_r_i_j = this;
-                // assert tn_r_i_j = tn_i_j_k.adjacentHavingEdge(pi, pj);
+                TriangleNode tn_r_j_i = this;
+                // assert tn_r_j_i = tn_i_j_k.adjacentHavingEdge(pi, pj);
 
                 // assert not tn_i_j_k.isLeaf()
-                // assert not tn_r_i_j.isLeaf()
+                // assert not tn_r_j_i.isLeaf()
 
                 TriangleNode tn_i_k_r = getTriangleNode().set(pi, pk, pr);
                 TriangleNode tn_r_k_j = getTriangleNode().set(pr, pk, pj);
 
-                tn_i_k_r.setAdjacent(pr, pk, tn_r_k_j);
-                tn_i_k_r.setAdjacent(pr, pi, adjacentHavingEdge(pr, pi));
-                tn_i_k_r.setAdjacent(pi, pk, tn_i_j_k.adjacentHavingEdge(pi, pk));
-
-                tn_r_k_j.setAdjacent(pr, pk, tn_i_k_r);
-                tn_r_k_j.setAdjacent(pr, pj, adjacentHavingEdge(pr, pj));
-                tn_r_k_j.setAdjacent(pj, pk, tn_i_j_k.adjacentHavingEdge(pj, pk));
-
+                TriangleNode tn_i_j_k__j_k = tn_i_j_k.adjacentHavingEdge(pj, pk);
                 TriangleNode tn_i_j_k__k_i = tn_i_j_k.adjacentHavingEdge(pk, pi);
+                TriangleNode tn_r_j_i__r_i = tn_r_j_i.adjacentHavingEdge(pr, pi);
+                TriangleNode tn_r_j_i__r_j = tn_r_j_i.adjacentHavingEdge(pr, pj);
+
+                tn_i_k_r.adjacentBC = tn_r_k_j;
+                tn_i_k_r.adjacentCA = tn_r_j_i__r_i;
+                tn_i_k_r.adjacentAB = tn_i_j_k__k_i;
+
+                tn_r_k_j.adjacentAB = tn_i_k_r;
+                tn_r_k_j.adjacentCA = tn_r_j_i__r_j;
+                tn_r_k_j.adjacentBC = tn_i_j_k__j_k;
+
                 if(tn_i_j_k__k_i != null)
                     tn_i_j_k__k_i.replaceAdjacent(tn_i_j_k, tn_i_k_r);
 
-                TriangleNode tn_i_j_k__k_j = tn_i_j_k.adjacentHavingEdge(pk, pj);
-                if(tn_i_j_k__k_j != null)
-                    tn_i_j_k__k_j.replaceAdjacent(tn_i_j_k, tn_r_k_j);
+                if(tn_i_j_k__j_k != null)
+                    tn_i_j_k__j_k.replaceAdjacent(tn_i_j_k, tn_r_k_j);
 
-                TriangleNode tn_r_i_j__r_i = tn_r_i_j.adjacentHavingEdge(pr, pi);
-                if(tn_r_i_j__r_i != null)
-                    tn_r_i_j__r_i.replaceAdjacent(tn_r_i_j, tn_i_k_r);
+                if(tn_r_j_i__r_i != null)
+                    tn_r_j_i__r_i.replaceAdjacent(tn_r_j_i, tn_i_k_r);
 
-                TriangleNode tn_r_i_j__r_j = tn_r_i_j.adjacentHavingEdge(pr, pj);
-                if(tn_r_i_j__r_j != null)
-                    tn_r_i_j__r_j.replaceAdjacent(tn_r_i_j, tn_r_k_j);
+                if(tn_r_j_i__r_j != null)
+                    tn_r_j_i__r_j.replaceAdjacent(tn_r_j_i, tn_r_k_j);
 
                 // now internal
-                tn_r_i_j.adjacentAB = null;
-                tn_r_i_j.adjacentBC = null;
-                tn_r_i_j.adjacentCA = null;
-                tn_r_i_j.children[0] = tn_i_k_r;
-                tn_r_i_j.children[1] = tn_r_k_j;
-                // assert tn_r_i_j.children[2] == null
+                tn_r_j_i.adjacentAB = null;
+                tn_r_j_i.adjacentBC = null;
+                tn_r_j_i.adjacentCA = null;
+                tn_r_j_i.children[0] = tn_i_k_r;
+                tn_r_j_i.children[1] = tn_r_k_j;
+                // assert tn_r_j_i.children[2] == null
 
                 // now internal
                 tn_i_j_k.adjacentAB = null;
@@ -318,31 +319,12 @@ public class DelaunayTriangulator {
                 // assert tn_i_j_k.children[2] == null
                 tn_i_j_k.breakLeafIteration = true;
 
-                if(tn_i_j_k__k_j != null)
-                    tn_r_k_j.legalizeEdge(pr, pk, pj, tn_i_j_k__k_j);
+                if(tn_i_j_k__j_k != null)
+                    tn_r_k_j.legalizeEdge(pr, pk, pj, tn_i_j_k__j_k);
 
                 if(tn_i_j_k__k_i != null)
                     tn_i_k_r.legalizeEdge(pr, pi, pk, tn_i_j_k__k_i);
             }
-        }
-
-        private void setAdjacent(int pi, int pj, TriangleNode tn) {
-            if(pi == vertexA && pj == vertexB || pi == vertexB && pj == vertexA) {
-                // assert adjacentAB == null
-                adjacentAB = tn;
-                return;
-            }
-            if(pi == vertexB && pj == vertexC || pi == vertexC && pj == vertexB) {
-                // assert adjacentBC == null
-                adjacentBC = tn;
-                return;
-            }
-            if(pi == vertexC && pj == vertexA || pi == vertexA && pj == vertexC) {
-                // assert adjacentCA == null
-                adjacentCA = tn;
-                return;
-            }
-            throw new AssertionError();
         }
 
         private boolean includesVertices(int a, int b) {
