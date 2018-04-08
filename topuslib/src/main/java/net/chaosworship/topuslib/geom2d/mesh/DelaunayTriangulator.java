@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.geom2d.mesh;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import java.util.ArrayList;
@@ -127,6 +128,32 @@ public class DelaunayTriangulator {
                     TriangleNode child = children[childi];
                     if(child != null) {
                         child.getLeafTriangles(triangulation, maxVertex);
+                    }
+                }
+            }
+        }
+
+        private void appendEdgeGraph(SimpleGraph graph, int maxVertex) {
+            if(breakLeafIteration)
+                return;
+            if(isLeaf()) {
+                boolean includeA = vertexA <= maxVertex;
+                boolean includeB = vertexB <= maxVertex;
+                boolean includeC = vertexC <= maxVertex;
+                if(includeA && includeB) {
+                    graph.tryAddEdge(vertexA, vertexB);
+                }
+                if(includeA && includeC) {
+                    graph.tryAddEdge(vertexA, vertexC);
+                }
+                if(includeB && includeC) {
+                    graph.tryAddEdge(vertexB, vertexC);
+                }
+            } else {
+                for(int childi = 0; childi < 3; childi++) {
+                    TriangleNode child = children[childi];
+                    if(child != null) {
+                        child.appendEdgeGraph(graph, maxVertex);
                     }
                 }
             }
@@ -470,5 +497,15 @@ public class DelaunayTriangulator {
             }
         }
         return mTriangulation;
+    }
+
+    public void getEdgeGraph(SimpleGraph graph) {
+        graph.clear();
+        if(mTriangulationRoot != null) {
+            for(int i = 0; i <= mPoints.length - 4; i++) {
+                graph.addVertex(i);
+            }
+            mTriangulationRoot.appendEdgeGraph(graph, mPoints.length - 4);
+        }
     }
 }
