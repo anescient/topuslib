@@ -1,17 +1,20 @@
 package net.chaosworship.topuslibtest.benchmark;
 
+import net.chaosworship.topuslib.IntPair;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.mesh.DelaunayTriangulator;
+import net.chaosworship.topuslib.graph.GraphEdgeConsumer;
 import net.chaosworship.topuslib.graph.MatrixSimpleGraph;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 
-public class DelaunayBench extends TimedRunner {
+public class DelaunayBench extends TimedRunner implements GraphEdgeConsumer {
 
-    private static final SuperRandom sRandom = new SuperRandom();
+    private static final SuperRandom sRandom = new SuperRandom(771);
 
     public void run() {
         DelaunayTriangulator triangulator = new DelaunayTriangulator();
@@ -23,11 +26,19 @@ public class DelaunayBench extends TimedRunner {
         for(int i = 0; i < 400; i++) {
             points.add(randomPoint());
             triangulator.triangulate(points);
-            triangulator.getEdgeGraph(graph);
+
+            triangulator.putEdges(this);
+
+            //triangulator.getEdgeGraph(graph);
         }
     }
 
     private static Vec2 randomPoint() {
         return new Vec2(sRandom.nextFloat(), sRandom.nextFloat());
+    }
+
+    @Override
+    public void putGraphEdge(int a, int b) {
+
     }
 }

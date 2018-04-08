@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.geom2d.mesh;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.graph.GraphEdgeConsumer;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.random.SuperRandom;
 
@@ -133,6 +134,29 @@ public class DelaunayTriangulator {
             }
         }
 
+        private void putEdges(GraphEdgeConsumer consumer, int maxVertex) {
+            if(breakLeafIteration)
+                return;
+            if(isLeaf()) {
+                if(vertexA < vertexB && vertexB <= maxVertex) {
+                    consumer.putGraphEdge(vertexA, vertexB);
+                }
+                if(vertexC < vertexA && vertexA <= maxVertex) {
+                    consumer.putGraphEdge(vertexA, vertexC);
+                }
+                if(vertexB < vertexC && vertexC <= maxVertex) {
+                    consumer.putGraphEdge(vertexB, vertexC);
+                }
+            } else {
+                for(int childi = 0; childi < 3; childi++) {
+                    TriangleNode child = children[childi];
+                    if(child != null) {
+                        child.putEdges(consumer, maxVertex);
+                    }
+                }
+            }
+        }
+
         private void appendEdgeGraph(SimpleGraph graph, int maxVertex) {
             if(breakLeafIteration)
                 return;
@@ -250,8 +274,8 @@ public class DelaunayTriangulator {
                 // assert not tn_i_j_k.isLeaf()
                 // assert not tn_r_i_j.isLeaf()
 
-                TriangleNode tn_r_i_k = getTriangleNode().set(pr, pi, pk);
-                TriangleNode tn_r_j_k = getTriangleNode().set(pr, pj, pk);
+                TriangleNode tn_r_i_k = getTriangleNode().set(pi, pk, pr);
+                TriangleNode tn_r_j_k = getTriangleNode().set(pr, pk, pj);
 
                 tn_r_i_k.setAdjacent(pr, pk, tn_r_j_k);
                 tn_r_i_k.setAdjacent(pr, pi, adjacentHavingEdge(pr, pi));
@@ -295,7 +319,7 @@ public class DelaunayTriangulator {
                 tn_i_j_k.breakLeafIteration = true;
 
                 if(tn_i_j_k__k_j != null)
-                    tn_r_j_k.legalizeEdge(pr, pj, pk, tn_i_j_k__k_j);
+                    tn_r_j_k.legalizeEdge(pr, pk, pj, tn_i_j_k__k_j);
 
                 if(tn_i_j_k__k_i != null)
                     tn_r_i_k.legalizeEdge(pr, pi, pk, tn_i_j_k__k_i);
@@ -506,6 +530,12 @@ public class DelaunayTriangulator {
                 graph.addVertex(i);
             }
             mTriangulationRoot.appendEdgeGraph(graph, mPoints.length - 4);
+        }
+    }
+
+    public void putEdges(GraphEdgeConsumer consumer) {
+        if(mTriangulationRoot != null) {
+            mTriangulationRoot.putEdges(consumer, mPoints.length - 4);
         }
     }
 }
