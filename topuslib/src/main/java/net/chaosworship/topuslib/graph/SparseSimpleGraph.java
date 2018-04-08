@@ -122,7 +122,7 @@ public class SparseSimpleGraph implements SimpleGraph {
 
     public boolean hasEdge(int a, int b) {
         SparseBooleanArray aNeighbors = mNeighborSets.get(a);
-        return aNeighbors != null && aNeighbors.indexOfKey(b) <= 0;
+        return aNeighbors != null && aNeighbors.indexOfKey(b) >= 0;
     }
 
     public ArrayList<IntPair> getEdges() {
@@ -130,7 +130,7 @@ public class SparseSimpleGraph implements SimpleGraph {
         for(int i = 0; i < mNeighborSets.size(); i++) {
             int a = mNeighborSets.keyAt(i);
             SparseBooleanArray aNeighbors = mNeighborSets.valueAt(i);
-            for(int j = 0; j < mNeighborSets.size(); j++) {
+            for(int j = 0; j < aNeighbors.size(); j++) {
                 int b = aNeighbors.keyAt(j);
                 if(a < b) {
                     edges.add(new IntPair(a, b));
@@ -145,7 +145,7 @@ public class SparseSimpleGraph implements SimpleGraph {
         for(int i = 0; i < mNeighborSets.size(); i++) {
             int a = mNeighborSets.keyAt(i);
             SparseBooleanArray aNeighbors = mNeighborSets.valueAt(i);
-            for(int j = 0; j < mNeighborSets.size(); j++) {
+            for(int j = 0; j < aNeighbors.size(); j++) {
                 int b = aNeighbors.keyAt(j);
                 if(a < b) {
                     consumer.putGraphEdge(a, b);
