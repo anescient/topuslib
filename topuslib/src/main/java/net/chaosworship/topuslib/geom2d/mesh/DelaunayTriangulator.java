@@ -274,55 +274,55 @@ public class DelaunayTriangulator {
                 // assert not tn_i_j_k.isLeaf()
                 // assert not tn_r_i_j.isLeaf()
 
-                TriangleNode tn_r_i_k = getTriangleNode().set(pi, pk, pr);
-                TriangleNode tn_r_j_k = getTriangleNode().set(pr, pk, pj);
+                TriangleNode tn_i_k_r = getTriangleNode().set(pi, pk, pr);
+                TriangleNode tn_r_k_j = getTriangleNode().set(pr, pk, pj);
 
-                tn_r_i_k.setAdjacent(pr, pk, tn_r_j_k);
-                tn_r_i_k.setAdjacent(pr, pi, adjacentHavingEdge(pr, pi));
-                tn_r_i_k.setAdjacent(pi, pk, tn_i_j_k.adjacentHavingEdge(pi, pk));
+                tn_i_k_r.setAdjacent(pr, pk, tn_r_k_j);
+                tn_i_k_r.setAdjacent(pr, pi, adjacentHavingEdge(pr, pi));
+                tn_i_k_r.setAdjacent(pi, pk, tn_i_j_k.adjacentHavingEdge(pi, pk));
 
-                tn_r_j_k.setAdjacent(pr, pk, tn_r_i_k);
-                tn_r_j_k.setAdjacent(pr, pj, adjacentHavingEdge(pr, pj));
-                tn_r_j_k.setAdjacent(pj, pk, tn_i_j_k.adjacentHavingEdge(pj, pk));
+                tn_r_k_j.setAdjacent(pr, pk, tn_i_k_r);
+                tn_r_k_j.setAdjacent(pr, pj, adjacentHavingEdge(pr, pj));
+                tn_r_k_j.setAdjacent(pj, pk, tn_i_j_k.adjacentHavingEdge(pj, pk));
 
                 TriangleNode tn_i_j_k__k_i = tn_i_j_k.adjacentHavingEdge(pk, pi);
                 if(tn_i_j_k__k_i != null)
-                    tn_i_j_k__k_i.replaceAdjacent(tn_i_j_k, tn_r_i_k);
+                    tn_i_j_k__k_i.replaceAdjacent(tn_i_j_k, tn_i_k_r);
 
                 TriangleNode tn_i_j_k__k_j = tn_i_j_k.adjacentHavingEdge(pk, pj);
                 if(tn_i_j_k__k_j != null)
-                    tn_i_j_k__k_j.replaceAdjacent(tn_i_j_k, tn_r_j_k);
+                    tn_i_j_k__k_j.replaceAdjacent(tn_i_j_k, tn_r_k_j);
 
                 TriangleNode tn_r_i_j__r_i = tn_r_i_j.adjacentHavingEdge(pr, pi);
                 if(tn_r_i_j__r_i != null)
-                    tn_r_i_j__r_i.replaceAdjacent(tn_r_i_j, tn_r_i_k);
+                    tn_r_i_j__r_i.replaceAdjacent(tn_r_i_j, tn_i_k_r);
 
                 TriangleNode tn_r_i_j__r_j = tn_r_i_j.adjacentHavingEdge(pr, pj);
                 if(tn_r_i_j__r_j != null)
-                    tn_r_i_j__r_j.replaceAdjacent(tn_r_i_j, tn_r_j_k);
+                    tn_r_i_j__r_j.replaceAdjacent(tn_r_i_j, tn_r_k_j);
 
                 // now internal
                 tn_r_i_j.adjacentAB = null;
                 tn_r_i_j.adjacentBC = null;
                 tn_r_i_j.adjacentCA = null;
-                tn_r_i_j.children[0] = tn_r_i_k;
-                tn_r_i_j.children[1] = tn_r_j_k;
+                tn_r_i_j.children[0] = tn_i_k_r;
+                tn_r_i_j.children[1] = tn_r_k_j;
                 // assert tn_r_i_j.children[2] == null
 
                 // now internal
                 tn_i_j_k.adjacentAB = null;
                 tn_i_j_k.adjacentBC = null;
                 tn_i_j_k.adjacentCA = null;
-                tn_i_j_k.children[0] = tn_r_i_k;
-                tn_i_j_k.children[1] = tn_r_j_k;
+                tn_i_j_k.children[0] = tn_i_k_r;
+                tn_i_j_k.children[1] = tn_r_k_j;
                 // assert tn_i_j_k.children[2] == null
                 tn_i_j_k.breakLeafIteration = true;
 
                 if(tn_i_j_k__k_j != null)
-                    tn_r_j_k.legalizeEdge(pr, pk, pj, tn_i_j_k__k_j);
+                    tn_r_k_j.legalizeEdge(pr, pk, pj, tn_i_j_k__k_j);
 
                 if(tn_i_j_k__k_i != null)
-                    tn_r_i_k.legalizeEdge(pr, pi, pk, tn_i_j_k__k_i);
+                    tn_i_k_r.legalizeEdge(pr, pi, pk, tn_i_j_k__k_i);
             }
         }
 
