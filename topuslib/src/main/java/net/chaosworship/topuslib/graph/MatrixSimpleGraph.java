@@ -26,6 +26,9 @@ public class MatrixSimpleGraph implements SimpleGraph {
     public void clear() {
         mNewVertex = 0;
         mVertices.clear();
+        for(BitSet neighbors : mNeighborSets) {
+            neighbors.clear();
+        }
     }
 
     @Override
