@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib;
+package net.chaosworship.topuslib.tuple;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
 

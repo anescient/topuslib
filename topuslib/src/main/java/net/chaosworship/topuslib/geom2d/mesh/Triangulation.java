@@ -1,11 +1,10 @@
 package net.chaosworship.topuslib.geom2d.mesh;
 
-import net.chaosworship.topuslib.IntPair;
-import net.chaosworship.topuslib.IntTriple;
+import net.chaosworship.topuslib.tuple.IntPair;
+import net.chaosworship.topuslib.tuple.IntTriple;
 import net.chaosworship.topuslib.geom2d.Segment;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.graph.MatrixSimpleGraph;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.graph.SparseSimpleGraph;
 

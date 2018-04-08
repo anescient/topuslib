@@ -10,6 +10,7 @@ import net.chaosworship.topuslib.graph.GraphEdgeConsumer;
 import net.chaosworship.topuslib.graph.HashSimpleGraph;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.random.SuperRandom;
+import net.chaosworship.topuslib.tuple.IntPair;
 
 import org.junit.Test;
 

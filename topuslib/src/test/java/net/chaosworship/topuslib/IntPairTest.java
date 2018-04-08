@@ -1,5 +1,7 @@
 package net.chaosworship.topuslib;
 
+import net.chaosworship.topuslib.tuple.IntPair;
+
 import org.junit.Test;
 
 import static junit.framework.Assert.*;

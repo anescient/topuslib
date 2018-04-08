@@ -3,7 +3,7 @@ package net.chaosworship.topuslib.graph;
 import android.annotation.SuppressLint;
 
 import net.chaosworship.topuslib.BuildConfig;
-import net.chaosworship.topuslib.IntPair;
+import net.chaosworship.topuslib.tuple.IntPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;

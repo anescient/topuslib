@@ -3,7 +3,7 @@ package net.chaosworship.topuslib.graph;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 
-import net.chaosworship.topuslib.IntPair;
+import net.chaosworship.topuslib.tuple.IntPair;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,6 +1,7 @@
 package net.chaosworship.topuslib;
 
-import java.util.ArrayList;
+import net.chaosworship.topuslib.tuple.IntPair;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
