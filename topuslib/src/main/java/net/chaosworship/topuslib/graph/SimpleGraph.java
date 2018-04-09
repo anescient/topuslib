@@ -1,12 +1,13 @@
 package net.chaosworship.topuslib.graph;
 
+import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.tuple.IntPair;
 
 import java.util.ArrayList;
 import java.util.Set;
 
 
-public interface SimpleGraph extends GraphEdgeConsumer {
+public interface SimpleGraph extends IntPairConsumer {
 
     void clear();
 
@@ -32,6 +33,6 @@ public interface SimpleGraph extends GraphEdgeConsumer {
 
     ArrayList<IntPair> getEdges();
 
-    void putEdges(GraphEdgeConsumer consumer);
+    void putEdges(IntPairConsumer consumer);
 
 }

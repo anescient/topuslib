@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.graph;
 import android.annotation.SuppressLint;
 
 import net.chaosworship.topuslib.BuildConfig;
+import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.tuple.IntPair;
 
 import java.util.ArrayList;
@@ -147,18 +148,18 @@ public class HashSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putEdges(GraphEdgeConsumer consumer) {
+    public void putEdges(IntPairConsumer consumer) {
         for(int a : mNeighborSets.keySet()) {
             for(int b : mNeighborSets.get(a)) {
                 if(a < b) {
-                    consumer.putGraphEdge(a, b);
+                    consumer.putIntPair(a, b);
                 }
             }
         }
     }
 
     @Override
-    public void putGraphEdge(int a, int b) {
+    public void putIntPair(int a, int b) {
         addEdge(a, b);
     }
 

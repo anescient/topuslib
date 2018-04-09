@@ -3,7 +3,7 @@ package net.chaosworship.topuslib.geom2d.mesh;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.graph.GraphEdgeConsumer;
+import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.random.SuperRandom;
 
@@ -134,18 +134,18 @@ public class DelaunayTriangulator {
             }
         }
 
-        private void putEdges(GraphEdgeConsumer consumer, int maxVertex) {
+        private void putEdges(IntPairConsumer consumer, int maxVertex) {
             if(breakLeafIteration)
                 return;
             if(isLeaf()) {
                 if(vertexA < vertexB && vertexB <= maxVertex) {
-                    consumer.putGraphEdge(vertexA, vertexB);
+                    consumer.putIntPair(vertexA, vertexB);
                 }
                 if(vertexC < vertexA && vertexA <= maxVertex) {
-                    consumer.putGraphEdge(vertexA, vertexC);
+                    consumer.putIntPair(vertexA, vertexC);
                 }
                 if(vertexB < vertexC && vertexC <= maxVertex) {
-                    consumer.putGraphEdge(vertexB, vertexC);
+                    consumer.putIntPair(vertexB, vertexC);
                 }
             } else {
                 for(int childi = 0; childi < 3; childi++) {
@@ -515,7 +515,7 @@ public class DelaunayTriangulator {
         }
     }
 
-    public void putEdges(GraphEdgeConsumer consumer) {
+    public void putEdges(IntPairConsumer consumer) {
         if(mTriangulationRoot != null) {
             mTriangulationRoot.putEdges(consumer, mPoints.length - 4);
         }

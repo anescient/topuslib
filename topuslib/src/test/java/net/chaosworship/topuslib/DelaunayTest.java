@@ -6,7 +6,7 @@ import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.mesh.DelaunayTriangulator;
 import net.chaosworship.topuslib.geom2d.mesh.Triangulation;
-import net.chaosworship.topuslib.graph.GraphEdgeConsumer;
+import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.graph.HashSimpleGraph;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.random.SuperRandom;
@@ -49,9 +49,9 @@ public class DelaunayTest {
             }
 
             final HashSet<IntPair> edgeSetC = new HashSet<>();
-            GraphEdgeConsumer consumer = new GraphEdgeConsumer() {
+            IntPairConsumer consumer = new IntPairConsumer() {
                 @Override
-                public void putGraphEdge(int a, int b) {
+                public void putIntPair(int a, int b) {
                     edgeSetC.add(IntPair.sorted(a, b));
                 }
             };

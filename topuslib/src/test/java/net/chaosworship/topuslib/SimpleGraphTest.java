@@ -1,6 +1,6 @@
 package net.chaosworship.topuslib;
 
-import net.chaosworship.topuslib.graph.GraphEdgeConsumer;
+import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.tuple.IntPair;
 
@@ -134,9 +134,9 @@ public abstract class SimpleGraphTest {
 
     private static HashSet<IntPair> consumeEdges(SimpleGraph g) {
         final HashSet<IntPair> pairs = new HashSet<>();
-        GraphEdgeConsumer consumer = new GraphEdgeConsumer() {
+        IntPairConsumer consumer = new IntPairConsumer() {
             @Override
-            public void putGraphEdge(int a, int b) {
+            public void putIntPair(int a, int b) {
                 pairs.add(new IntPair(a, b));
             }
         };

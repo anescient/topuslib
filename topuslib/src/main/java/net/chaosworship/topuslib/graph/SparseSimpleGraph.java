@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.graph;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 
+import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.tuple.IntPair;
 
 import java.util.ArrayList;
@@ -141,14 +142,14 @@ public class SparseSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putEdges(GraphEdgeConsumer consumer) {
+    public void putEdges(IntPairConsumer consumer) {
         for(int i = 0; i < mNeighborSets.size(); i++) {
             int a = mNeighborSets.keyAt(i);
             SparseBooleanArray aNeighbors = mNeighborSets.valueAt(i);
             for(int j = 0; j < aNeighbors.size(); j++) {
                 int b = aNeighbors.keyAt(j);
                 if(a < b) {
-                    consumer.putGraphEdge(a, b);
+                    consumer.putIntPair(a, b);
                 }
             }
         }
@@ -168,7 +169,7 @@ public class SparseSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putGraphEdge(int a, int b) {
+    public void putIntPair(int a, int b) {
         addEdge(a, b);
     }
 }

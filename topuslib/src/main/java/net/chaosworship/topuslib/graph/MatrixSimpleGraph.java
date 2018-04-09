@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib.graph;
 
+import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.tuple.IntPair;
 
 import java.util.ArrayList;
@@ -164,13 +165,13 @@ public class MatrixSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putEdges(GraphEdgeConsumer consumer) {
+    public void putEdges(IntPairConsumer consumer) {
         int a = mVertices.nextSetBit(0);
         while(a >= 0) {
             BitSet aNeighbors = mNeighborSets[a];
             int b = aNeighbors.nextSetBit(a + 1);
             while(b >= 0) {
-                consumer.putGraphEdge(a, b);
+                consumer.putIntPair(a, b);
                 b = aNeighbors.nextSetBit(b + 1);
             }
             a = mVertices.nextSetBit(a + 1);
@@ -178,7 +179,7 @@ public class MatrixSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putGraphEdge(int a, int b) {
+    public void putIntPair(int a, int b) {
         addEdge(a, b);
     }
 }
