@@ -176,4 +176,9 @@ public class MatrixSimpleGraph implements SimpleGraph {
             a = mVertices.nextSetBit(a + 1);
         }
     }
+
+    @Override
+    public void putGraphEdge(int a, int b) {
+        addEdge(a, b);
+    }
 }

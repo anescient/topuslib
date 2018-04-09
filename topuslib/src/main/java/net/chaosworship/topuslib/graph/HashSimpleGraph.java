@@ -157,6 +157,11 @@ public class HashSimpleGraph implements SimpleGraph {
         }
     }
 
+    @Override
+    public void putGraphEdge(int a, int b) {
+        addEdge(a, b);
+    }
+
     public static HashSimpleGraph generateCompleteGraph(int vertexCount) {
         HashSimpleGraph g = new HashSimpleGraph();
         ArrayList<Integer> vertices = new ArrayList<>();

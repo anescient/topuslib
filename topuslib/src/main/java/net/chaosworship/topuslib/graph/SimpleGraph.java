@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 
-public interface SimpleGraph {
+public interface SimpleGraph extends GraphEdgeConsumer {
 
     void clear();
 
@@ -33,4 +33,5 @@ public interface SimpleGraph {
     ArrayList<IntPair> getEdges();
 
     void putEdges(GraphEdgeConsumer consumer);
+
 }

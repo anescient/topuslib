@@ -166,4 +166,9 @@ public class SparseSimpleGraph implements SimpleGraph {
         }
         return g;
     }
+
+    @Override
+    public void putGraphEdge(int a, int b) {
+        addEdge(a, b);
+    }
 }
