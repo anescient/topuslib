@@ -20,6 +20,8 @@
         </activity>
         <activity android:name=".DrawingBoardActivity">
         </activity>
+        <activity android:name=".InputTestActivity">
+        </activity>
     </application>
 
 </manifest>

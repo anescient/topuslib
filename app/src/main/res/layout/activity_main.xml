@@ -25,4 +25,12 @@
         android:text="benchmark"
         android:onClick="startBenchmark"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="50dp"
+        android:paddingBottom="50dp"
+        android:text="input test"
+        android:onClick="startInputTest"/>
+
 </android.support.v7.widget.LinearLayoutCompat>

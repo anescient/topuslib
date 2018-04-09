@@ -159,25 +159,38 @@ public class MotionEventConverter {
     // pointers that have gone up and ended
     private final ArrayList<Pointer> mFinishedPointers;
 
+    // positions of first events
+    private final ArrayList<Vec2> mDownPositions;
+
     @SuppressLint("UseSparseArrays")
     public MotionEventConverter() {
         mActivePointers = new HashMap<>();
         mFinishedPointers = new ArrayList<>();
+        mDownPositions = new ArrayList<>();
     }
 
     // get all active and finished pointers, removing finished pointers
     public ArrayList<Pointer> dumpPointers() {
-        ArrayList<Pointer> pointers = new ArrayList<>();
+        ArrayList<Pointer> pointers;
         // if finished pointers are taken first there shouldn't be any duplicates
         // at worst a pointer will sneak from active to finished and get picked up later
         synchronized(mFinishedPointers) {
-            pointers.addAll(mFinishedPointers);
+            pointers = new ArrayList<>(mFinishedPointers);
             mFinishedPointers.clear();
         }
         synchronized(mActivePointers) {
             pointers.addAll(mActivePointers.values());
         }
         return pointers;
+    }
+
+    public ArrayList<Vec2> dumpDowns() {
+        ArrayList<Vec2> downPositions;
+        synchronized(mDownPositions) {
+            downPositions = new ArrayList<>(mDownPositions);
+            mDownPositions.clear();
+        }
+        return downPositions;
     }
 
     public ArrayList<Pointer> getActivePointers() {
@@ -232,16 +245,28 @@ public class MotionEventConverter {
         int pointerIndex = event.getActionIndex();
         int eventPointerId = event.getPointerId(pointerIndex);
         if(mActivePointers.containsKey(eventPointerId)) {
-            throw new AssertionError("already down?");
+            if(BuildConfig.DEBUG) {
+                throw new AssertionError("already down?");
+            } else {
+                return;
+            }
         }
 
+        Pointer newPointer = new Pointer(event, pointerIndex);
         synchronized(mActivePointers) {
-            mActivePointers.put(eventPointerId, new Pointer(event, pointerIndex));
+            mActivePointers.put(eventPointerId, newPointer);
             for(int i = 0; i < event.getPointerCount(); i++) {
                 if(i == pointerIndex) {
                     continue;
                 }
                 updatePointer(event, i);
+            }
+        }
+
+        synchronized(mDownPositions) {
+            mDownPositions.add(newPointer.getFirstPosition());
+            if(mDownPositions.size() > 20) {
+                mDownPositions.remove(0);
             }
         }
     }

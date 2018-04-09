@@ -25,4 +25,8 @@ public class MainActivity extends AppCompatActivity {
     public void startBenchmark(View view) {
         startActivity(new Intent(this, BenchmarkActivity.class));
     }
+
+    public void startInputTest(View view) {
+        startActivity(new Intent(this, InputTestActivity.class));
+    }
 }
