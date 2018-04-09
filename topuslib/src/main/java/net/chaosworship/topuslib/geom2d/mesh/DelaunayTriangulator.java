@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib.geom2d.mesh;
 
+import net.chaosworship.topuslib.collection.TriangleConsumer;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
@@ -148,11 +149,28 @@ public class DelaunayTriangulator {
                     consumer.putIntPair(vertexB, vertexC);
                 }
             } else {
-                for(int childi = 0; childi < 3; childi++) {
-                    TriangleNode child = children[childi];
-                    if(child != null) {
-                        child.putEdges(consumer, maxVertex);
+                for(TriangleNode child : children) {
+                    if(child == null) {
+                        break;
                     }
+                    child.putEdges(consumer, maxVertex);
+                }
+            }
+        }
+
+        private void putTriangles(TriangleConsumer consumer, int maxVertex) {
+            if(breakLeafIteration)
+                return;
+            if(isLeaf()) {
+                if(vertexA <= maxVertex && vertexB <= maxVertex && vertexC <= maxVertex) {
+                    consumer.putTriangle(triangle);
+                }
+            } else {
+                for(TriangleNode child : children) {
+                    if(child == null) {
+                        break;
+                    }
+                    child.putTriangles(consumer, maxVertex);
                 }
             }
         }
@@ -518,6 +536,12 @@ public class DelaunayTriangulator {
     public void putEdges(IntPairConsumer consumer) {
         if(mTriangulationRoot != null) {
             mTriangulationRoot.putEdges(consumer, mPoints.length - 4);
+        }
+    }
+
+    public void putTriangles(TriangleConsumer consumer) {
+        if(mTriangulationRoot != null) {
+            mTriangulationRoot.putTriangles(consumer, mPoints.length - 4);
         }
     }
 }

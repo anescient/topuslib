@@ -6,9 +6,11 @@ import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
+import net.chaosworship.topuslib.collection.TriangleConsumer;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Segment;
+import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.mesh.DelaunayTriangulator;
 import net.chaosworship.topuslib.geom2d.mesh.Triangulation;
@@ -84,17 +86,28 @@ public class DrawingBoard
         */
 
         mViewTransform.setVisibleRectangle(Rectangle.bound(points).scale(2));
-        ShapesBrush brush = mLoader.getShapesBrush();
+        final ShapesBrush brush = mLoader.getShapesBrush();
         brush.begin(mViewTransform.getViewMatrix());
 
         Circle c = Circle.minimumBound(points);
         brush.setColor(Color.RED);
         brush.drawCircle(c, 0.3f);
 
-        brush.setColor(Color.LTGRAY);
-        brush.setAlpha(0.2f);
         DelaunayTriangulator dt = new DelaunayTriangulator();
         dt.triangulate(points);
+
+        brush.setColor(Color.BLUE);
+        brush.setAlpha(0.2f);
+        TriangleConsumer consumer = new TriangleConsumer() {
+            @Override
+            public void putTriangle(Triangle triangle) {
+                brush.fillTriangle(triangle);
+            }
+        };
+        dt.putTriangles(consumer);
+
+        brush.setColor(Color.WHITE);
+        brush.setAlpha(0.2f);
         Triangulation triangulation = dt.getTriangulation();
         for(Segment s : triangulation.resolveSegments()) {
             brush.drawSegment(s, 0.3f);

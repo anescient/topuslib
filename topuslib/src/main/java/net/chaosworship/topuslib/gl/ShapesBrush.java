@@ -75,6 +75,10 @@ public class ShapesBrush extends Brush {
         drawSegment(triangle.pointC, triangle.pointA, lineWidth);
     }
 
+    public void fillTriangle(Triangle triangle) {
+        mTrianglesBrush.addTriangle(triangle, mColor);
+    }
+
     public void drawRectangle(Rectangle rect, float lineWidth) {
         Vec2 a = new Vec2(rect.minx, rect.miny);
         Vec2 b = new Vec2(rect.minx, rect.maxy);
