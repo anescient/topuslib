@@ -20,11 +20,7 @@ public class ClosestPointOnLine {
         // Jan.'18 from https://math.stackexchange.com/questions/1300484/distance-between-line-and-a-point?noredirect=1&lq=1
         float denom = Ax2 - 2 * A.x * B.x + Ay2 - 2 * A.y * B.y + Bx2 + By2;
         mAlongAB = 0;
-        if(denom == 0) {
-            if(!A.equals(B)) {
-                throw new AssertionError();
-            }
-        } else {
+        if(denom != 0) {
             mAlongAB = (Ax2 - A.x * (B.x + Q.x) + Ay2 - A.y * (B.y + Q.y) + B.x * Q.x + B.y * Q.y) / denom;
         }
         if(segment) {
