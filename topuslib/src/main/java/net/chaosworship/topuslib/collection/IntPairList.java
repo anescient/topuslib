@@ -1,0 +1,45 @@
+package net.chaosworship.topuslib.collection;
+
+import java.util.Arrays;
+
+
+public class IntPairList implements IntPairConsumer {
+
+    private int[] mData;
+    private int mPairCount;
+
+    public IntPairList() {
+        mData = new int[0];
+        mPairCount = 0;
+    }
+
+    public void add(int a, int b) {
+        int intCount = mPairCount * 2;
+        if(mData.length < intCount + 2) {
+            mData = Arrays.copyOf(mData, 2 * (((mData.length / 2) * 3 / 2) + 1));
+        }
+        mData[intCount] = a;
+        mData[intCount + 1] = b;
+        mPairCount++;
+    }
+
+    public int getPairCount() {
+        return mPairCount;
+    }
+
+    public void clear() {
+        mPairCount = 0;
+    }
+
+    @Override
+    public void putIntPair(int a, int b) {
+        add(a, b);
+    }
+
+    public void putPairs(IntPairConsumer consumer) {
+        int intCount = mPairCount * 2;
+        for(int i = 0; i < intCount; i += 2) {
+            consumer.putIntPair(mData[i], mData[i + 1]);
+        }
+    }
+}
