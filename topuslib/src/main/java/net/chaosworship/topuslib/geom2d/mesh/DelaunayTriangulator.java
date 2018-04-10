@@ -466,8 +466,8 @@ public class DelaunayTriangulator {
             for(i = 0; i < n; i++) {
                 mPointsInsertOrder[i] = i;
             }
+            sRandom.shuffle(mPointsInsertOrder);
         }
-        sRandom.shuffle(mPointsInsertOrder);
 
         mTriangulationRoot = getTriangleNode().set(n, n + 1, n + 2);
         if(DEBUG_VALIDATEADJACENT)
