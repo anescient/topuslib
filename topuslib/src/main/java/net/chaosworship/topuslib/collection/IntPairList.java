@@ -9,7 +9,7 @@ public class IntPairList implements IntPairConsumer {
     private int mPairCount;
 
     public IntPairList() {
-        mData = new int[0];
+        mData = new int[20];
         mPairCount = 0;
     }
 
