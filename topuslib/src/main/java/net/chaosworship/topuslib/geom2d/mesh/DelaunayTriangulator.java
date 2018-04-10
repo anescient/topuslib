@@ -1,10 +1,8 @@
 package net.chaosworship.topuslib.geom2d.mesh;
 
-import net.chaosworship.topuslib.collection.TriangleConsumer;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.random.SuperRandom;
 
@@ -97,8 +95,7 @@ public class DelaunayTriangulator {
         }
 
         private boolean contains(int pi) {
-            Vec2 p = mPoints[pi];
-            return triangle.contains(p);
+            return triangle.contains(mPoints[pi]);
         }
 
         private void getLeafTriangles(Collection<Triangle> triangles, int maxVertex) {
@@ -118,59 +115,28 @@ public class DelaunayTriangulator {
             }
         }
 
-        private void getLeafTriangles(Triangulation triangulation, int maxVertex) {
-            if(breakLeafIteration)
-                return;
-            if(isLeaf()) {
-                if(vertexA <= maxVertex && vertexB <= maxVertex && vertexC <= maxVertex) {
-                    triangulation.addTriangle(vertexA, vertexB, vertexC);
-                }
-            } else {
-                for(int childi = 0; childi < 3; childi++) {
-                    TriangleNode child = children[childi];
-                    if(child != null) {
-                        child.getLeafTriangles(triangulation, maxVertex);
-                    }
-                }
-            }
-        }
-
-        private void putEdges(IntPairConsumer consumer, int maxVertex) {
+        private void outputTriangulation(Triangulation triangulation, int maxVertex) {
             if(breakLeafIteration)
                 return;
             if(isLeaf()) {
                 if(vertexA < vertexB && vertexB <= maxVertex) {
-                    consumer.putIntPair(vertexA, vertexB);
+                    triangulation.addEdge(vertexA, vertexB);
                 }
                 if(vertexC < vertexA && vertexA <= maxVertex) {
-                    consumer.putIntPair(vertexA, vertexC);
+                    triangulation.addEdge(vertexA, vertexC);
                 }
                 if(vertexB < vertexC && vertexC <= maxVertex) {
-                    consumer.putIntPair(vertexB, vertexC);
+                    triangulation.addEdge(vertexB, vertexC);
                 }
-            } else {
-                for(TriangleNode child : children) {
-                    if(child == null) {
-                        break;
-                    }
-                    child.putEdges(consumer, maxVertex);
-                }
-            }
-        }
-
-        private void putTriangles(TriangleConsumer consumer, int maxVertex) {
-            if(breakLeafIteration)
-                return;
-            if(isLeaf()) {
                 if(vertexA <= maxVertex && vertexB <= maxVertex && vertexC <= maxVertex) {
-                    consumer.putTriangle(triangle);
+                    triangulation.addTriangle(triangle);
                 }
             } else {
                 for(TriangleNode child : children) {
                     if(child == null) {
                         break;
                     }
-                    child.putTriangles(consumer, maxVertex);
+                    child.outputTriangulation(triangulation, maxVertex);
                 }
             }
         }
@@ -411,14 +377,14 @@ public class DelaunayTriangulator {
     public DelaunayTriangulator() {
         mPoints = new Vec2[0];
         mPointsInsertOrder = new int[0];
-        mTriangulation = null;
+        mTriangulation = new Triangulation();
         mNodePool = new TriangleNode[0];
         mNextNodeFromPool = 0;
     }
 
     private TriangleNode getTriangleNode() {
         if(mNextNodeFromPool >= mNodePool.length) {
-            growNodePool(mNodePool.length + 32);
+            growNodePool(mNodePool.length * 4 / 3);
         }
         return mNodePool[mNextNodeFromPool++];
     }
@@ -434,14 +400,15 @@ public class DelaunayTriangulator {
         mNodePool = newPool;
     }
 
-    public void triangulate(Collection<Vec2> points) {
+    // todo maybe retriangulate, using same Vec2 objects with new values
+    public Triangulation triangulate(Collection<Vec2> points) {
         int n = points.size();
         if(n < 3) {
             throw new IllegalArgumentException();
         }
 
         // uniform random points uses approx. 7 nodes per point
-        growNodePool(7 * points.size());
+        growNodePool(8 * points.size());
         mNextNodeFromPool = 0;
 
         if(mPoints.length != n + 3) {
@@ -479,31 +446,10 @@ public class DelaunayTriangulator {
                 mTriangulationRoot.validateAdjacent();
         }
 
-        mTriangulation = null;
+        mTriangulation.init(mPoints);
+        mTriangulationRoot.outputTriangulation(mTriangulation, mPoints.length - 4);
+        return mTriangulation;
     }
-
-    /*
-    private static boolean higherThan(Vec2 lhs, Vec2 rhs) {
-        return lhs.y != rhs.y ? lhs.y > rhs.y : lhs.x > rhs.x;
-    }
-
-    private static void orderHighestThenRandom(Vec2[] points) {
-        int highestIndex = 0;
-        Vec2 highest = points[0];
-        for(int i = 1; i < points.length; i++) {
-            Vec2 p = points[i];
-            if(higherThan(p, highest)) {
-                highestIndex = i;
-                highest = p;
-            }
-        }
-        if(highestIndex != 0) {
-            points[highestIndex] = points[0];
-            points[0] = highest;
-        }
-        sRandom.subShuffle(points, 1);
-    }
-    */
 
     public ArrayList<Triangle> getTriangles() {
         ArrayList<Triangle> triangles = new ArrayList<>();
@@ -513,16 +459,6 @@ public class DelaunayTriangulator {
         return triangles;
     }
 
-    public Triangulation getTriangulation() {
-        if(mTriangulation == null) {
-            if(mTriangulationRoot != null) {
-                mTriangulation = new Triangulation(mPoints);
-                mTriangulationRoot.getLeafTriangles(mTriangulation, mPoints.length - 4);
-            }
-        }
-        return mTriangulation;
-    }
-
     public void getEdgeGraph(SimpleGraph graph) {
         graph.clear();
         if(mTriangulationRoot != null) {
@@ -530,18 +466,6 @@ public class DelaunayTriangulator {
                 graph.addVertex(i);
             }
             mTriangulationRoot.appendEdgeGraph(graph, mPoints.length - 4);
-        }
-    }
-
-    public void putEdges(IntPairConsumer consumer) {
-        if(mTriangulationRoot != null) {
-            mTriangulationRoot.putEdges(consumer, mPoints.length - 4);
-        }
-    }
-
-    public void putTriangles(TriangleConsumer consumer) {
-        if(mTriangulationRoot != null) {
-            mTriangulationRoot.putTriangles(consumer, mPoints.length - 4);
         }
     }
 }

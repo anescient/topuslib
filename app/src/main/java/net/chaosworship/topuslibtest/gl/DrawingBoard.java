@@ -6,10 +6,9 @@ import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
-import net.chaosworship.topuslib.collection.TriangleConsumer;
+import net.chaosworship.topuslib.collection.SegmentConsumer;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
-import net.chaosworship.topuslib.geom2d.Segment;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.mesh.DelaunayTriangulator;
@@ -94,24 +93,23 @@ public class DrawingBoard
         brush.drawCircle(c, 0.3f);
 
         DelaunayTriangulator dt = new DelaunayTriangulator();
-        dt.triangulate(points);
+        Triangulation triangulation = dt.triangulate(points);
 
         brush.setColor(Color.BLUE);
         brush.setAlpha(0.2f);
-        TriangleConsumer consumer = new TriangleConsumer() {
-            @Override
-            public void putTriangle(Triangle triangle) {
-                brush.fillTriangle(triangle);
-            }
-        };
-        dt.putTriangles(consumer);
+        for(Triangle t : triangulation.getTriangles()) {
+            brush.fillTriangle(t);
+        }
 
         brush.setColor(Color.WHITE);
         brush.setAlpha(0.2f);
-        Triangulation triangulation = dt.getTriangulation();
-        for(Segment s : triangulation.resolveSegments()) {
-            brush.drawSegment(s, 0.3f);
-        }
+        SegmentConsumer segmentDrawer = new SegmentConsumer() {
+            @Override
+            public void addSegment(Vec2 a, Vec2 b) {
+                brush.drawSegment(a, b, 0.3f);
+            }
+        };
+        triangulation.outputSegments(segmentDrawer);
 
         brush.setColor(Color.WHITE);
         brush.setAlpha(1);

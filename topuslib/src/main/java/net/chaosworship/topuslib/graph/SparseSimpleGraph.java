@@ -149,7 +149,7 @@ public class SparseSimpleGraph implements SimpleGraph {
             for(int j = 0; j < aNeighbors.size(); j++) {
                 int b = aNeighbors.keyAt(j);
                 if(a < b) {
-                    consumer.putIntPair(a, b);
+                    consumer.addIntPair(a, b);
                 }
             }
         }
@@ -169,7 +169,7 @@ public class SparseSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putIntPair(int a, int b) {
+    public void addIntPair(int a, int b) {
         addEdge(a, b);
     }
 }

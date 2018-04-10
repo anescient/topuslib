@@ -32,14 +32,14 @@ public class IntPairList implements IntPairConsumer {
     }
 
     @Override
-    public void putIntPair(int a, int b) {
+    public void addIntPair(int a, int b) {
         add(a, b);
     }
 
-    public void putPairs(IntPairConsumer consumer) {
+    public void outputPairs(IntPairConsumer consumer) {
         int intCount = mPairCount * 2;
-        for(int i = 0; i < intCount; i += 2) {
-            consumer.putIntPair(mData[i], mData[i + 1]);
+        for(int i = 0; i < intCount;) {
+            consumer.addIntPair(mData[i++], mData[i++]);
         }
     }
 }

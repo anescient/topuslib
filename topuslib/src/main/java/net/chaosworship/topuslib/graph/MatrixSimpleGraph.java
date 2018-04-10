@@ -171,7 +171,7 @@ public class MatrixSimpleGraph implements SimpleGraph {
             BitSet aNeighbors = mNeighborSets[a];
             int b = aNeighbors.nextSetBit(a + 1);
             while(b >= 0) {
-                consumer.putIntPair(a, b);
+                consumer.addIntPair(a, b);
                 b = aNeighbors.nextSetBit(b + 1);
             }
             a = mVertices.nextSetBit(a + 1);
@@ -179,7 +179,7 @@ public class MatrixSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putIntPair(int a, int b) {
+    public void addIntPair(int a, int b) {
         addEdge(a, b);
     }
 }

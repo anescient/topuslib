@@ -152,14 +152,14 @@ public class HashSimpleGraph implements SimpleGraph {
         for(int a : mNeighborSets.keySet()) {
             for(int b : mNeighborSets.get(a)) {
                 if(a < b) {
-                    consumer.putIntPair(a, b);
+                    consumer.addIntPair(a, b);
                 }
             }
         }
     }
 
     @Override
-    public void putIntPair(int a, int b) {
+    public void addIntPair(int a, int b) {
         addEdge(a, b);
     }
 

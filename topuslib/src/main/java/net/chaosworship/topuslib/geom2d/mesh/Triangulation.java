@@ -1,109 +1,61 @@
 package net.chaosworship.topuslib.geom2d.mesh;
 
-import net.chaosworship.topuslib.tuple.IntPair;
-import net.chaosworship.topuslib.tuple.IntTriple;
-import net.chaosworship.topuslib.geom2d.Segment;
+import net.chaosworship.topuslib.collection.IntPairConsumer;
+import net.chaosworship.topuslib.collection.IntPairList;
+import net.chaosworship.topuslib.collection.SegmentConsumer;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.graph.SimpleGraph;
-import net.chaosworship.topuslib.graph.SparseSimpleGraph;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 
 
 @SuppressWarnings("unused")
 public class Triangulation {
 
-    private final Vec2[] mPoints;
-    private final HashSet<IntTriple> mTriangles;
-
-    public Triangulation(Collection<Vec2> points) {
-        mPoints = new Vec2[points.size()];
-        int i = 0;
-        for(Vec2 p : points) {
-            mPoints[i++] = p;
+    private class SegmentResolver implements IntPairConsumer {
+        SegmentConsumer segmentConsumer;
+        @Override
+        public void addIntPair(int a, int b) {
+            segmentConsumer.addSegment(mPoints[a], mPoints[b]);
         }
-        mTriangles = new HashSet<>();
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public Triangulation(Vec2[] points) {
+    private Vec2[] mPoints;
+    private final IntPairList mEdges;
+    private final ArrayList<Triangle> mTriangles;
+    private SegmentResolver mSegmentResolver;
+
+    Triangulation() {
+        mPoints = null;
+        mEdges = new IntPairList();
+        mTriangles = new ArrayList<>();
+        mSegmentResolver = new SegmentResolver();
+    }
+
+    void init(Vec2[] points) {
         mPoints = points;
-        mTriangles = new HashSet<>();
+        mEdges.clear();
+        mTriangles.clear();
     }
 
-    public void addTriangle(int i, int j, int k) {
-        if(i < 0 || j < 0 || k < 0) {
-            throw new IllegalArgumentException();
-        }
-        if(i >= mPoints.length || j >= mPoints.length || k >= mPoints.length) {
-            throw new IllegalArgumentException();
-        }
-        if(i == j || j == k || i == k) {
-            throw new IllegalArgumentException();
-        }
-        if(!mTriangles.add(IntTriple.sorted(i, j, k))) {
-            throw new IllegalArgumentException("already have that triangle");
-        }
+    void addEdge(int a, int b) {
+        mEdges.add(a, b);
     }
 
-    public void removeTriangle(int i, int j, int k) {
-        if(!mTriangles.remove(IntTriple.sorted(i, j, k))) {
-            throw new IllegalStateException("no such triangle");
-        }
+    void addTriangle(Triangle triangle) {
+        mTriangles.add(triangle);
     }
 
-    public Vec2[] getPoints() {
-        return mPoints;
+    public void outputEdges(IntPairConsumer consumer) {
+        mEdges.outputPairs(consumer);
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public HashSet<IntPair> getEdges() {
-        HashSet<IntPair> edges = new HashSet<>();
-        for(IntTriple triple : mTriangles) {
-            edges.add(IntPair.sorted(triple.a, triple.b));
-            edges.add(IntPair.sorted(triple.b, triple.c));
-            edges.add(IntPair.sorted(triple.c, triple.a));
-        }
-        return edges;
+    public void outputSegments(SegmentConsumer consumer) {
+        mSegmentResolver.segmentConsumer = consumer;
+        mEdges.outputPairs(mSegmentResolver);
     }
 
-    public void getGraph(SimpleGraph graph) {
-        graph.clear();
-        for(int i = 0; i < mPoints.length; i++) {
-            graph.addVertex(i);
-        }
-        for(IntTriple triple : mTriangles) {
-            graph.tryAddEdge(triple.a, triple.b);
-            graph.tryAddEdge(triple.b, triple.c);
-            graph.tryAddEdge(triple.c, triple.a);
-        }
-    }
-
-    public SimpleGraph getGraph() {
-        SimpleGraph graph = new SparseSimpleGraph();
-        getGraph(graph);
-        return graph;
-    }
-
-    public ArrayList<Triangle> resolveTriangles() {
-        ArrayList<Triangle> triangles = new ArrayList<>();
-        for(IntTriple triple : mTriangles) {
-            triangles.add(new Triangle(
-                    mPoints[triple.a],
-                    mPoints[triple.b],
-                    mPoints[triple.c]));
-        }
-        return triangles;
-    }
-
-    public ArrayList<Segment> resolveSegments() {
-        ArrayList<Segment> segments = new ArrayList<>();
-        for(IntPair vertexPair : getEdges()) {
-            segments.add(new Segment(mPoints[vertexPair.a], mPoints[vertexPair.b]));
-        }
-        return segments;
+    public Iterable<Triangle> getTriangles() {
+        return mTriangles;
     }
 }

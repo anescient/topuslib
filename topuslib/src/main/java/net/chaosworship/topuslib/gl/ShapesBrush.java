@@ -5,7 +5,6 @@ import android.support.annotation.ColorInt;
 
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
-import net.chaosworship.topuslib.geom2d.Segment;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 
@@ -63,10 +62,6 @@ public class ShapesBrush extends Brush {
         Vec2 b2 = b.difference(unit);
         mTrianglesBrush.addTriangle(a1, a2, b1, mColor);
         mTrianglesBrush.addTriangle(a2, b1, b2, mColor);
-    }
-
-    public void drawSegment(Segment s, float width) {
-        drawSegment(s.a, s.b, width);
     }
 
     public void drawTriangle(Triangle triangle, float lineWidth) {

@@ -25,8 +25,6 @@ public class DelaunayBench extends TimedRunner implements IntPairConsumer {
             points.add(randomPoint());
             triangulator.triangulate(points);
 
-            triangulator.putEdges(this);
-
             //triangulator.getEdgeGraph(graph);
         }
     }
@@ -36,7 +34,7 @@ public class DelaunayBench extends TimedRunner implements IntPairConsumer {
     }
 
     @Override
-    public void putIntPair(int a, int b) {
+    public void addIntPair(int a, int b) {
 
     }
 }

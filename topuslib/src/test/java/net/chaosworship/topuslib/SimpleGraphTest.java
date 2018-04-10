@@ -136,7 +136,7 @@ public abstract class SimpleGraphTest {
         final HashSet<IntPair> pairs = new HashSet<>();
         IntPairConsumer consumer = new IntPairConsumer() {
             @Override
-            public void putIntPair(int a, int b) {
+            public void addIntPair(int a, int b) {
                 pairs.add(new IntPair(a, b));
             }
         };

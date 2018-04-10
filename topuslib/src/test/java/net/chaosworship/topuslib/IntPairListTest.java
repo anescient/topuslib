@@ -16,32 +16,32 @@ public class IntPairListTest {
         assertTrue(ipl.getPairCount() == 0);
         IntPairConsumer consumer = new IntPairConsumer() {
             @Override
-            public void putIntPair(int a, int b) {
+            public void addIntPair(int a, int b) {
                 fail();
             }
         };
-        ipl.putPairs(consumer);
+        ipl.outputPairs(consumer);
     }
 
     @Test
     public void basicallyWorks() {
         IntPairList ipl = new IntPairList();
         ipl.add(1, 2);
-        ipl.putIntPair(3, 4);
+        ipl.addIntPair(3, 4);
         assertTrue(ipl.getPairCount() == 2);
         IntPairConsumer counter = new IntPairConsumer() {
             int x = 1;
             @Override
-            public void putIntPair(int a, int b) {
+            public void addIntPair(int a, int b) {
                 assertTrue(a == x++);
                 assertTrue(b == x++);
             }
         };
-        ipl.putPairs(counter);
+        ipl.outputPairs(counter);
         ipl.clear();
-        ipl.putIntPair(5, 6);
-        ipl.putIntPair(7, 8);
+        ipl.addIntPair(5, 6);
+        ipl.addIntPair(7, 8);
         ipl.add(9, 10);
-        ipl.putPairs(counter);
+        ipl.outputPairs(counter);
     }
 }
