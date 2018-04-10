@@ -164,11 +164,14 @@ public class Vec2 implements Cloneable {
     // q is expected to be in [0, 1]
     // produce point along the line from a to b
     // q=0 gives a, q=1 gives b, q=0.5 gives midpoint of ab
+    public Vec2 setMix(Vec2 a, Vec2 b, float q) {
+        x = a.x + q * (b.x - a.x);
+        y = a.y + q * (b.y - a.y);
+        return this;
+    }
+
     public static Vec2 mix(Vec2 a, Vec2 b, float q) {
-        Vec2 v = new Vec2();
-        v.x = a.x + q * (b.x - a.x);
-        v.y = a.y + q * (b.y - a.y);
-        return v;
+        return new Vec2().setMix(a, b, q);
     }
 
     public Vec2 negate() {
