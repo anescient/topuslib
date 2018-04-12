@@ -165,7 +165,7 @@ public class MatrixSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putEdges(IntPairConsumer consumer) {
+    public void outputEdges(IntPairConsumer consumer) {
         int a = mVertices.nextSetBit(0);
         while(a >= 0) {
             BitSet aNeighbors = mNeighborSets[a];

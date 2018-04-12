@@ -148,7 +148,7 @@ public class HashSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putEdges(IntPairConsumer consumer) {
+    public void outputEdges(IntPairConsumer consumer) {
         for(int a : mNeighborSets.keySet()) {
             for(int b : mNeighborSets.get(a)) {
                 if(a < b) {

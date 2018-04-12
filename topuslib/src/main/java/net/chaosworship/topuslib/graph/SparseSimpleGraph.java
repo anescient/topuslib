@@ -142,7 +142,7 @@ public class SparseSimpleGraph implements SimpleGraph {
     }
 
     @Override
-    public void putEdges(IntPairConsumer consumer) {
+    public void outputEdges(IntPairConsumer consumer) {
         for(int i = 0; i < mNeighborSets.size(); i++) {
             int a = mNeighborSets.keyAt(i);
             SparseBooleanArray aNeighbors = mNeighborSets.valueAt(i);

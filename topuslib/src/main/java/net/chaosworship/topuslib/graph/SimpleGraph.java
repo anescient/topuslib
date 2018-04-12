@@ -33,6 +33,6 @@ public interface SimpleGraph extends IntPairConsumer {
 
     ArrayList<IntPair> getEdges();
 
-    void putEdges(IntPairConsumer consumer);
+    void outputEdges(IntPairConsumer consumer);
 
 }
