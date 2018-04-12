@@ -22,6 +22,8 @@
         </activity>
         <activity android:name=".InputTestActivity">
         </activity>
+        <activity android:name=".BitmapGenActivity">
+        </activity>
     </application>
 
 </manifest>

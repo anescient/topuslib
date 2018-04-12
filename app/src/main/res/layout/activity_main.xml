@@ -33,4 +33,12 @@
         android:text="input test"
         android:onClick="startInputTest"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="50dp"
+        android:paddingBottom="50dp"
+        android:text="bitmap generator test"
+        android:onClick="startBitmapGenTest"/>
+
 </android.support.v7.widget.LinearLayoutCompat>

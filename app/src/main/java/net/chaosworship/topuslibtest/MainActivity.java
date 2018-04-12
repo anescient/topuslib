@@ -29,4 +29,8 @@ public class MainActivity extends AppCompatActivity {
     public void startInputTest(View view) {
         startActivity(new Intent(this, InputTestActivity.class));
     }
+
+    public void startBitmapGenTest(View view) {
+        startActivity(new Intent(this, BitmapGenActivity.class));
+    }
 }

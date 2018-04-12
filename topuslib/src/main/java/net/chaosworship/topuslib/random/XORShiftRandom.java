@@ -9,6 +9,10 @@ public class XORShiftRandom extends Random {
     public XORShiftRandom() {
     }
 
+    public XORShiftRandom(long seed) {
+        this.seed = seed;
+    }
+
     protected int next(int nbits) {
         // N.B. Not thread-safe!
         long x = this.seed;
