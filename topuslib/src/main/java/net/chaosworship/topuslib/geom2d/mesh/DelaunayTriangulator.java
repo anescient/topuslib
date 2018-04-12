@@ -1,6 +1,5 @@
 package net.chaosworship.topuslib.geom2d.mesh;
 
-import net.chaosworship.topuslib.BuildConfig;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
@@ -18,7 +17,9 @@ public class DelaunayTriangulator {
 
     ////////////////////////////////////////////////
 
-    public static class NumericalFailure extends Exception {};
+    // thrown if an error is detected during the triangulation process
+    // this is usually because of bad luck with floating point
+    public static class NumericalFailure extends Exception {}
 
     ////////////////////////////////////////////////
 
@@ -128,7 +129,7 @@ public class DelaunayTriangulator {
                     triangulation.addEdge(vertexA, vertexB);
                 }
                 if(vertexC < vertexA && vertexA <= maxVertex) {
-                    triangulation.addEdge(vertexA, vertexC);
+                    triangulation.addEdge(vertexC, vertexA);
                 }
                 if(vertexB < vertexC && vertexC <= maxVertex) {
                     triangulation.addEdge(vertexB, vertexC);
@@ -181,11 +182,7 @@ public class DelaunayTriangulator {
             } else if(adjacentCA == was) {
                 adjacentCA = is;
             } else {
-                if(BuildConfig.DEBUG) {
-                    throw new AssertionError();
-                } else {
-                    throw new NumericalFailure();
-                }
+                throw new NumericalFailure();
             }
         }
 
