@@ -69,7 +69,6 @@ public class Loader {
             mHashcode = mShaderV.hashCode() ^ mShaderF.hashCode();
         }
 
-
         @Override
         public boolean equals(Object rhs) {
             if(rhs == null || !this.getClass().equals(rhs.getClass())) {
