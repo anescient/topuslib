@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib.geom2d.mesh;
 
+import net.chaosworship.topuslib.BuildConfig;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
@@ -14,6 +15,10 @@ import java.util.Collection;
 public class DelaunayTriangulator {
 
     private static final boolean DEBUG_VALIDATEADJACENT = false;
+
+    ////////////////////////////////////////////////
+
+    public static class NumericalFailure extends Exception {};
 
     ////////////////////////////////////////////////
 
@@ -167,7 +172,7 @@ public class DelaunayTriangulator {
             }
         }
 
-        private void replaceAdjacent(TriangleNode was, TriangleNode is) {
+        private void replaceAdjacent(TriangleNode was, TriangleNode is) throws NumericalFailure {
             // assert was != is
             if(adjacentAB == was) {
                 adjacentAB = is;
@@ -176,11 +181,15 @@ public class DelaunayTriangulator {
             } else if(adjacentCA == was) {
                 adjacentCA = is;
             } else {
-                throw new AssertionError();
+                if(BuildConfig.DEBUG) {
+                    throw new AssertionError();
+                } else {
+                    throw new NumericalFailure();
+                }
             }
         }
 
-        private void insertPoint(int pr) {
+        private void insertPoint(int pr) throws NumericalFailure {
             if(isLeaf()) {
                 TriangleNode childAB = children[0] = getTriangleNode().set(vertexA, vertexB, pr);
                 TriangleNode childBC = children[1] = getTriangleNode().set(pr, vertexB, vertexC);
@@ -244,7 +253,7 @@ public class DelaunayTriangulator {
             }
         }
 
-        private void legalizeEdge(int pr, int pi, int pj, TriangleNode tn_i_j_k) {
+        private void legalizeEdge(int pr, int pi, int pj, TriangleNode tn_i_j_k) throws NumericalFailure {
             if(Circumcircle.contains(tn_i_j_k.triangle, mPoints[pr])) {
 
                 // internalize triangles r-i-j and i-j-k
@@ -401,7 +410,7 @@ public class DelaunayTriangulator {
     }
 
     // todo maybe retriangulate, using same Vec2 objects with new values
-    public Triangulation triangulate(Collection<Vec2> points) {
+    public Triangulation triangulate(Collection<Vec2> points) throws NumericalFailure {
         int n = points.size();
         if(n < 3) {
             throw new IllegalArgumentException();

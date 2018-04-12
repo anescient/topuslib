@@ -23,7 +23,9 @@ public class DelaunayBench extends TimedRunner implements IntPairConsumer {
         }
         for(int i = 0; i < 400; i++) {
             points.add(randomPoint());
-            triangulator.triangulate(points);
+            try {
+                triangulator.triangulate(points);
+            } catch (DelaunayTriangulator.NumericalFailure ignored) {}
 
             //triangulator.getEdgeGraph(graph);
         }

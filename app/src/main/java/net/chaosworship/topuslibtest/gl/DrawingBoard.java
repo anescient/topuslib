@@ -93,7 +93,10 @@ public class DrawingBoard
         brush.drawCircle(c, 0.3f);
 
         DelaunayTriangulator dt = new DelaunayTriangulator();
-        Triangulation triangulation = dt.triangulate(points);
+        Triangulation triangulation = null;
+        try {
+            triangulation = dt.triangulate(points);
+        } catch (DelaunayTriangulator.NumericalFailure ignored) {}
 
         brush.setColor(Color.BLUE);
         brush.setAlpha(0.2f);
