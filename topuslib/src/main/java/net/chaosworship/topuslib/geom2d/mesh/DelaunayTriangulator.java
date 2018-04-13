@@ -106,10 +106,6 @@ public class DelaunayTriangulator {
             return children[0] == null; // implies other children are null, too
         }
 
-        private boolean contains(int pi) {
-            return triangle.contains(mPoints[pi]);
-        }
-
         private void getLeafTriangles(Collection<Triangle> triangles, int maxVertex) {
             if(breakLeafIteration)
                 return;
@@ -368,8 +364,9 @@ public class DelaunayTriangulator {
             // because points sometimes fall on open boundary, in neither half-plane
             // i.e. !inHalfPlane(a,b) does not imply inHalfPlane(b,a)
 
+            Vec2 p = mPoints[pi];
+
             if(tripleSplit != null) {
-                Vec2 p = mPoints[pi];
                 if(p.inHalfPlane(triangle.pointA, tripleSplit)) {
                     if(p.inHalfPlane(triangle.pointB, tripleSplit)) {
                         return children[1];
@@ -388,7 +385,6 @@ public class DelaunayTriangulator {
             if(flipSplitA != null) {
                 if(flipSplitB == null || children[2] != null)
                     throw new AssertionError();
-                Vec2 p = mPoints[pi];
                 if(p.inHalfPlane(flipSplitA, flipSplitB)) {
                     return children[1];
                 }
@@ -399,7 +395,7 @@ public class DelaunayTriangulator {
 
             for(int childi = 0; childi < 3; childi++) {
                 TriangleNode child = children[childi];
-                if(child != null && child.contains(pi)) {
+                if(child != null && child.triangle.contains(p)) {
                     return child;
                 }
             }
@@ -407,7 +403,6 @@ public class DelaunayTriangulator {
             // otherwise, no luck. the point must be on an unlucky boundary or something.
             // todo: expose this case in a test and then deal with it here
             // for now just use closest-to-bound
-            Vec2 p = mPoints[pi];
             int closesti = 0;
             float closestDist = children[0].triangle.distanceSquaredFromBound(p);
             for(int childi = 1; childi < 3; childi++) {

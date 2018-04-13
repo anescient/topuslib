@@ -51,7 +51,10 @@ public class Triangle {
     }
 
     public boolean contains(Vec2 point) {
-        return contains(pointA, pointB, pointC, point);
+        boolean b1 = point.inHalfPlane(pointA, pointB);
+        boolean b2 = point.inHalfPlane(pointB, pointC);
+        boolean b3 = point.inHalfPlane(pointC, pointA);
+        return (b1 == b2) && (b2 == b3);
     }
 
     public boolean isDegenerate() {
@@ -82,13 +85,6 @@ public class Triangle {
     public static float distanceSquaredFromBound(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
         Vec2 closest = closestPointOnBound(a, b, c, p).getClosestOnAB();
         return closest.subtract(p).magnitudeSq();
-    }
-
-    private static boolean contains(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
-        boolean b1 = p.inHalfPlane(a, b);
-        boolean b2 = p.inHalfPlane(b, c);
-        boolean b3 = p.inHalfPlane(c, a);
-        return (b1 == b2) && (b2 == b3);
     }
 
     @SuppressWarnings("WeakerAccess")
