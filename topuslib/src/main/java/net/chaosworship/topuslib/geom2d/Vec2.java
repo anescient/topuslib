@@ -322,4 +322,12 @@ public class Vec2 implements Cloneable {
         x = xx;
         return this;
     }
+
+    public boolean inHalfPlane(Vec2 a, Vec2 b) {
+        return ((x - b.x) * (a.y - b.y) - (a.x - b.x) * (y - b.y)) < 0;
+    }
+
+    public static boolean inHalfPlane(Vec2 p, Vec2 a, Vec2 b) {
+        return ((p.x - b.x) * (a.y - b.y) - (a.x - b.x) * (p.y - b.y)) < 0;
+    }
 }

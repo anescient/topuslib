@@ -84,14 +84,10 @@ public class Triangle {
         return closest.subtract(p).magnitudeSq();
     }
 
-    private static boolean inHalfPlane(Vec2 p, Vec2 a, Vec2 b) {
-        return ((p.x - b.x) * (a.y - b.y) - (a.x - b.x) * (p.y - b.y)) < 0;
-    }
-
     private static boolean contains(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
-        boolean b1 = inHalfPlane(p, a, b);
-        boolean b2 = inHalfPlane(p, b, c);
-        boolean b3 = inHalfPlane(p, c, a);
+        boolean b1 = p.inHalfPlane(a, b);
+        boolean b2 = p.inHalfPlane(b, c);
+        boolean b3 = p.inHalfPlane(c, a);
         return (b1 == b2) && (b2 == b3);
     }
 
