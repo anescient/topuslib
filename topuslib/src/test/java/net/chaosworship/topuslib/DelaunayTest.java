@@ -25,6 +25,23 @@ import static junit.framework.Assert.*;
 
 public class DelaunayTest {
 
+    private static class EdgeSetLoader implements IntPairConsumer {
+        HashSet<IntPair> mPairSet;
+        int mCount;
+        EdgeSetLoader(HashSet<IntPair> pairSet) {
+            mPairSet = pairSet;
+            mCount = 0;
+        }
+        @Override
+        public void addIntPair(int a, int b) {
+            mCount++;
+            assertFalse(a == b);
+            IntPair pair = IntPair.sorted(a, b);
+            assertFalse(mPairSet.contains(pair));
+            mPairSet.add(pair);
+        }
+    }
+
     @Test
     public void edgeEnumeration() throws DelaunayTriangulator.NumericalFailure {
         SuperRandom random = new SuperRandom(1234);
@@ -38,13 +55,9 @@ public class DelaunayTest {
             triangulator.triangulate(points);
             Triangulation triangulation = triangulator.getTriangulation();
 
-            /*
             HashSet<IntPair> edgeSetA = new HashSet<>();
-            Triangulation triangulation = triangulator.getTriangulation();
-            for(IntPair ip : triangulation.getEdges()) {
-                edgeSetA.add(IntPair.sorted(ip.a, ip.b));
-            }
-*/
+            EdgeSetLoader setLoader = new EdgeSetLoader(edgeSetA);
+            triangulator.outputDelaunayEdges(setLoader);
 
             HashSet<IntPair> edgeSetB = new HashSet<>();
             SimpleGraph graph = new HashSimpleGraph();
@@ -54,15 +67,10 @@ public class DelaunayTest {
             }
 
             final HashSet<IntPair> edgeSetC = new HashSet<>();
-            IntPairConsumer consumer = new IntPairConsumer() {
-                @Override
-                public void addIntPair(int a, int b) {
-                    edgeSetC.add(IntPair.sorted(a, b));
-                }
-            };
-            triangulation.outputEdges(consumer);
+            setLoader = new EdgeSetLoader(edgeSetC);
+            triangulation.outputEdges(setLoader);
 
-//            assertTrue(CollectionTester.intPairSetsEqual(edgeSetA, edgeSetB));
+            assertTrue(CollectionTester.intPairSetsEqual(edgeSetA, edgeSetB));
             assertTrue(CollectionTester.intPairSetsEqual(edgeSetB, edgeSetC));
         }
     }

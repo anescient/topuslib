@@ -160,8 +160,8 @@ public class DelaunayTriangulator {
                 if(vertexA < vertexB && includeA && includeB) {
                     consumer.addIntPair(vertexA, vertexB);
                 }
-                if(vertexA < vertexC && includeA && includeC) {
-                    consumer.addIntPair(vertexA, vertexC);
+                if(vertexC < vertexA && includeA && includeC) {
+                    consumer.addIntPair(vertexC, vertexA);
                 }
                 if(vertexB < vertexC && includeB && includeC) {
                     consumer.addIntPair(vertexB, vertexC);
