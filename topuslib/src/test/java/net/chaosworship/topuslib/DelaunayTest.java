@@ -24,7 +24,7 @@ import static junit.framework.Assert.*;
 public class DelaunayTest {
 
     @Test
-    public void edgeEnumeration() {
+    public void edgeEnumeration() throws DelaunayTriangulator.NumericalFailure {
         SuperRandom random = new SuperRandom(1234);
         DelaunayTriangulator triangulator = new DelaunayTriangulator();
         ArrayList<Vec2> points = new ArrayList<>();
@@ -65,7 +65,7 @@ public class DelaunayTest {
     }
 
     @Test
-    public void isDelaunay() {
+    public void isDelaunay() throws DelaunayTriangulator.NumericalFailure {
         SuperRandom random = new SuperRandom(1234);
         ArrayList<Vec2> points = new ArrayList<>();
         DelaunayTriangulator triangulator = new DelaunayTriangulator();

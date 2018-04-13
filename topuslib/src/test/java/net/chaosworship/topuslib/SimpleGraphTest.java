@@ -140,7 +140,7 @@ public abstract class SimpleGraphTest {
                 pairs.add(new IntPair(a, b));
             }
         };
-        g.putEdges(consumer);
+        g.outputEdges(consumer);
         return pairs;
     }
 
