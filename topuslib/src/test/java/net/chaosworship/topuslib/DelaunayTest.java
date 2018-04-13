@@ -2,6 +2,7 @@ package net.chaosworship.topuslib;
 
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
+import net.chaosworship.topuslib.geom2d.SegmentIntersection;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.mesh.DelaunayTriangulator;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import static junit.framework.Assert.*;
 
@@ -74,8 +76,33 @@ public class DelaunayTest {
             for(int i = 0; i < pointCount; i++) {
                 points.add(new Vec2(random.nextFloat(), random.nextFloat()));
             }
-            triangulator.triangulate(points);
+            assertTriangulation(triangulator.triangulate(points), points);
             assertDelaunny(points, triangulator.getTriangles());
+        }
+    }
+
+    private static void assertTriangulation(Triangulation triangulation, List<Vec2> points) {
+        final HashSet<IntPair> pairSet = new HashSet<>();
+        IntPairConsumer setFiller = new IntPairConsumer() {
+            @Override
+            public void addIntPair(int a, int b) {
+                IntPair pair = new IntPair(a, b);
+                assertFalse(pairSet.contains(pair));
+                pairSet.add(pair);
+            }
+        };
+        ArrayList<IntPair> pairList = new ArrayList<>(pairSet);
+        for(int i = 0; i < pairList.size(); i++) {
+            IntPair pi = pairList.get(i);
+            for(int j = i + 1; j < pairList.size(); j++) {
+                IntPair pj = pairList.get(j);
+                Vec2 a = points.get(pi.a);
+                Vec2 b = points.get(pi.b);
+                Vec2 c = points.get(pj.a);
+                Vec2 d = points.get(pj.b);
+                SegmentIntersection intersection = new SegmentIntersection(a, b, c, d);
+                assertFalse(intersection.segmentsIntersect());
+            }
         }
     }
 
