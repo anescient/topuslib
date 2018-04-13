@@ -50,6 +50,10 @@ public class SegmentIntersection {
         }
     }
 
+    public static boolean connected(Vec2 A, Vec2 B, Vec2 C, Vec2 D) {
+        return A.equals(C) || B.equals(C) || A.equals(D) || B.equals(D);
+    }
+
     private static boolean clockwise(Vec2 P, Vec2 Q, Vec2 R) {
         return (Q.y - P.y) * (R.x - Q.x) - (Q.x - P.x) * (R.y - Q.y) > 0;
     }

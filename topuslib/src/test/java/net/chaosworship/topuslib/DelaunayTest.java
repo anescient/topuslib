@@ -93,6 +93,7 @@ public class DelaunayTest {
                 pairSet.add(pair);
             }
         };
+        triangulation.outputEdges(setFiller);
         ArrayList<IntPair> pairList = new ArrayList<>(pairSet);
         for(int i = 0; i < pairList.size(); i++) {
             IntPair pi = pairList.get(i);
@@ -103,7 +104,7 @@ public class DelaunayTest {
                 Vec2 c = points.get(pj.a);
                 Vec2 d = points.get(pj.b);
                 SegmentIntersection intersection = new SegmentIntersection(a, b, c, d);
-                assertFalse(intersection.segmentsIntersect());
+                assertFalse(intersection.segmentsIntersect() && !SegmentIntersection.connected(a, b, c, d));
             }
         }
     }
