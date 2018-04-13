@@ -95,7 +95,8 @@ public class DrawingBoard
         DelaunayTriangulator dt = new DelaunayTriangulator();
         Triangulation triangulation = null;
         try {
-            triangulation = dt.triangulate(points);
+            dt.triangulate(points);
+            triangulation = dt.getTriangulation();
         } catch (DelaunayTriangulator.NumericalFailure ignored) {}
 
         brush.setColor(Color.BLUE);

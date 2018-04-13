@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib.geom2d.mesh;
 
+import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.geom2d.Circumcircle;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
@@ -147,6 +148,33 @@ public class DelaunayTriangulator {
                     child.outputTriangulation(triangulation, maxVertex);
                 }
             }
+        }
+
+        private void outputEdges(IntPairConsumer consumer, int maxVertex) {
+            if(breakLeafIteration)
+                return;
+            if(isLeaf()) {
+                boolean includeA = vertexA <= maxVertex;
+                boolean includeB = vertexB <= maxVertex;
+                boolean includeC = vertexC <= maxVertex;
+                if(vertexA < vertexB && includeA && includeB) {
+                    consumer.addIntPair(vertexA, vertexB);
+                }
+                if(vertexA < vertexC && includeA && includeC) {
+                    consumer.addIntPair(vertexA, vertexC);
+                }
+                if(vertexB < vertexC && includeB && includeC) {
+                    consumer.addIntPair(vertexB, vertexC);
+                }
+            } else {
+                for(int childi = 0; childi < 3; childi++) {
+                    TriangleNode child = children[childi];
+                    if(child != null) {
+                        child.outputEdges(consumer, maxVertex);
+                    }
+                }
+            }
+
         }
 
         private void appendEdgeGraph(SimpleGraph graph, int maxVertex) {
@@ -456,8 +484,7 @@ public class DelaunayTriangulator {
         mNodePool = newPool;
     }
 
-    // todo maybe retriangulate, using same Vec2 objects with new values
-    public Triangulation triangulate(Collection<Vec2> points) throws NumericalFailure {
+    public void triangulate(Collection<Vec2> points) throws NumericalFailure {
         int n = points.size();
         if(n < 3) {
             throw new IllegalArgumentException();
@@ -501,7 +528,19 @@ public class DelaunayTriangulator {
             if(DEBUG_VALIDATEADJACENT)
                 mTriangulationRoot.validateAdjacent();
         }
+    }
 
+    public void outputDelaunayEdges(IntPairConsumer consumer) {
+        if(mTriangulationRoot == null) {
+            throw new IllegalStateException();
+        }
+        mTriangulationRoot.outputEdges(consumer, mPoints.length - 4);
+    }
+
+    public Triangulation getTriangulation() throws NumericalFailure {
+        if(mTriangulationRoot == null) {
+            throw new IllegalStateException();
+        }
         mTriangulation.init(mPoints);
         mTriangulationRoot.outputTriangulation(mTriangulation, mPoints.length - 4);
         return mTriangulation;

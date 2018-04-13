@@ -35,7 +35,8 @@ public class DelaunayTest {
         }
         for(int i = 0; i < 20; i++) {
             points.add(new Vec2(random.nextFloat(), random.nextFloat()));
-            Triangulation triangulation = triangulator.triangulate(points);
+            triangulator.triangulate(points);
+            Triangulation triangulation = triangulator.getTriangulation();
 
             /*
             HashSet<IntPair> edgeSetA = new HashSet<>();
@@ -76,7 +77,8 @@ public class DelaunayTest {
             for(int i = 0; i < pointCount; i++) {
                 points.add(new Vec2(random.nextFloat(), random.nextFloat()));
             }
-            assertTriangulation(triangulator.triangulate(points), points);
+            triangulator.triangulate(points);
+            assertTriangulation(triangulator.getTriangulation(), points);
             assertDelaunny(points, triangulator.getTriangles());
         }
     }
