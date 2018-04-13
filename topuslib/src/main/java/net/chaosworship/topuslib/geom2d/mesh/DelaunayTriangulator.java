@@ -33,6 +33,9 @@ public class DelaunayTriangulator {
         private TriangleNode adjacentAB; // node with triangle sharing edge AB
         private TriangleNode adjacentBC;
         private TriangleNode adjacentCA;
+        private Vec2 tripleSplit; // point used to split this triangle to 3 children
+        private Vec2 flipSplitA; // points used to flip an edge and divide this triangle
+        private Vec2 flipSplitB;
 
         // do not descend this when iterating leaf triangles
         // some nodes have multiple parents
@@ -58,6 +61,9 @@ public class DelaunayTriangulator {
             adjacentAB = null;
             adjacentBC = null;
             adjacentCA = null;
+            tripleSplit = null;
+            flipSplitA = null;
+            flipSplitB = null;
             breakLeafIteration = false;
             return this;
         }
@@ -187,6 +193,17 @@ public class DelaunayTriangulator {
         }
 
         private void insertPoint(int pr) throws NumericalFailure {
+
+            /*
+            Vec2 p = mPoints[pr];
+            if(p.inHalfPlane(triangle.pointA, triangle.pointB))
+                throw new AssertionError();
+            if(p.inHalfPlane(triangle.pointB, triangle.pointC))
+                throw new AssertionError();
+            if(p.inHalfPlane(triangle.pointC, triangle.pointA))
+                throw new AssertionError();
+            */
+
             if(isLeaf()) {
                 TriangleNode childAB = children[0] = getTriangleNode().set(vertexA, vertexB, pr);
                 TriangleNode childBC = children[1] = getTriangleNode().set(pr, vertexB, vertexC);
@@ -218,6 +235,8 @@ public class DelaunayTriangulator {
                 adjacentAB = null;
                 adjacentBC = null;
                 adjacentCA = null;
+
+                tripleSplit = mPoints[pr];
 
                 if(childAB.adjacentAB != null) {
                     childAB.legalizeEdge(pr, vertexA, vertexB, childAB.adjacentAB);
@@ -263,6 +282,9 @@ public class DelaunayTriangulator {
 
                 // assert not tn_i_j_k.isLeaf()
                 // assert not tn_r_j_i.isLeaf()
+
+                tn_r_j_i.flipSplitA = mPoints[pk];
+                tn_r_j_i.flipSplitB = mPoints[pr];
 
                 TriangleNode tn_i_k_r = getTriangleNode().set(pi, pk, pr);
                 TriangleNode tn_r_k_j = getTriangleNode().set(pr, pk, pj);
@@ -341,6 +363,39 @@ public class DelaunayTriangulator {
             }
 
             // assert not a leaf
+
+            // these half-plane tests are done forward and backward
+            // because points sometimes fall on open boundary, in neither half-plane
+            // i.e. !inHalfPlane(a,b) does not imply inHalfPlane(b,a)
+
+            if(tripleSplit != null) {
+                Vec2 p = mPoints[pi];
+                if(p.inHalfPlane(triangle.pointA, tripleSplit)) {
+                    if(p.inHalfPlane(triangle.pointB, tripleSplit)) {
+                        return children[1];
+                    } else if(p.inHalfPlane(tripleSplit, triangle.pointB)) {
+                        return children[0];
+                    }
+                } else if(p.inHalfPlane(tripleSplit, triangle.pointA)) {
+                    if(p.inHalfPlane(triangle.pointC, tripleSplit)) {
+                        return children[2];
+                    } else if(p.inHalfPlane(tripleSplit, triangle.pointC)) {
+                        return children[1];
+                    }
+                }
+            }
+
+            if(flipSplitA != null) {
+                if(flipSplitB == null || children[2] != null)
+                    throw new AssertionError();
+                Vec2 p = mPoints[pi];
+                if(p.inHalfPlane(flipSplitA, flipSplitB)) {
+                    return children[1];
+                }
+                if(p.inHalfPlane(flipSplitB, flipSplitA)) {
+                    return children[0];
+                }
+            }
 
             for(int childi = 0; childi < 3; childi++) {
                 TriangleNode child = children[childi];
