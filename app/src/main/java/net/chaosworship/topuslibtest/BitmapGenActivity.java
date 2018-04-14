@@ -6,8 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
-import net.chaosworship.topuslib.imagegen.PerlinNoise;
-import net.chaosworship.topuslib.imagegen.WhiteNoise;
+import net.chaosworship.topuslib.imagegen.HueMap;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 
@@ -26,7 +25,9 @@ public class BitmapGenActivity extends AppCompatActivity {
 
     public void generateBitmap(View view) {
         //Bitmap bmp = WhiteNoise.generateRGB(512, 512, sRandom.nextLong());
-        Bitmap bmp = PerlinNoise.generateGrayscale(512, 512, sRandom.nextDouble(), 5);
+        //Bitmap bmp = PerlinNoise.generateGrayscale(512, 512, sRandom.nextDouble(), 5);
+        //Bitmap bmp = HueMap.generateHueCycle(256, 1.0f);
+        Bitmap bmp = HueMap.generateHueBlackToWhite(256, 64);
         mOutputImageView.setImageBitmap(bmp);
     }
 }
