@@ -163,20 +163,24 @@ public class MotionEventConverter {
     // positions of first events
     private final ArrayList<Vec2> mDownPositions;
 
+    private final ArrayList<Pointer> mEmptyPointerList;
+    private final ArrayList<Vec2> mEmptyVec2List;
+
     @SuppressLint("UseSparseArrays")
     public MotionEventConverter() {
         mActivePointers = new HashMap<>();
         mFinishedPointers = new ArrayList<>();
         mDownPositions = new ArrayList<>();
-    }
-
-    // return true if dumpPointers, dumpDowns, etc. will return anything
-    public boolean hasEvents() {
-        return !(mFinishedPointers.isEmpty() && mActivePointers.isEmpty() && mDownPositions.isEmpty());
+        mEmptyPointerList = new ArrayList<>();
+        mEmptyVec2List = new ArrayList<>();
     }
 
     // get all active and finished pointers, removing finished pointers
     public ArrayList<Pointer> dumpPointers() {
+        if(mFinishedPointers.isEmpty() && mActivePointers.isEmpty()) {
+            mEmptyPointerList.clear();
+            return mEmptyPointerList;
+        }
         ArrayList<Pointer> pointers;
         // if finished pointers are taken first there shouldn't be any duplicates
         // at worst a pointer will sneak from active to finished and get picked up later
@@ -191,6 +195,10 @@ public class MotionEventConverter {
     }
 
     public ArrayList<Vec2> dumpDowns() {
+        if(mDownPositions.isEmpty()) {
+            mEmptyVec2List.clear();
+            return mEmptyVec2List;
+        }
         ArrayList<Vec2> downPositions;
         synchronized(mDownPositions) {
             downPositions = new ArrayList<>(mDownPositions);
