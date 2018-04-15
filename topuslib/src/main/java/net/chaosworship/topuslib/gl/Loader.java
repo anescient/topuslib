@@ -1,11 +1,11 @@
 package net.chaosworship.topuslib.gl;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLUtils;
 import android.os.Environment;
+import android.util.SparseIntArray;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -92,18 +92,17 @@ public class Loader {
     protected final Context mContext;
     private final HashMap<String, Integer> mPrograms;
     private final HashMap<LiteralProgram, Integer> mLiteralPrograms;
-    private final HashMap<Integer, Integer> mTextures;
+    private final SparseIntArray mTextures;
     private final HashMap<String, FrameBuffer> mFrameBuffers;
 
     private ShapesBrush mShapesBrush;
     private TrianglesBrush mTrianglesBrush;
 
-    @SuppressLint("UseSparseArrays")
     public Loader(Context context) {
         mContext = context;
         mPrograms = new HashMap<>();
         mLiteralPrograms = new HashMap<>();
-        mTextures = new HashMap<>();
+        mTextures = new SparseIntArray();
         mFrameBuffers = new HashMap<>();
         invalidateAll();
     }
@@ -176,7 +175,7 @@ public class Loader {
     }
 
     public int getTexture(int resourceId) {
-        if(!mTextures.containsKey(resourceId)) {
+        if(mTextures.indexOfKey(resourceId) < 0) {
             try {
                 mTextures.put(resourceId, loadTexture(resourceId));
             } catch (LoaderException e) {
