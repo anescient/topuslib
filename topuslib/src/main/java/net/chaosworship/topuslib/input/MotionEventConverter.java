@@ -87,6 +87,7 @@ public class MotionEventConverter {
             return new PointerMotionSegment(start.position, end.position, end.timestamp - start.timestamp);
         }
 
+        @SuppressWarnings("WeakerAccess")
         public Vec2 getFirstPosition() {
             return mFirstEvent.position;
         }
@@ -167,6 +168,11 @@ public class MotionEventConverter {
         mActivePointers = new HashMap<>();
         mFinishedPointers = new ArrayList<>();
         mDownPositions = new ArrayList<>();
+    }
+
+    // return true if dumpPointers, dumpDowns, etc. will return anything
+    public boolean hasEvents() {
+        return !(mFinishedPointers.isEmpty() && mActivePointers.isEmpty() && mDownPositions.isEmpty());
     }
 
     // get all active and finished pointers, removing finished pointers
