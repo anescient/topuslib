@@ -24,6 +24,8 @@
         </activity>
         <activity android:name=".BitmapGenActivity">
         </activity>
+        <activity android:name=".WidgetActivity">
+        </activity>
     </application>
 
 </manifest>

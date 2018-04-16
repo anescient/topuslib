@@ -33,4 +33,8 @@ public class MainActivity extends AppCompatActivity {
     public void startBitmapGenTest(View view) {
         startActivity(new Intent(this, BitmapGenActivity.class));
     }
+
+    public void startWidgetTest(View view) {
+        startActivity(new Intent(this, WidgetActivity.class));
+    }
 }

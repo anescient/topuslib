@@ -15,6 +15,7 @@ public class FloatSeekBar extends android.support.v7.widget.AppCompatSeekBar {
 
     public interface OnSeekBarChangeListener {
         void onProgressChanged(float value);
+        void onProgressFinishedChanging(float value);
     }
 
     public FloatSeekBar(Context context) {
@@ -73,7 +74,9 @@ public class FloatSeekBar extends android.support.v7.widget.AppCompatSeekBar {
             public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                listener.onProgressFinishedChanging((float)seekBar.getProgress() / seekBar.getMax());
+            }
         });
     }
 }

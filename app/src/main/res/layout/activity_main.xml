@@ -20,32 +20,35 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="50dp"
-                android:paddingBottom="50dp"
+                style="@style/MainButton"
                 android:text="drawing board"
                 android:onClick="startDrawingBoard"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="50dp"
-                android:paddingBottom="50dp"
+                style="@style/MainButton"
                 android:text="benchmark"
                 android:onClick="startBenchmark"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="50dp"
-                android:paddingBottom="50dp"
+                style="@style/MainButton"
                 android:text="input test"
                 android:onClick="startInputTest"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="50dp"
-                android:paddingBottom="50dp"
+                style="@style/MainButton"
+                android:text="widget test"
+                android:onClick="startWidgetTest"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/MainButton"
                 android:text="bitmap generator test"
                 android:onClick="startBitmapGenTest"/>
 
