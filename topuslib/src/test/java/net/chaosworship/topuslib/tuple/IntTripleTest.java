@@ -1,7 +1,4 @@
-package net.chaosworship.topuslib;
-
-import net.chaosworship.topuslib.tuple.IntPair;
-import net.chaosworship.topuslib.tuple.IntTriple;
+package net.chaosworship.topuslib.tuple;
 
 import org.junit.Test;
 

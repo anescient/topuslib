@@ -7,11 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 
 
-class CollectionTester {
+@SuppressWarnings("WeakerAccess")
+public class CollectionTester {
 
     private CollectionTester() {}
 
-    static boolean hasDuplicateReferences(List list) {
+    public static boolean hasDuplicateReferences(List list) {
         for(int i = 0; i < list.size(); i++) {
             for(int j = i + 1; j < list.size(); j++) {
                 if(list.get(i) == list.get(j)) {
@@ -23,7 +24,7 @@ class CollectionTester {
     }
 
     // return number of occurrences of reference to object
-    static int countReferences(Iterable iterable, Object object) {
+    public static int countReferences(Iterable iterable, Object object) {
         int count = 0;
         for(Object o : iterable) {
             if(o == object) {
@@ -33,7 +34,7 @@ class CollectionTester {
         return count;
     }
 
-    static <T> boolean orderedReferencesEqual(List<T> a, List<T> b) {
+    public static <T> boolean orderedReferencesEqual(List<T> a, List<T> b) {
         if(a.size() != b.size()) {
             return false;
         }
@@ -46,7 +47,7 @@ class CollectionTester {
     }
 
     // check that two lists have identical contents regardless of order
-    static <T> boolean unorderedReferencesEqual(List<T> a, List<T> b) {
+    public static <T> boolean unorderedReferencesEqual(List<T> a, List<T> b) {
         if(a.size() != b.size()) {
             return false;
         }
@@ -59,11 +60,11 @@ class CollectionTester {
     }
 
     // check that two arrays have identical contents regardless of order
-    static <T> boolean unorderedReferencesEqual(T[] a, T[] b) {
+    public static <T> boolean unorderedReferencesEqual(T[] a, T[] b) {
         return unorderedReferencesEqual(Arrays.asList(a), Arrays.asList(b));
     }
 
-    static boolean intSetsEqual(Iterable<Integer> a, Iterable<Integer> b) {
+    public static boolean intSetsEqual(Iterable<Integer> a, Iterable<Integer> b) {
         HashSet<Integer> aSet = new HashSet<>();
         for(Integer aInt : a) {
             if(aSet.contains(aInt)) {
@@ -86,7 +87,7 @@ class CollectionTester {
         return aSet.size() == bSet.size();
     }
 
-    static boolean intPairSetsEqual(Iterable<IntPair> pa, Iterable<IntPair> pb) {
+    public static boolean intPairSetsEqual(Iterable<IntPair> pa, Iterable<IntPair> pb) {
         HashSet<IntPair> aSet = new HashSet<>();
         HashSet<IntPair> bSet = new HashSet<>();
         for(IntPair p : pa) {

@@ -1,7 +1,7 @@
-package net.chaosworship.topuslib;
+package net.chaosworship.topuslib.graph;
 
+import net.chaosworship.topuslib.CollectionTester;
 import net.chaosworship.topuslib.collection.IntPairConsumer;
-import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.tuple.IntPair;
 
 import org.junit.Test;

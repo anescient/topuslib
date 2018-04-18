@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib;
+package net.chaosworship.topuslib.geom2d;
 
 import net.chaosworship.topuslib.math.Angles;
 

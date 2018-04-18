@@ -1,8 +1,4 @@
-package net.chaosworship.topuslib;
-
-
-import net.chaosworship.topuslib.geom2d.Rectangle;
-import net.chaosworship.topuslib.geom2d.Vec2;
+package net.chaosworship.topuslib.geom2d;
 
 import org.junit.Test;
 

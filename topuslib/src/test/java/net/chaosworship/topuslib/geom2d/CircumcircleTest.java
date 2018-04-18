@@ -1,8 +1,5 @@
-package net.chaosworship.topuslib;
+package net.chaosworship.topuslib.geom2d;
 
-import net.chaosworship.topuslib.geom2d.Circle;
-import net.chaosworship.topuslib.geom2d.Circumcircle;
-import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.random.SuperRandom;
 
 import org.junit.Test;

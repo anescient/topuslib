@@ -1,6 +1,6 @@
-package net.chaosworship.topuslib;
+package net.chaosworship.topuslib.random;
 
-import net.chaosworship.topuslib.random.SuperRandom;
+import net.chaosworship.topuslib.CollectionTester;
 
 import org.junit.Test;
 

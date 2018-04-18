@@ -1,7 +1,6 @@
-package net.chaosworship.topuslib;
+package net.chaosworship.topuslib.geom2d;
 
-import net.chaosworship.topuslib.geom2d.Rectangle;
-import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.CollectionTester;
 import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
 import net.chaosworship.topuslib.geom2d.rangesearch.RectangularSearch;
 import net.chaosworship.topuslib.tuple.PointValuePair;

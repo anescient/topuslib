@@ -1,7 +1,4 @@
-package net.chaosworship.topuslib;
-
-import net.chaosworship.topuslib.collection.IntPairConsumer;
-import net.chaosworship.topuslib.collection.IntPairList;
+package net.chaosworship.topuslib.collection;
 
 import org.junit.Test;
 

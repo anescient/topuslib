@@ -1,10 +1,6 @@
-package net.chaosworship.topuslib;
+package net.chaosworship.topuslib.geom2d;
 
-import net.chaosworship.topuslib.geom2d.Circle;
-import net.chaosworship.topuslib.geom2d.Circumcircle;
-import net.chaosworship.topuslib.geom2d.SegmentIntersection;
-import net.chaosworship.topuslib.geom2d.Triangle;
-import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.CollectionTester;
 import net.chaosworship.topuslib.geom2d.mesh.DelaunayTriangulator;
 import net.chaosworship.topuslib.geom2d.mesh.Triangulation;
 import net.chaosworship.topuslib.collection.IntPairConsumer;

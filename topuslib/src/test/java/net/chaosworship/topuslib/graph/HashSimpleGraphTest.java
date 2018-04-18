@@ -1,7 +1,4 @@
-package net.chaosworship.topuslib;
-
-import net.chaosworship.topuslib.graph.HashSimpleGraph;
-import net.chaosworship.topuslib.graph.SimpleGraph;
+package net.chaosworship.topuslib.graph;
 
 
 public class HashSimpleGraphTest extends SimpleGraphTest {
