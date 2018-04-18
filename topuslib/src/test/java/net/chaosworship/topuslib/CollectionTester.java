@@ -33,6 +33,18 @@ class CollectionTester {
         return count;
     }
 
+    static <T> boolean orderedReferencesEqual(List<T> a, List<T> b) {
+        if(a.size() != b.size()) {
+            return false;
+        }
+        for(int i = 0; i < a.size(); i++) {
+            if(a.get(i) != b.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // check that two lists have identical contents regardless of order
     static <T> boolean unorderedReferencesEqual(List<T> a, List<T> b) {
         if(a.size() != b.size()) {
