@@ -1,8 +1,8 @@
 package net.chaosworship.topuslib.geom2d;
 
-
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Circle {
 

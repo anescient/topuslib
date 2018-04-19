@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.imagegen;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
+
 public class PerlinNoise {
 
     private PerlinNoise() {}

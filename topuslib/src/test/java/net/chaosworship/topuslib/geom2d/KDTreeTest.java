@@ -2,7 +2,6 @@ package net.chaosworship.topuslib.geom2d;
 
 import net.chaosworship.topuslib.CollectionTester;
 import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
-import net.chaosworship.topuslib.geom2d.rangesearch.RectangularSearch;
 import net.chaosworship.topuslib.tuple.PointValuePair;
 
 import org.junit.Test;
@@ -17,7 +16,7 @@ import static org.junit.Assert.*;
 
 public class KDTreeTest {
 
-    private static final RectangularSearch<String> mStringTree = new KDTree<>();
+    private static final KDTree<String> mStringTree = new KDTree<>();
 
     @Test
     public void emptySet() {

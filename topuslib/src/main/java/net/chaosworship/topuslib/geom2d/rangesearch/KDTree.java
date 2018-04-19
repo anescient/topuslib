@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class KDTree<T> implements RectangularSearch<T> {
+public class KDTree<T> {
 
     private static class EvenNode<T> {
         DoublySortedPointValues<T> mPointValues;
@@ -148,18 +148,17 @@ public class KDTree<T> implements RectangularSearch<T> {
         mSearchResults = new ArrayList<>();
     }
 
-    @Override
+    // clear and load
     public void load(Collection<PointValuePair<T>> pointValues) {
         mRoot.set(pointValues);
     }
 
-    @Override
+    // if the collection of points/values objects hasn't changed but the points themselves have been altered
     public void reload() {
         mRoot.mPointValues.sort();
         mRoot.update();
     }
 
-    @Override
     public List<T> search(Rectangle area) {
         mSearchResults.clear();
         if(mRoot != null) {
