@@ -1,6 +1,7 @@
 package net.chaosworship.topuslib.collection;
 
 import net.chaosworship.topuslib.CollectionTester;
+import net.chaosworship.topuslib.random.RandomQueue;
 import net.chaosworship.topuslib.random.XORShiftRandom;
 
 import org.junit.Test;

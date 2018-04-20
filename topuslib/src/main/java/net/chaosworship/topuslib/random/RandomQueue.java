@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib.collection;
+package net.chaosworship.topuslib.random;
 
 import java.util.ArrayList;
 import java.util.Random;
