@@ -1,4 +1,4 @@
-package net.chaosworship.topuslibtest.gl;
+package net.chaosworship.topuslibtest.drawingboard;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -16,6 +16,7 @@ import net.chaosworship.topuslib.geom2d.mesh.Triangulation;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
 import net.chaosworship.topuslib.gl.ShapesBrush;
 import net.chaosworship.topuslib.random.SuperRandom;
+import net.chaosworship.topuslibtest.gl.TestLoader;
 
 import java.util.ArrayList;
 

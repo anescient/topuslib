@@ -16,15 +16,15 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".BenchmarkActivity">
+        <activity android:name=".benchmark.BenchmarkActivity">
         </activity>
-        <activity android:name=".DrawingBoardActivity">
+        <activity android:name=".drawingboard.DrawingBoardActivity">
         </activity>
-        <activity android:name=".InputTestActivity">
+        <activity android:name=".inputtest.InputTestActivity">
         </activity>
-        <activity android:name=".BitmapGenActivity">
+        <activity android:name=".bitmapgen.BitmapGenActivity">
         </activity>
-        <activity android:name=".WidgetActivity">
+        <activity android:name=".inputtest.WidgetActivity">
         </activity>
     </application>
 

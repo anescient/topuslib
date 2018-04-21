@@ -1,4 +1,4 @@
-package net.chaosworship.topuslibtest;
+package net.chaosworship.topuslibtest.benchmark;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import net.chaosworship.topuslibtest.R;
 import net.chaosworship.topuslibtest.benchmark.DelaunayBench;
 import net.chaosworship.topuslibtest.benchmark.KDTreeBench;
 import net.chaosworship.topuslibtest.benchmark.TimedRunner;

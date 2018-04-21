@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="net.chaosworship.topuslibtest.InputTestActivity">
+    tools:context="net.chaosworship.topuslibtest.inputtest.InputTestActivity">
 
     <net.chaosworship.topuslibtest.inputtest.InputTestView
         android:id="@+id/inputtestview"

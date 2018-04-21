@@ -6,6 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import net.chaosworship.topuslibtest.benchmark.BenchmarkActivity;
+import net.chaosworship.topuslibtest.bitmapgen.BitmapGenActivity;
+import net.chaosworship.topuslibtest.drawingboard.DrawingBoardActivity;
+import net.chaosworship.topuslibtest.inputtest.InputTestActivity;
+import net.chaosworship.topuslibtest.inputtest.WidgetActivity;
+
 
 @SuppressLint({"SetTextI18n", "DefaultLocale"})
 public class MainActivity extends AppCompatActivity {

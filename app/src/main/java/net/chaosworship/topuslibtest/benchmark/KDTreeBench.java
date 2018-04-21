@@ -4,7 +4,6 @@ import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
 import net.chaosworship.topuslib.tuple.PointValuePair;
-import net.chaosworship.topuslib.geom2d.rangesearch.RectangularSearch;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -19,7 +18,7 @@ public class KDTreeBench extends TimedRunner {
 
     private ArrayList<PointValuePair<String>> mPointValues;
     private ArrayList<Rectangle> mSearchAreas;
-    private RectangularSearch<String> mSearch;
+    private KDTree<String> mSearch;
 
     public KDTreeBench() {
         mPointValues = new ArrayList<>();

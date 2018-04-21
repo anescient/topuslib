@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="net.chaosworship.topuslibtest.WidgetActivity">
+    tools:context="net.chaosworship.topuslibtest.inputtest.WidgetActivity">
 
     <net.chaosworship.topuslib.ui.FloatSeekBar
         android:id="@+id/testseekbar"

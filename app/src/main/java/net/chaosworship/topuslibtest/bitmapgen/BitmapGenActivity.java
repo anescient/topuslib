@@ -1,4 +1,4 @@
-package net.chaosworship.topuslibtest;
+package net.chaosworship.topuslibtest.bitmapgen;
 
 import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import net.chaosworship.topuslib.imagegen.HueMap;
 import net.chaosworship.topuslib.random.SuperRandom;
+import net.chaosworship.topuslibtest.R;
 
 
 public class BitmapGenActivity extends AppCompatActivity {
