@@ -1,6 +1,6 @@
 package net.chaosworship.topuslib.gl;
 
-import net.chaosworship.topuslib.geom2d.Vec2Transformer;
+import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 
 
 public interface ViewTransform {

@@ -1,7 +1,7 @@
 package net.chaosworship.topuslib.input;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.geom2d.Vec2Transformer;
+import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 
 
 public class PointerMotionSegment {

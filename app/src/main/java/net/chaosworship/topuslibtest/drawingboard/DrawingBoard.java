@@ -78,10 +78,6 @@ public class DrawingBoard
         Circle c = new Circle(new Vec2(0, 0), 0.7f);
         brush.drawCircle(c, 0.01f);
 
-        ArrayList<Vec2> points = new ArrayList<>();
-        for(int i = 0; i < 50; i++) {
-
-        }
 
         brush.end();
     }

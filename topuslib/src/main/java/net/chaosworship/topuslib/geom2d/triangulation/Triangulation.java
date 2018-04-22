@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib.geom2d.mesh;
+package net.chaosworship.topuslib.geom2d.triangulation;
 
 import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.collection.IntPairList;

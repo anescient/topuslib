@@ -1,4 +1,7 @@
-package net.chaosworship.topuslib.geom2d;
+package net.chaosworship.topuslib.geom2d.transform;
+
+import net.chaosworship.topuslib.geom2d.Rectangle;
+import net.chaosworship.topuslib.geom2d.Vec2;
 
 
 public class RectangularMapping implements Vec2Transformer {

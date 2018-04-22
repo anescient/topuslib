@@ -1,4 +1,6 @@
-package net.chaosworship.topuslib.geom2d;
+package net.chaosworship.topuslib.geom2d.transform;
+
+import net.chaosworship.topuslib.geom2d.Vec2;
 
 
 // rotate in-place

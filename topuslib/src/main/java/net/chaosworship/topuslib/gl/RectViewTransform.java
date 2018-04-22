@@ -7,7 +7,7 @@ import static android.opengl.GLES20.glViewport;
 import net.chaosworship.topuslib.BuildConfig;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.geom2d.Vec2Transformer;
+import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 
 
 // handles transformations for a simple rectangular view of a 2D world

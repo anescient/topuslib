@@ -1,8 +1,8 @@
 package net.chaosworship.topuslib.geom2d;
 
 import net.chaosworship.topuslib.CollectionTester;
-import net.chaosworship.topuslib.geom2d.mesh.DelaunayTriangulator;
-import net.chaosworship.topuslib.geom2d.mesh.Triangulation;
+import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulator;
+import net.chaosworship.topuslib.geom2d.triangulation.Triangulation;
 import net.chaosworship.topuslib.collection.IntPairConsumer;
 import net.chaosworship.topuslib.graph.HashSimpleGraph;
 import net.chaosworship.topuslib.graph.SimpleGraph;
