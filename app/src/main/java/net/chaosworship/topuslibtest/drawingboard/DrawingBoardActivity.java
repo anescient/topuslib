@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import net.chaosworship.topuslibtest.R;
-import net.chaosworship.topuslibtest.drawingboard.DrawingBoard;
 
 
 public class DrawingBoardActivity extends AppCompatActivity {

@@ -37,6 +37,10 @@ public class Circle {
         return points;
     }
 
+    public Vec2 getPointOnBound(double theta) {
+        return Vec2.unit(theta).scale(radius).add(center);
+    }
+
     // generate an equilateral triangle that tightly fits inside the circle
     public Triangle getInscribedTriangle() {
         return new Triangle(

@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.gl;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
 
+import net.chaosworship.topuslib.geom2d.Arc;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Triangle;
@@ -89,6 +90,14 @@ public class ShapesBrush extends Brush {
         List<Vec2> points = circle.getBoundPoints(33);
         for(int i = 0; i < points.size(); i++) {
             drawSegment(points.get(i), points.get((i + 1) % points.size()), lineWidth);
+        }
+    }
+
+    public void drawArc(Arc arc, float lineWidth) {
+        List<Vec2> points = arc.getPointsAlong(33);
+        drawSegment(points.get(0), points.get(1), lineWidth);
+        for(int i = 1; i < points.size(); i++) {
+            drawSegment(points.get(i - 1), points.get(i), lineWidth);
         }
     }
 
