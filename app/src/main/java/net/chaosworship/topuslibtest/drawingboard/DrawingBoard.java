@@ -15,6 +15,8 @@ import net.chaosworship.topuslib.gl.ShapesBrush;
 import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
+import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -71,13 +73,15 @@ public class DrawingBoard
         brush.begin(mViewTransform.getViewMatrix());
 
         brush.setColor(Color.WHITE);
-        brush.setAlpha(0.2f);
+        brush.setAlpha(1f);
 
         Circle c = new Circle(new Vec2(0, 0), 0.7f);
-        brush.drawCircle(c, 0.04f);
+        brush.drawCircle(c, 0.01f);
 
-        brush.setAlpha(1);
-        brush.drawArc(new Arc(c, 0, 3.14), 0.01f);
+        ArrayList<Vec2> points = new ArrayList<>();
+        for(int i = 0; i < 50; i++) {
+
+        }
 
         brush.end();
     }

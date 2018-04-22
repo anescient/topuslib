@@ -537,7 +537,7 @@ public class DelaunayTriangulator {
         mTriangulationRoot.outputEdges(consumer, mPoints.length - 4);
     }
 
-    public Triangulation getTriangulation() throws NumericalFailure {
+    public Triangulation getTriangulation() {
         if(mTriangulationRoot == null) {
             throw new IllegalStateException();
         }

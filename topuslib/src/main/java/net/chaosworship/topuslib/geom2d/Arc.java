@@ -16,10 +16,6 @@ public class Arc {
         mMaxRadians = maxRadians;
     }
 
-    public Arc(Circle circle) {
-        this(circle, 0, 2 * Math.PI);
-    }
-
     public double getStartRadians() {
         return mMinRadians;
     }

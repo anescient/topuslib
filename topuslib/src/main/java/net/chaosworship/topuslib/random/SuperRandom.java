@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib.random;
 
+import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 
 import java.util.List;
@@ -27,18 +28,28 @@ public class SuperRandom extends Random {
         return mean + x * stddev;
     }
 
-    public void uniformUnit(Vec2 v) {
+    public float uniformInRange(float lower, float upper) {
+        return lower + (upper - lower) * nextFloat();
+    }
+
+    public Vec2 uniformInRect(Rectangle rect) {
+        return new Vec2(
+                uniformInRange(rect.minx, rect.maxx),
+                uniformInRange(rect.miny, rect.maxy));
+    }
+
+    public void setUniformUnit(Vec2 v) {
         v.setUnit(nextDouble() * Math.PI * 2);
     }
 
     public Vec2 uniformUnit() {
         Vec2 v = new Vec2();
-        uniformUnit(v);
+        setUniformUnit(v);
         return v;
     }
 
-    public void uniformInCircle(Vec2 v, float radius) {
-        uniformUnit(v);
+    public void setUniformInCircle(Vec2 v, float radius) {
+        setUniformUnit(v);
         v.scale(radius * (float)Math.sqrt(nextDouble()));
     }
 
