@@ -32,8 +32,7 @@ public class Arc {
         return mMaxRadians == mMinRadians;
     }
 
-    public ArrayList<Vec2> getPointsAlong(int internalPoints) {
-        int n = internalPoints + 2;
+    public ArrayList<Vec2> getPointsAlong(int n) {
         ArrayList<Vec2> points = new ArrayList<>();
         for(int i = 0; i < n; i++) {
             double a = mMinRadians + (double)i * (mMaxRadians - mMinRadians) / (n - 1);

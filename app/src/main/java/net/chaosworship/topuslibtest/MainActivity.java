@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //startDrawingBoard(null);
+        startDrawingBoard(null);
     }
 
     public void startDrawingBoard(View view) {
