@@ -2,11 +2,13 @@ package net.chaosworship.topuslib.geom2d;
 
 import android.graphics.RectF;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 
 @SuppressWarnings("UnusedReturnValue")
-public class Rectangle {
+public class Rectangle implements SolidShape {
 
     public float minx;
     public float miny;
@@ -96,6 +98,7 @@ public class Rectangle {
         return new Vec2((minx + maxx) * 0.5f, (miny + maxy) * 0.5f);
     }
 
+    @Override
     public float area() {
         return (maxx - minx) * (maxy - miny);
     }
@@ -106,6 +109,16 @@ public class Rectangle {
 
     public boolean containsOpen(Vec2 point) {
         return point.x > minx && point.x < maxx && point.y > miny && point.y < maxy;
+    }
+
+    @Override
+    public boolean contains(Vec2 point) {
+        return containsClosed(point);
+    }
+
+    @Override
+    public Rectangle getBoundingRectangle() {
+        return new Rectangle(this);
     }
 
     // resize rectangle, keeping center
@@ -121,6 +134,13 @@ public class Rectangle {
         miny = center.y - newHeight * 0.5f;
         maxy = center.y + newHeight * 0.5f;
         return this;
+    }
+
+    public static Rectangle bound(Vec2 point, Vec2 ...more) {
+        ArrayList<Vec2> points = new ArrayList<>();
+        points.add(point);
+        points.addAll(Arrays.asList(more));
+        return bound(points);
     }
 
     public static Rectangle bound(Iterable<Vec2> points) {

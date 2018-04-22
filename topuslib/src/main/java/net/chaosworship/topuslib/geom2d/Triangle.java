@@ -1,12 +1,13 @@
 package net.chaosworship.topuslib.geom2d;
 
 
-public class Triangle {
+public class Triangle implements SolidShape {
 
     public Vec2 pointA;
     public Vec2 pointB;
     public Vec2 pointC;
 
+    @SuppressWarnings("WeakerAccess")
     public Triangle() {
         pointA = new Vec2();
         pointB = new Vec2();
@@ -18,6 +19,7 @@ public class Triangle {
         set(a, b, c);
     }
 
+    @SuppressWarnings("unused")
     public Triangle(Triangle source) {
         this(source.pointA, source.pointB, source.pointC);
     }
@@ -27,7 +29,6 @@ public class Triangle {
         pointB = b;
         pointC = c;
     }
-
 
     @Override
     public boolean equals(Object rhs) {
@@ -50,6 +51,7 @@ public class Triangle {
         return distanceSquaredFromBound(pointA, pointB, pointC, point);
     }
 
+    @Override
     public boolean contains(Vec2 point) {
         boolean b1 = point.inHalfPlane(pointA, pointB);
         boolean b2 = point.inHalfPlane(pointB, pointC);
@@ -57,12 +59,18 @@ public class Triangle {
         return (b1 == b2) && (b2 == b3);
     }
 
-    public boolean isDegenerate() {
-        return pointA.equals(pointB) || pointB.equals(pointC) || pointC.equals(pointA);
-    }
-
+    @Override
     public float area() {
         return area(pointA, pointB, pointC);
+    }
+
+    @Override
+    public Rectangle getBoundingRectangle() {
+        return Rectangle.bound(pointA, pointB, pointC);
+    }
+
+    public boolean isDegenerate() {
+        return pointA.equals(pointB) || pointB.equals(pointC) || pointC.equals(pointA);
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -82,6 +90,7 @@ public class Triangle {
         return closest;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static float distanceSquaredFromBound(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
         Vec2 closest = closestPointOnBound(a, b, c, p).getClosestOnAB();
         return closest.subtract(p).magnitudeSq();

@@ -3,6 +3,8 @@ package net.chaosworship.topuslib.geom2d;
 
 public class Circumcircle {
 
+    private Circumcircle() {}
+
     public static Circle toCircle(Vec2 a, Vec2 b) {
         Vec2 center = Vec2.midpoint(a, b);
         float radius = Vec2.distance(center, a);

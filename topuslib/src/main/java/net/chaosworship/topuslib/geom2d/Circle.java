@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Circle {
+public class Circle implements SolidShape {
 
     private static final float CIRCLEOVER3 = (float)(2 * Math.PI / 3);
 
@@ -21,8 +21,20 @@ public class Circle {
         this.radius = radius;
     }
 
+    @Override
     public boolean contains(Vec2 p) {
         return Vec2.distanceSq(center, p) <= radius * radius;
+    }
+
+    @Override
+    public float area() {
+        return (float)(Math.PI * radius * radius);
+    }
+
+    @Override
+    public Rectangle getBoundingRectangle() {
+        return new Rectangle(
+                center.x - radius, center.y - radius, center.x + radius, center.y + radius);
     }
 
     public ArrayList<Vec2> getBoundPoints(int n) {
