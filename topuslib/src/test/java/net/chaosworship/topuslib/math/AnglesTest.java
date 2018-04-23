@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib.geom2d;
+package net.chaosworship.topuslib.math;
 
 import net.chaosworship.topuslib.math.Angles;
 
@@ -9,7 +9,7 @@ import java.util.Random;
 import static junit.framework.Assert.*;
 
 
-public class AngleTest {
+public class AnglesTest {
 
     @Test
     public void unloop() {
@@ -22,6 +22,8 @@ public class AngleTest {
 
         assertTrue(Angles.unloopRadians(0) == 0);
         assertTrue(Angles.unloopRadians(2 * Math.PI) == 0);
+        assertTrue(Angles.unloopRadians(-2 * Math.PI) == 0);
+        assertTrue(Angles.unloopRadians(-Math.PI) == Math.PI);
 
         for(int i = 0; i < 100; i++) {
             double a = (random.nextDouble() - 0.5) * 20;
