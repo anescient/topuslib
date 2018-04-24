@@ -2,8 +2,6 @@ package net.chaosworship.topuslib.math;
 
 import net.chaosworship.topuslib.geom2d.Arc;
 import net.chaosworship.topuslib.geom2d.Circle;
-import net.chaosworship.topuslib.geom2d.Rectangle;
-import net.chaosworship.topuslib.geom2d.Vec2;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -110,13 +108,13 @@ public class RadianMultiInterval {
         }
         ArrayList<RadianRange> newRanges = new ArrayList<>();
         for(RadianRange rr : mRanges) {
-            if(rr.high <= low || rr.low >= high) {
+            if(rr.high < low || rr.low > high) {
                 newRanges.add(rr);
             } else {
-                if(low >= rr.low) {
+                if(low > rr.low) {
                     newRanges.add(new RadianRange(rr.low, low));
                 }
-                if(rr.high >= high) {
+                if(rr.high > high) {
                     newRanges.add(new RadianRange(high, rr.high));
                 }
             }
