@@ -95,7 +95,15 @@ public class Rectangle implements SolidShape {
     }
 
     public Vec2 center() {
-        return new Vec2((minx + maxx) * 0.5f, (miny + maxy) * 0.5f);
+        return new Vec2(centerX(), centerY());
+    }
+
+    public float centerX() {
+        return (minx + maxx) * 0.5f;
+    }
+
+    public float centerY() {
+        return (miny + maxy) * 0.5f;
     }
 
     @Override

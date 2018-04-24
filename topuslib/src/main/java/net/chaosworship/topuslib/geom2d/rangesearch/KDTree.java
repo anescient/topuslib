@@ -10,6 +10,8 @@ import java.util.List;
 
 public class KDTree<T> {
 
+    //////////////////////////////////////////////////////////
+
     private static class EvenNode<T> {
         DoublySortedPointValues<T> mPointValues;
         PointValuePair<T> mLeafPointValue;
@@ -77,6 +79,8 @@ public class KDTree<T> {
         }
     }
 
+    //////////////////////////////////////////////////////////
+
     private static class OddNode<T> {
         DoublySortedPointValues<T> mPointValues;
         PointValuePair<T> mLeafPointValue;
@@ -139,6 +143,8 @@ public class KDTree<T> {
             }
         }
     }
+
+    //////////////////////////////////////////////////////////
 
     private EvenNode<T> mRoot;
     private final ArrayList<T> mSearchResults;
