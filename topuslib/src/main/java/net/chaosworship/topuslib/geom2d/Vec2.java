@@ -1,5 +1,7 @@
 package net.chaosworship.topuslib.geom2d;
 
+import android.annotation.SuppressLint;
+
 import net.chaosworship.topuslib.math.Spline;
 
 
@@ -21,6 +23,12 @@ public class Vec2 implements Cloneable {
     public Vec2(float x, float y) {
         this.x = x;
         this.y = y;
+    }
+
+    @SuppressLint("DefaultLocale")
+    @Override
+    public String toString() {
+        return String.format("Vec2(%f, %f)", x, y);
     }
 
     @Override

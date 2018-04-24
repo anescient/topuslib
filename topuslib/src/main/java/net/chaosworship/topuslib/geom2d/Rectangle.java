@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib.geom2d;
 
+import android.annotation.SuppressLint;
 import android.graphics.RectF;
 
 import java.util.ArrayList;
@@ -38,6 +39,12 @@ public class Rectangle implements SolidShape {
         this.miny = miny;
         this.maxx = maxx;
         this.maxy = maxy;
+    }
+
+    @SuppressLint("DefaultLocale")
+    @Override
+    public String toString() {
+        return String.format("Rectangle (%f,%f)-(%f,%f)", minx, miny, maxx, maxy);
     }
 
     @Override
