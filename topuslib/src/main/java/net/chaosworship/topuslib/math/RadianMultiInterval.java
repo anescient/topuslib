@@ -1,5 +1,8 @@
 package net.chaosworship.topuslib.math;
 
+import net.chaosworship.topuslib.geom2d.Arc;
+import net.chaosworship.topuslib.geom2d.Circle;
+import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 
 import java.util.ArrayList;
@@ -57,6 +60,14 @@ public class RadianMultiInterval {
     public void setFullCircle() {
         mRanges.clear();
         mRanges.add(new RadianRange(0, TWOPI));
+    }
+
+    public ArrayList<Arc> getArcs(Circle circle) {
+        ArrayList<Arc> arcs = new ArrayList<>();
+        for(RadianRange rr : mRanges) {
+            arcs.add(new Arc(circle, rr.low, rr.high));
+        }
+        return arcs;
     }
 
     public double getTotalRadians() {
