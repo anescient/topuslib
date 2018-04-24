@@ -116,6 +116,13 @@ public class Rectangle implements SolidShape {
         return containsClosed(point);
     }
 
+    public boolean contains(Circle circle) {
+        return circle.center.x - circle.radius >= minx &&
+                circle.center.x + circle.radius <= maxx &&
+                circle.center.y - circle.radius >= miny &&
+                circle.center.y + circle.radius <= maxy;
+    }
+
     @Override
     public Rectangle getBoundingRectangle() {
         return new Rectangle(this);

@@ -38,6 +38,17 @@ public class CircleTest {
     }
 
     @Test
+    public void containsRectangle() {
+        Circle c = new Circle(new Vec2(1, 1), 2);
+        assertTrue(c.contains(new Rectangle(1, 1, 1.1f, 1.1f)));
+        assertFalse(c.contains(new Rectangle(10, 1, 1.1f, 1.1f)));
+        c = new Circle(new Vec2(10, 10), 1);
+        assertFalse(c.contains(new Rectangle(9, 9, 11, 11)));
+        c.radius = 1.415f;
+        assertTrue(c.contains(new Rectangle(9, 9, 11, 11)));
+    }
+
+    @Test
     public void minimumBoundContains() {
         SuperRandom random = new SuperRandom(1234);
         Vec2 offset = new Vec2(1.23f, 4.56f);
@@ -51,12 +62,16 @@ public class CircleTest {
             c.radius = radius * 1.000001f;
             for(Vec2 p : points) {
                 assertTrue(c.contains(p));
+                assertTrue(c.contains(p.x, p.y));
             }
             c.radius = radius * 0.99999f;
             int outCount = 0;
             for(Vec2 p : points) {
                 if(!c.contains(p)) {
                     outCount++;
+                    assertFalse(c.contains(p.x, p.y));
+                } else {
+                    assertTrue(c.contains(p.x, p.y));
                 }
             }
             assertTrue(outCount >= 3);

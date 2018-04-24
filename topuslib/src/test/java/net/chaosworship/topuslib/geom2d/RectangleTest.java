@@ -43,6 +43,34 @@ public class RectangleTest {
     }
 
     @Test
+    public void containsCircle() {
+        Rectangle r = new Rectangle(0, 0, 4, 2);
+        Circle c = new Circle();
+        c.center.setZero();
+        c.radius = 0;
+        assertTrue(r.contains(c));
+        c.radius = 0.000001f;
+        assertFalse(r.contains(c));
+        c.center.set(2, 1);
+        c.radius = 1;
+        assertTrue(r.contains(c));
+        c.radius = 1.000001f;
+        assertFalse(r.contains(c));
+        c.center.set(1, 1);
+        c.radius = 1;
+        assertTrue(r.contains(c));
+        c.center.x -= 0.000001f;
+        assertFalse(r.contains(c));
+        c.center.set(3, 1);
+        assertTrue(r.contains(c));
+        c.center.x += 0.000001f;
+        assertFalse(r.contains(c));
+        c.center.setZero();
+        c.radius = 99;
+        assertFalse(r.contains(c));
+    }
+
+    @Test
     public void setCenter() {
         Rectangle r = new Rectangle();
 

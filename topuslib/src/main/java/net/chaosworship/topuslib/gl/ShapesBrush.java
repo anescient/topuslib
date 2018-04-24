@@ -94,7 +94,7 @@ public class ShapesBrush extends Brush {
     }
 
     public void drawArc(Arc arc, float lineWidth) {
-        List<Vec2> points = arc.getPointsAlong(10);
+        List<Vec2> points = arc.getPointsAlong(33);
         drawSegment(points.get(0), points.get(1), lineWidth);
         for(int i = 1; i < points.size(); i++) {
             drawSegment(points.get(i - 1), points.get(i), lineWidth);

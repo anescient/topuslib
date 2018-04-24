@@ -26,6 +26,19 @@ public class Circle implements SolidShape {
         return Vec2.distanceSq(center, p) <= radius * radius;
     }
 
+    public boolean contains(float x, float y) {
+        float dx = center.x - x;
+        float dy = center.y - y;
+        return dx * dx + dy * dy <= radius * radius;
+    }
+
+    public boolean contains(Rectangle rect) {
+        return contains(rect.minx, rect.miny) &&
+                contains(rect.minx, rect.maxy) &&
+                contains(rect.maxx, rect.miny) &&
+                contains(rect.maxx, rect.maxy);
+    }
+
     @Override
     public float area() {
         return (float)(Math.PI * radius * radius);
