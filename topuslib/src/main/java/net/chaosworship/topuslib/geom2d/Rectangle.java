@@ -158,6 +158,15 @@ public class Rectangle implements SolidShape {
         return this;
     }
 
+    // make a rectangle with the same center which has width + 2 * margin, height + 2 * margin
+    public Rectangle enlarged(float margin) {
+        return new Rectangle(
+                minx - margin,
+                miny - margin,
+                maxx + margin,
+                maxy + margin);
+    }
+
     public static Rectangle bound(Vec2 point, Vec2 ...more) {
         ArrayList<Vec2> points = new ArrayList<>();
         points.add(point);
