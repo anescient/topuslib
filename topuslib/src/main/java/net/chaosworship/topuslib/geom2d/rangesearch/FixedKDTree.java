@@ -165,7 +165,7 @@ public class FixedKDTree<T> {
     }
 
     public void insert(Vec2 point, T value) {
-        insert(new PointValuePair<T>(point, value));
+        insert(new PointValuePair<>(point, value));
     }
 
     public ArrayList<T> search(Rectangle area) {

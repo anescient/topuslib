@@ -11,6 +11,7 @@ import net.chaosworship.topuslib.geom2d.Arc;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.geom2d.sampling.PoissonDiskFill;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
 import net.chaosworship.topuslib.gl.ShapesBrush;
 import net.chaosworship.topuslib.input.MotionEventConverter;
@@ -49,8 +50,8 @@ public class DrawingBoard
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
         setRenderer(this);
-        //setRenderMode(RENDERMODE_WHEN_DIRTY);
-        setRenderMode(RENDERMODE_CONTINUOUSLY);
+        setRenderMode(RENDERMODE_WHEN_DIRTY);
+        //setRenderMode(RENDERMODE_CONTINUOUSLY);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -95,14 +96,21 @@ public class DrawingBoard
         brush.setColor(Color.WHITE);
         brush.setAlpha(1f);
 
-        Rectangle testBox = new Rectangle(-0.3f, -0.7f, 0.1f, 0.2f);
+        Rectangle testBox = new Rectangle(-0.3f, -0.7f, 0.2f, 0.8f);
         brush.drawRectangle(testBox, 0.003f);
 
+        brush.setColor(Color.WHITE);
+        brush.setAlpha(0.5f);
+        float spacing = 0.07f;
+        for(Vec2 p : PoissonDiskFill.fill(testBox, spacing)) {
+            brush.drawSpot(p, 0.01f);
+        }
+
+        /*
         Circle c = new Circle(mTouch, 0.2f);
         brush.setAlpha(0.5f);
         brush.drawCircle(c, 0.005f);
-
-
+*/
         brush.end();
     }
 }
