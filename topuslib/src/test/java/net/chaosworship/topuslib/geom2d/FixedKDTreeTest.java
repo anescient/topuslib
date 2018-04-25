@@ -7,7 +7,6 @@ import net.chaosworship.topuslib.tuple.PointValuePair;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -65,6 +64,14 @@ public class FixedKDTreeTest {
                 assertTrue(CollectionTester.unorderedReferencesEqual(tree.search(area), expected));
             }
         }
+    }
+
+    @Test
+    public void identicalPoints() {
+        Rectangle r = new Rectangle(-1, -1, 1, 1);
+        FixedKDTree<String> tree = new FixedKDTree<>(r);
+        tree.insert(new Vec2(0, 0), "");
+        tree.insert(new Vec2(0, 0), "");
     }
 
     private static<TT> ArrayList<TT> bruteSearch(Rectangle area, Iterable<PointValuePair<TT>> pointValues) {

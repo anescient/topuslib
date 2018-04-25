@@ -11,7 +11,8 @@ import java.util.Collection;
 // rectangular search supporting incremental point insertion
 // balance is not guaranteed
 // bound of (future) points needs to be provided
-// best for small result sets
+// best to avoid large result sets
+// identical points are not supported, new value will simply replace old value
 public class FixedKDTree<T> {
 
     //////////////////////////////////////////////////////////
@@ -32,6 +33,10 @@ public class FixedKDTree<T> {
         }
 
         private void insert(PointValuePair<T> pointValuePair) {
+            if(mLeafPointValue != null && mLeafPointValue.point.equals(pointValuePair.point)) {
+                mLeafPointValue = pointValuePair;
+                return;
+            }
             if(mLeafPointValue == null && mLesserXChild == null) {
                 mLeafPointValue = pointValuePair;
             } else {
@@ -93,6 +98,10 @@ public class FixedKDTree<T> {
         }
 
         private void insert(PointValuePair<T> pointValuePair) {
+            if(mLeafPointValue != null && mLeafPointValue.point.equals(pointValuePair.point)) {
+                mLeafPointValue = pointValuePair;
+                return;
+            }
             if(mLeafPointValue == null && mLesserYChild == null) {
                 mLeafPointValue = pointValuePair;
             } else {
