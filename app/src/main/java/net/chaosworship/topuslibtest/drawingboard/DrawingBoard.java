@@ -7,17 +7,21 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import net.chaosworship.topuslib.collection.SegmentConsumer;
 import net.chaosworship.topuslib.geom2d.Arc;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.sampling.PoissonDiskFill;
+import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulator;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
 import net.chaosworship.topuslib.gl.ShapesBrush;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.math.RadianMultiInterval;
 import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslibtest.gl.TestLoader;
+
+import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -96,15 +100,30 @@ public class DrawingBoard
         brush.setColor(Color.WHITE);
         brush.setAlpha(1f);
 
-        Rectangle testBox = new Rectangle(-0.3f, -0.7f, 0.2f, 0.8f);
+        Rectangle testBox = new Rectangle(-0.7f, -1, 0.7f, 1);
         brush.drawRectangle(testBox, 0.003f);
 
+        float spacing = 0.1f;
+        ArrayList<Vec2> poissonPoints = PoissonDiskFill.fill(testBox, spacing);
+
         brush.setColor(Color.WHITE);
-        brush.setAlpha(0.5f);
-        float spacing = 0.07f;
-        for(Vec2 p : PoissonDiskFill.fill(testBox, spacing)) {
+        brush.setAlpha(0.7f);
+        for(Vec2 p : poissonPoints) {
             brush.drawSpot(p, 0.01f);
         }
+
+        DelaunayTriangulator triangulator = new DelaunayTriangulator();
+        try {
+            triangulator.triangulate(poissonPoints);
+        } catch (DelaunayTriangulator.NumericalFailure e) {
+            e.printStackTrace();
+        }
+        triangulator.getTriangulation().outputSegments(new SegmentConsumer() {
+            @Override
+            public void addSegment(Vec2 a, Vec2 b) {
+                brush.drawSegment(a, b, 0.005f);
+            }
+        });
 
         /*
         Circle c = new Circle(mTouch, 0.2f);
