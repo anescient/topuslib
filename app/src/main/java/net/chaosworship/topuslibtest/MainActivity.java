@@ -11,6 +11,7 @@ import net.chaosworship.topuslibtest.bitmapgen.BitmapGenActivity;
 import net.chaosworship.topuslibtest.drawingboard.DrawingBoardActivity;
 import net.chaosworship.topuslibtest.inputtest.InputTestActivity;
 import net.chaosworship.topuslibtest.inputtest.WidgetActivity;
+import net.chaosworship.topuslibtest.particles.ParticlesActivity;
 
 
 @SuppressLint({"SetTextI18n", "DefaultLocale"})
@@ -21,11 +22,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startDrawingBoard(null);
+        startParticles(null);
     }
 
     public void startDrawingBoard(View view) {
         startActivity(new Intent(this, DrawingBoardActivity.class));
+    }
+
+    public void startParticles(View view) {
+        startActivity(new Intent(this, ParticlesActivity.class));
     }
 
     public void startBenchmark(View view) {

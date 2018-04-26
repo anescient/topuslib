@@ -26,6 +26,8 @@
         </activity>
         <activity android:name=".inputtest.WidgetActivity">
         </activity>
+        <activity android:name=".particles.ParticlesActivity">
+        </activity>
     </application>
 
 </manifest>
