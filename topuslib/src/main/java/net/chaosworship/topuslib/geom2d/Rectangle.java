@@ -190,4 +190,17 @@ public class Rectangle implements SolidShape {
         }
         return r;
     }
+
+    public static Rectangle squareBound(Iterable<Vec2> points) {
+        Rectangle rect = bound(points);
+        float d = (rect.width() - rect.height()) * 0.5f;
+        if(d > 0) {
+            rect.miny -= d;
+            rect.maxy += d;
+        } else {
+            rect.minx += d;
+            rect.maxx -= d;
+        }
+        return rect;
+    }
 }

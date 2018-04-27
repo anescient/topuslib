@@ -1,5 +1,7 @@
 package net.chaosworship.topuslib.geom2d;
 
+import android.graphics.Rect;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -111,5 +113,27 @@ public class RectangleTest {
         assertTrue(r.maxx == 3);
         assertTrue(r.miny == -2);
         assertTrue(r.maxy == 1);
+    }
+
+    @Test
+    public void squareBound() {
+        Rectangle rect;
+        ArrayList<Vec2> points = new ArrayList<>();
+        try {
+            Rectangle.squareBound(points);
+            fail();
+        } catch (IllegalArgumentException ignored) {}
+        points.add(new Vec2(1, 1));
+        rect = Rectangle.squareBound(points);
+        assertTrue(rect.width() == 0);
+        assertTrue(rect.height() == 0);
+        points.add(new Vec2(1, 2));
+        rect = Rectangle.squareBound(points);
+        assertTrue(rect.width() == 1);
+        assertTrue(rect.height() == 1);
+        points.add(new Vec2(2, 2));
+        rect = Rectangle.squareBound(points);
+        assertTrue(rect.width() == 1);
+        assertTrue(rect.height() == 1);
     }
 }
