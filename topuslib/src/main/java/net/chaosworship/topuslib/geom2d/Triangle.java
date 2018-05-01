@@ -43,7 +43,7 @@ public class Triangle implements SolidShape {
                 rhsTriangle.contains(pointC);
     }
 
-    public ClosestPointOnLine closestPointOnBound(Vec2 point) {
+    public Vec2 closestPointOnBound(Vec2 point) {
         return closestPointOnBound(pointA, pointB, pointC, point);
     }
 
@@ -74,25 +74,25 @@ public class Triangle implements SolidShape {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static ClosestPointOnLine closestPointOnBound(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
-        ClosestPointOnLine closestAB = new ClosestPointOnLine(p, a, b, true);
-        ClosestPointOnLine closestBC = new ClosestPointOnLine(p, b, c, true);
-        ClosestPointOnLine closestCA = new ClosestPointOnLine(p, c, a, true);
-        float dAB = Vec2.distanceSq(p, closestAB.getClosestOnAB());
-        float dBC = Vec2.distanceSq(p, closestBC.getClosestOnAB());
-        float dCA = Vec2.distanceSq(p, closestCA.getClosestOnAB());
+    public static Vec2 closestPointOnBound(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
+        ClosestPointOnLine closestAB = new ClosestPointOnLine(a, b);
+        ClosestPointOnLine closestBC = new ClosestPointOnLine(b, c);
+        ClosestPointOnLine closestCA = new ClosestPointOnLine(c, a);
+        float dAB = Vec2.distanceSq(p, closestAB.getClosestOnAB(p, true));
+        float dBC = Vec2.distanceSq(p, closestBC.getClosestOnAB(p, true));
+        float dCA = Vec2.distanceSq(p, closestCA.getClosestOnAB(p, true));
         ClosestPointOnLine closest;
         if(dAB < dBC) {
             closest = dAB < dCA ? closestAB : closestCA;
         } else {
             closest = dBC < dCA ? closestBC : closestCA;
         }
-        return closest;
+        return closest.getClosestOnAB(p, true);
     }
 
     @SuppressWarnings("WeakerAccess")
     public static float distanceSquaredFromBound(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
-        Vec2 closest = closestPointOnBound(a, b, c, p).getClosestOnAB();
+        Vec2 closest = closestPointOnBound(a, b, c, p);
         return closest.subtract(p).magnitudeSq();
     }
 
