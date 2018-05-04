@@ -214,6 +214,22 @@ public class Vec2 implements Cloneable {
         return new Vec2(x * multiplier, y * multiplier);
     }
 
+    public Vec2 clampMagnitude(float min, float max) {
+        if(min > max) {
+            throw new IllegalArgumentException();
+        }
+        float magSq = magnitudeSq();
+        if(magSq == 0) {
+            return this;
+        }
+        if(magSq < min * min) {
+            scale(min / (float)Math.sqrt(magSq));
+        } else if(magSq > max * max) {
+            scale(max / (float)Math.sqrt(magSq));
+        }
+        return this;
+    }
+
     public Vec2 sum(Vec2 rhs) {
         return new Vec2(x + rhs.x, y + rhs.y);
     }
