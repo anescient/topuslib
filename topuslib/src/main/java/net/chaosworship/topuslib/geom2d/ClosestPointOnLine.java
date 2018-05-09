@@ -1,40 +1,43 @@
 package net.chaosworship.topuslib.geom2d;
 
 
-// relate a point to a line
-@SuppressWarnings("SameParameterValue")
+// relate points to a segment/line
+// Jan.'18 from https://math.stackexchange.com/questions/1300484/distance-between-line-and-a-point?noredirect=1&lq=1
+@SuppressWarnings({"SameParameterValue", "WeakerAccess"})
 public class ClosestPointOnLine {
 
-    private float mAlongAB; // 0 to 1 along segment AB
-    private final Vec2 mOnAB; // point closest to Q
+    private final Vec2 mA;
+    private final Vec2 mB;
+    private final float mAx2;
+    private final float mAy2;
+    private final float mDenom;
+    private final Vec2 mClosest;
 
     // find point along line AB closest to Q
     // if segment, limit to the segment AB
-    public ClosestPointOnLine(Vec2 Q, Vec2 A, Vec2 B, boolean segment) {
+    public ClosestPointOnLine(Vec2 A, Vec2 B) {
+        mA = A;
+        mB = B;
+        mAx2 = A.x * A.x;
+        mAy2 = A.y * A.y;
+        mDenom = mAx2 - 2 * A.x * B.x + mAy2 - 2 * A.y * B.y + (B.x * B.x) + (B.y * B.y);
+        mClosest = new Vec2();
+    }
 
-        float Ax2 = A.x * A.x;
-        float Ay2 = A.y * A.y;
-        float Bx2 = B.x * B.x;
-        float By2 = B.y * B.y;
-
-        // Jan.'18 from https://math.stackexchange.com/questions/1300484/distance-between-line-and-a-point?noredirect=1&lq=1
-        float denom = Ax2 - 2 * A.x * B.x + Ay2 - 2 * A.y * B.y + Bx2 + By2;
-        mAlongAB = 0;
-        if(denom != 0) {
-            mAlongAB = (Ax2 - A.x * (B.x + Q.x) + Ay2 - A.y * (B.y + Q.y) + B.x * Q.x + B.y * Q.y) / denom;
-        }
+    public Vec2 getClosestOnAB(Vec2 p, boolean segment) {
+        float along = getAlongAB(p);
         if(segment) {
-            mAlongAB = mAlongAB < 0 ? 0 : mAlongAB;
-            mAlongAB = mAlongAB > 1 ? 1 : mAlongAB;
+            along = along < 0 ? 0 : along;
+            along = along > 1 ? 1 : along;
         }
-        mOnAB = B.difference(A).scale(mAlongAB).add(A);
+        mClosest.setDifference(mB, mA).scale(along).add(mA);
+        return mClosest;
     }
 
-    public Vec2 getClosestOnAB() {
-        return mOnAB;
-    }
-
-    public float getAlongAB() {
-        return mAlongAB;
+    public float getAlongAB(Vec2 p) {
+        if(mDenom == 0) {
+            return 0;
+        }
+        return (mAx2 - mA.x * (mB.x + p.x) + mAy2 - mA.y * (mB.y + p.y) + mB.x * p.x + mB.y * p.y) / mDenom;
     }
 }

@@ -41,6 +41,13 @@ public class Rectangle implements SolidShape {
         this.maxy = maxy;
     }
 
+    public Rectangle(Vec2 cornerA, Vec2 cornerB) {
+        this.minx = Math.min(cornerA.x, cornerB.x);
+        this.miny = Math.min(cornerA.y, cornerB.y);
+        this.maxx = Math.max(cornerA.x, cornerB.x);
+        this.maxy = Math.max(cornerA.y, cornerB.y);
+    }
+
     @SuppressLint("DefaultLocale")
     @Override
     public String toString() {

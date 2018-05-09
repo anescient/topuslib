@@ -135,21 +135,21 @@ public class TriangleTest {
         t.pointA.set(0, 0);
         t.pointB.set(2, 3);
         t.pointC.set(9, 0);
-        assertTrue(t.closestPointOnBound(new Vec2(-1, -1)).getClosestOnAB().epsilonEquals(t.pointA, e));
-        assertTrue(t.closestPointOnBound(new Vec2(2, 4)).getClosestOnAB().epsilonEquals(t.pointB, e));
-        assertTrue(t.closestPointOnBound(new Vec2(10, -1)).getClosestOnAB().epsilonEquals(t.pointC, e));
-        assertTrue(t.closestPointOnBound(new Vec2(4, -1)).getClosestOnAB().epsilonEquals(new Vec2(4, 0), e));
+        assertTrue(t.closestPointOnBound(new Vec2(-1, -1)).epsilonEquals(t.pointA, e));
+        assertTrue(t.closestPointOnBound(new Vec2(2, 4)).epsilonEquals(t.pointB, e));
+        assertTrue(t.closestPointOnBound(new Vec2(10, -1)).epsilonEquals(t.pointC, e));
+        assertTrue(t.closestPointOnBound(new Vec2(4, -1)).epsilonEquals(new Vec2(4, 0), e));
         Vec2 midAB = Vec2.midpoint(t.pointA, t.pointB);
         Vec2 midBC = Vec2.midpoint(t.pointB, t.pointC);
         Vec2 midCA = Vec2.midpoint(t.pointC, t.pointA);
-        assertTrue(t.closestPointOnBound(midAB).getClosestOnAB().epsilonEquals(midAB, e));
-        assertTrue(t.closestPointOnBound(midBC).getClosestOnAB().epsilonEquals(midBC, e));
-        assertTrue(t.closestPointOnBound(midCA).getClosestOnAB().epsilonEquals(midCA, e));
+        assertTrue(t.closestPointOnBound(midAB).epsilonEquals(midAB, e));
+        assertTrue(t.closestPointOnBound(midBC).epsilonEquals(midBC, e));
+        assertTrue(t.closestPointOnBound(midCA).epsilonEquals(midCA, e));
 
         t.pointA.set(0, 0);
         t.pointB.set(2, 3);
         t.pointC.set(4, 0);
-        assertTrue(t.closestPointOnBound(new Vec2(2, 1)).getClosestOnAB().epsilonEquals(new Vec2(2, 0), e));
+        assertTrue(t.closestPointOnBound(new Vec2(2, 1)).epsilonEquals(new Vec2(2, 0), e));
     }
 
     private static boolean softEquals(float a, float b, float delta) {

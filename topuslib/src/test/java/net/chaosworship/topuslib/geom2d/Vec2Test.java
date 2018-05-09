@@ -16,6 +16,20 @@ public class Vec2Test {
         }
     }
 
+    @Test
+    public void clamp() {
+        Vec2 v = new Vec2(0, 2);
+        v.clampMagnitude(1, 3);
+        assertTrue(v.equals(new Vec2(0, 2)));
+        v.clampMagnitude(0, 1);
+        assertTrue(v.equals(new Vec2(0, 1)));
+        v.clampMagnitude(3, 4);
+        assertTrue(v.equals(new Vec2(0, 3)));
+        v.setUnit(0.54321);
+        v.clampMagnitude(10, 100);
+        assertTrue(probablyEqual(v.magnitude(), 10));
+    }
+
     private static boolean probablyEqual(Vec2 a, Vec2 b) {
         return probablyEqual(a.x, b.x) && probablyEqual(a.y, b.y);
     }
