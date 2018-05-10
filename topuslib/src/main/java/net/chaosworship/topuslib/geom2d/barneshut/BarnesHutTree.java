@@ -9,10 +9,12 @@ import java.util.Collection;
 
 public class BarnesHutTree {
 
+    private final Rectangle mArea;
     private BarnesHutNode mRoot;
 
 
-    public BarnesHutTree() {
+    public BarnesHutTree(Rectangle area) {
+        mArea = area.enlargedToSquare();
         mRoot = null;
     }
 
@@ -21,11 +23,15 @@ public class BarnesHutTree {
     }
 
     public void load(Collection<PointMass> pointMasses) {
-        //Rectangle bound = Rectangle.squareBound(pointMasses);
-
+        if(mRoot == null) {
+            mRoot = new BarnesHutNode(mArea);
+        }
+        for(PointMass pointMass : pointMasses) {
+            mRoot.insert(pointMass);
+        }
     }
 
     public Vec2 getForce(Vec2 position) {
-        return null;
+        return mRoot.getForce(position);
     }
 }

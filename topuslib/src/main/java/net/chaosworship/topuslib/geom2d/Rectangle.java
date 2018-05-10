@@ -174,6 +174,16 @@ public class Rectangle implements SolidShape {
                 maxy + margin);
     }
 
+    public Rectangle enlargedToSquare() {
+        Rectangle square = new Rectangle();
+        if(width() > height()) {
+            square.setWithCenter(center(), width(), width());
+        } else {
+            square.setWithCenter(center(), height(), height());
+        }
+        return square;
+    }
+
     public static Rectangle bound(Vec2 point, Vec2 ...more) {
         ArrayList<Vec2> points = new ArrayList<>();
         points.add(point);

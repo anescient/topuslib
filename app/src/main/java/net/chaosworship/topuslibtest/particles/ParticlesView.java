@@ -9,11 +9,13 @@ import android.view.MotionEvent;
 
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.geom2d.barneshut.BarnesHutTree;
 import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
 import net.chaosworship.topuslib.gl.FlatViewTransform;
 import net.chaosworship.topuslib.gl.ShapesBrush;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
+import net.chaosworship.topuslib.tuple.PointMass;
 import net.chaosworship.topuslib.tuple.PointValuePair;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
@@ -109,10 +111,10 @@ class ParticlesView
     private void setParticles() {
         mParticles.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 1000; i++) {
+        for(int i = 0; i < 1500; i++) {
             Particle p = new Particle();
             p.pos = sRandom.uniformUnit().scale(0.7f + 0.2f * sRandom.nextFloat());
-            p.vel = sRandom.uniformUnit().scale(0.01f);
+            p.vel = sRandom.uniformUnit().scale(1.0f * sRandom.nextFloat());
             mParticles.add(p);
             ppvps.add(new PointValuePair<>(p.pos, p));
         }
@@ -141,14 +143,48 @@ class ParticlesView
                 }
             }
 
+            /*
             for(Particle p : mParticles) {
                 p.acc.addScaled(p.pos.normalized(), -0.004f);
+            }*/
+
+            BarnesHutTree bht = new BarnesHutTree(mBound);
+            ArrayList<PointMass> pointMasses = new ArrayList<>();
+            for(Particle p : mParticles) {
+                pointMasses.add(new PointMass(p.pos, 1));
             }
+            bht.load(pointMasses);
+
+            for(int i = 0; i < mParticles.size(); i++) {
+                Particle pi = mParticles.get(i);
+                Vec2 force = bht.getForce(pi.pos);
+                force.clampMagnitude(0, 10);
+                pi.acc.addScaled(force, -0.0001f);
+            }
+
+            /*
+            for(int i = 0; i < mParticles.size(); i++) {
+                Particle pi = mParticles.get(i);
+                for(int j = i + 1; j < mParticles.size(); j++) {
+                    Particle pj = mParticles.get(j);
+                    Vec2 pdiff = Vec2.difference(pj.pos, pi.pos);
+                    float dist = pdiff.magnitude();
+                    if(dist <= 0) {
+                        continue;
+                    }
+                    pdiff.scaleInverse(dist);
+                    float f = 0.000001f / (dist * dist);
+                    f = Math.min(f, 0.01f);
+                    pi.acc.addScaled(pdiff, f);
+                    pj.acc.addScaled(pdiff, -f);
+                }
+            }
+            */
 
             mNeighborSearch.reload();
             Rectangle searchRect = new Rectangle();
 
-            float d = 0.03f;
+            float d = 0.02f;
             for(Particle p : mParticles) {
                 searchRect.setWithCenter(p.pos, 2 * d, 2 * d);
                 for(Particle q : mNeighborSearch.search(searchRect)) {
@@ -162,7 +198,9 @@ class ParticlesView
                         float vdot = vdiff.dot(diff);
                         if(vdot < 0) {
                             float f = (d - distance) / d;
-                            float f1 = 0.1f + 1f * f * f;
+                            float f1 = 0.01f + 1f * f * f;
+                            if(f > 0.75f)
+                                f1 = 1.5f;
                             p.acc.addScaled(diff, f1);
                             q.acc.addScaled(diff, -f1);
                             //float f2 = 0.05f * f * vdot;
@@ -211,7 +249,7 @@ class ParticlesView
         brush.setAlpha(1f);
         synchronized(mParticles) {
             for(Particle p : mParticles) {
-                brush.drawSpot(p.pos, 0.005f);
+                brush.drawSpot(p.pos, 0.015f);
             }
         }
 
