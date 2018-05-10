@@ -155,9 +155,11 @@ class ParticlesView
             }
             bht.load(pointMasses);
 
+            Vec2 force = new Vec2();
             for(int i = 0; i < mParticles.size(); i++) {
                 Particle pi = mParticles.get(i);
-                Vec2 force = bht.getForce(pi.pos);
+                force.setZero();
+                bht.getForce(pi.pos, force);
                 force.clampMagnitude(0, 10);
                 pi.acc.addScaled(force, -0.0001f);
             }

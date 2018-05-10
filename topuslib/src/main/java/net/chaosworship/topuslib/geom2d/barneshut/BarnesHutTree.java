@@ -31,7 +31,7 @@ public class BarnesHutTree {
         }
     }
 
-    public Vec2 getForce(Vec2 position) {
-        return mRoot.getForce(position);
+    public void getForce(Vec2 position, Vec2 forceAccum) {
+        mRoot.getForce(position, forceAccum);
     }
 }
