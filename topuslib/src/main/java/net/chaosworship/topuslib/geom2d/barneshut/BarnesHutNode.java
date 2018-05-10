@@ -121,7 +121,7 @@ class BarnesHutNode {
         open |= mArea.contains(position);
         if(!open) {
             float diameter = mArea.width() * 1.4142f;
-            float distance = Vec2.distance(position, mArea.center());
+            float distance = Vec2.distance(position, mSumPointMass.position);
             if(distance < 0.5f * diameter) {
                 open = true;
             }
