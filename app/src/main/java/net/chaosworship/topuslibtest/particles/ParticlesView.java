@@ -66,14 +66,14 @@ class ParticlesView
 
         mViewTransform = new FlatViewTransform();
         mViewTransform.setViewCenter(new Vec2(0, 0));
-        mViewTransform.setViewZoom(400.0f);
+        mViewTransform.setViewZoom(200.0f);
 
         mInputConverter = new MotionEventConverter();
 
         mParticles = new ArrayList<>();
         mNeighborSearch = new KDTree<>();
 
-        mBound = new Rectangle(-1.2f, -1.5f, 1.2f, 1.5f);
+        mBound = new Rectangle(-2.3f, -3.5f, 2.3f, 3.5f);
 
         mBarnesHut = new BarnesHutTree(mBound);
 
@@ -102,7 +102,7 @@ class ParticlesView
     }
 
     public void setZoom(float zoom) {
-        mViewTransform.setViewZoom(400 * zoom);
+        mViewTransform.setViewZoom(200 * zoom);
     }
 
     public void reset() {
@@ -114,10 +114,10 @@ class ParticlesView
     private void setParticles() {
         mParticles.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 4000; i++) {
+        for(int i = 0; i < 700; i++) {
             Particle p = new Particle();
-            p.pos = sRandom.uniformUnit().scale(0.7f + 0.2f * sRandom.nextFloat());
-            p.vel = sRandom.uniformUnit().scale(1.0f * sRandom.nextFloat());
+            p.pos = sRandom.uniformInRect(mBound);//sRandom.uniformUnit().scale(0.7f + 0.2f * sRandom.nextFloat());
+            p.vel = new Vec2();//sRandom.uniformUnit().scale(0.1f * sRandom.nextFloat());
             mParticles.add(p);
             ppvps.add(new PointValuePair<>(p.pos, p));
         }
@@ -143,13 +143,15 @@ class ParticlesView
                         p.vel.x *= 0.5f;
                         p.vel.setZero();
                     }
+                    p.acc.addScaled(p.pos.normalized(), -0.002f);
                 }
             }
 
             /*
             for(Particle p : mParticles) {
-                p.acc.addScaled(p.pos.normalized(), -0.004f);
-            }*/
+                p.acc.addScaled(p.pos.normalized(), -0.001f);
+            }
+            */
 
             mBarnesHut.clear();
             ArrayList<PointMass> pointMasses = new ArrayList<>();
@@ -163,8 +165,8 @@ class ParticlesView
                 Particle pi = mParticles.get(i);
                 force.setZero();
                 mBarnesHut.getForce(pi.pos, force);
-                force.clampMagnitude(0, 10);
-                pi.acc.addScaled(force, -0.001f);
+                force.clampMagnitude(0, 50.0f);
+                pi.acc.addScaled(force, -0.0001f);
             }
 
             /*
@@ -189,7 +191,7 @@ class ParticlesView
             mNeighborSearch.reload();
             Rectangle searchRect = new Rectangle();
 
-            float d = 0.02f;
+            float d = 0.04f;
             for(Particle p : mParticles) {
                 searchRect.setWithCenter(p.pos, 2 * d, 2 * d);
                 for(Particle q : mNeighborSearch.search(searchRect)) {
@@ -204,8 +206,8 @@ class ParticlesView
                         if(vdot < 0) {
                             float f = (d - distance) / d;
                             float f1 = 0.01f + 1f * f * f;
-                            if(f > 0.75f)
-                                f1 = 1.5f;
+                            if(f > 0.5f)
+                                f1 = 1.0f;
                             p.acc.addScaled(diff, f1);
                             q.acc.addScaled(diff, -f1);
                             //float f2 = 0.05f * f * vdot;
@@ -254,7 +256,7 @@ class ParticlesView
         brush.setAlpha(1f);
         synchronized(mParticles) {
             for(Particle p : mParticles) {
-                brush.drawSpot(p.pos, 0.015f);
+                brush.drawSpot(p.pos, 0.02f);
             }
         }
 
