@@ -114,7 +114,7 @@ class ParticlesView
     private void setParticles() {
         mParticles.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 1000; i++) {
+        for(int i = 0; i < 4000; i++) {
             Particle p = new Particle();
             p.pos = sRandom.uniformUnit().scale(0.7f + 0.2f * sRandom.nextFloat());
             p.vel = sRandom.uniformUnit().scale(1.0f * sRandom.nextFloat());
@@ -164,7 +164,7 @@ class ParticlesView
                 force.setZero();
                 mBarnesHut.getForce(pi.pos, force);
                 force.clampMagnitude(0, 10);
-                pi.acc.addScaled(force, -0.0001f);
+                pi.acc.addScaled(force, -0.001f);
             }
 
             /*

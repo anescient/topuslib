@@ -1,65 +1,74 @@
 package net.chaosworship.topuslib.geom2d.barneshut;
 
+import android.util.Log;
+
 import net.chaosworship.topuslib.BuildConfig;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.tuple.PointMass;
 
-import java.util.ArrayList;
-
 
 class BarnesHutNode {
+
+    private static int nodecount = 0;
 
     private final Rectangle mArea;
     private final float mSplitX;
     private final float mSplitY;
-    private final ArrayList<PointMass> mPointMasses;
     private PointMass mSumPointMass;
+    private int mPointMassCount;
     private BarnesHutNode mChildLessXLessY;
     private BarnesHutNode mChildLessXMoreY;
     private BarnesHutNode mChildMoreXLessY;
     private BarnesHutNode mChildMoreXMoreY;
 
+    private final Vec2 mTempDiff;
+
     BarnesHutNode(Rectangle area) {
+        nodecount++;
+        if(nodecount % 100 == 0)
+            Log.d("bht", String.valueOf(nodecount));
+
         mArea = area;
         mSplitX = mArea.centerX();
         mSplitY = mArea.centerY();
-        mPointMasses = new ArrayList<>();
-        mSumPointMass = null;
+        mSumPointMass = new PointMass();
+        mPointMassCount = 0;
         mChildLessXLessY = null;
         mChildLessXMoreY = null;
         mChildMoreXLessY = null;
         mChildMoreXMoreY = null;
+        mTempDiff = new Vec2();
     }
 
     void clear() {
-        mPointMasses.clear();
-        mSumPointMass = null;
-        if(mChildLessXLessY != null) {
-            mChildLessXLessY.clear();
-            mChildLessXMoreY.clear();
-            mChildMoreXLessY.clear();
-            mChildMoreXMoreY.clear();
-        }
+        mSumPointMass.position.setZero();
+        mSumPointMass.mass = 0;
+        mPointMassCount = 0;
     }
 
     void insert(PointMass pointMass) {
-        mSumPointMass = null;
-        if(mPointMasses.isEmpty()) {
-            mPointMasses.add(pointMass);
-        } else {
-            if(mPointMasses.size() == 1) {
-                putToChild(mPointMasses.get(0));
+        if(mPointMassCount == 0) {
+            if(mChildLessXLessY != null) {
+                mChildLessXLessY.clear();
+                mChildLessXMoreY.clear();
+                mChildMoreXLessY.clear();
+                mChildMoreXMoreY.clear();
             }
-            mPointMasses.add(pointMass);
+        }
+
+        mSumPointMass.position.addScaled(pointMass.position, pointMass.mass);
+        mSumPointMass.mass += pointMass.mass;
+        mPointMassCount++;
+        if(mChildLessXLessY == null) {
+            createChildren();
+        }
+        if(mPointMassCount > 1) {
             putToChild(pointMass);
         }
     }
 
     private void putToChild(PointMass pointMass) {
-        if(mChildLessXLessY == null) {
-            createChildren();
-        }
         if(pointMass.position.x <= mSplitX) {
             if(pointMass.position.y <= mSplitY) {
                 mChildLessXLessY.insert(pointMass);
@@ -101,37 +110,32 @@ class BarnesHutNode {
     }
 
     void getForce(Vec2 position, Vec2 forceAccum) {
-        if(mPointMasses.isEmpty()) {
+        if(mPointMassCount == 0) {
             return;
+        }
+        if(mPointMassCount > 1) {
+            mSumPointMass.position.scaleInverse(mSumPointMass.mass);
+            mPointMassCount = 1;
         }
         boolean open = false;
         open |= mArea.contains(position);
         if(!open) {
             float diameter = mArea.width() * 1.4142f;
             float distance = Vec2.distance(position, mArea.center());
-            if(distance < 2 * diameter) {
+            if(distance < 0.5f * diameter) {
                 open = true;
             }
         }
-        if(open && mPointMasses.size() > 1) {
+        if(open) {
             mChildLessXLessY.getForce(position, forceAccum);
             mChildLessXMoreY.getForce(position, forceAccum);
             mChildMoreXLessY.getForce(position, forceAccum);
             mChildMoreXMoreY.getForce(position, forceAccum);
         } else {
-            if(mSumPointMass == null) {
-                mSumPointMass = new PointMass();
-                for(PointMass pointMass : mPointMasses) {
-                    mSumPointMass.position.addScaled(pointMass.position, pointMass.mass);
-                    mSumPointMass.mass += pointMass.mass;
-                }
-                mSumPointMass.position.scaleInverse(mSumPointMass.mass);
-            }
-            float distance = Vec2.distance(position, mSumPointMass.position);
+            mTempDiff.setDifference(position, mSumPointMass.position);
+            float distance = mTempDiff.magnitude();
             if(distance > 0) {
-                Vec2 forceInc = Vec2.difference(position, mSumPointMass.position)
-                        .normalize().scaleInverse(distance * distance);
-                forceAccum.add(forceInc);
+                forceAccum.addScaled(mTempDiff, mSumPointMass.mass / (distance * distance * distance));
             }
         }
     }
