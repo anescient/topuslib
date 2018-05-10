@@ -32,13 +32,23 @@ class BarnesHutNode {
         mChildMoreXMoreY = null;
     }
 
+    void clear() {
+        mPointMasses.clear();
+        mSumPointMass = null;
+        if(mChildLessXLessY != null) {
+            mChildLessXLessY.clear();
+            mChildLessXMoreY.clear();
+            mChildMoreXLessY.clear();
+            mChildMoreXMoreY.clear();
+        }
+    }
+
     void insert(PointMass pointMass) {
         mSumPointMass = null;
         if(mPointMasses.isEmpty()) {
             mPointMasses.add(pointMass);
         } else {
             if(mPointMasses.size() == 1) {
-                createChildren();
                 putToChild(mPointMasses.get(0));
             }
             mPointMasses.add(pointMass);
@@ -47,6 +57,9 @@ class BarnesHutNode {
     }
 
     private void putToChild(PointMass pointMass) {
+        if(mChildLessXLessY == null) {
+            createChildren();
+        }
         if(pointMass.position.x <= mSplitX) {
             if(pointMass.position.y <= mSplitY) {
                 mChildLessXLessY.insert(pointMass);

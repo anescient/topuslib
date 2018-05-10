@@ -9,23 +9,18 @@ import java.util.Collection;
 
 public class BarnesHutTree {
 
-    private final Rectangle mArea;
     private BarnesHutNode mRoot;
 
-
     public BarnesHutTree(Rectangle area) {
-        mArea = area.enlargedToSquare();
-        mRoot = null;
+        mRoot = new BarnesHutNode(area.enlargedToSquare());
     }
 
     public void clear() {
-        mRoot = null;
+        mRoot.clear();
     }
 
     public void load(Collection<PointMass> pointMasses) {
-        if(mRoot == null) {
-            mRoot = new BarnesHutNode(mArea);
-        }
+        mRoot.clear();
         for(PointMass pointMass : pointMasses) {
             mRoot.insert(pointMass);
         }

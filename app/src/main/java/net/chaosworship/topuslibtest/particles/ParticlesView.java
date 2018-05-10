@@ -57,6 +57,7 @@ class ParticlesView
     private final ArrayList<Particle> mParticles;
     private final KDTree<Particle> mNeighborSearch;
     private Rectangle mBound;
+    private final BarnesHutTree mBarnesHut;
 
     public ParticlesView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -73,6 +74,8 @@ class ParticlesView
         mNeighborSearch = new KDTree<>();
 
         mBound = new Rectangle(-1.2f, -1.5f, 1.2f, 1.5f);
+
+        mBarnesHut = new BarnesHutTree(mBound);
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
@@ -111,7 +114,7 @@ class ParticlesView
     private void setParticles() {
         mParticles.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 1500; i++) {
+        for(int i = 0; i < 1000; i++) {
             Particle p = new Particle();
             p.pos = sRandom.uniformUnit().scale(0.7f + 0.2f * sRandom.nextFloat());
             p.vel = sRandom.uniformUnit().scale(1.0f * sRandom.nextFloat());
@@ -148,18 +151,18 @@ class ParticlesView
                 p.acc.addScaled(p.pos.normalized(), -0.004f);
             }*/
 
-            BarnesHutTree bht = new BarnesHutTree(mBound);
+            mBarnesHut.clear();
             ArrayList<PointMass> pointMasses = new ArrayList<>();
             for(Particle p : mParticles) {
                 pointMasses.add(new PointMass(p.pos, 1));
             }
-            bht.load(pointMasses);
+            mBarnesHut.load(pointMasses);
 
             Vec2 force = new Vec2();
             for(int i = 0; i < mParticles.size(); i++) {
                 Particle pi = mParticles.get(i);
                 force.setZero();
-                bht.getForce(pi.pos, force);
+                mBarnesHut.getForce(pi.pos, force);
                 force.clampMagnitude(0, 10);
                 pi.acc.addScaled(force, -0.0001f);
             }
