@@ -10,6 +10,8 @@ import net.chaosworship.topuslib.tuple.PointMass;
 
 class BarnesHutNode {
 
+    private static final float OPENINGRATIO = 0.1f;
+
     private static int nodecount = 0;
 
     private final Rectangle mArea;
@@ -117,12 +119,11 @@ class BarnesHutNode {
             mSumPointMass.position.scaleInverse(mSumPointMass.mass);
             mPointMassCount = 1;
         }
-        boolean open = false;
-        open |= mArea.contains(position);
+        boolean open = mArea.contains(position);
         if(!open) {
-            float diameter = mArea.width() * 1.4142f;
+            float diameter = mArea.width() * 1.4142f; // diagonal of a square
             float distance = Vec2.distance(position, mSumPointMass.position);
-            if(distance < 0.5f * diameter) {
+            if(distance < OPENINGRATIO * diameter) {
                 open = true;
             }
         }
