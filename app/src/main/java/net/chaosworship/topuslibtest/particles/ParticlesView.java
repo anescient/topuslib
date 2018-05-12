@@ -55,6 +55,7 @@ class ParticlesView
     private final MotionEventConverter mInputConverter;
 
     private final ArrayList<Particle> mParticles;
+    private final ArrayList<PointMass> mPointMasses;
     private final KDTree<Particle> mNeighborSearch;
     private Rectangle mBound;
     private final BarnesHutTree mBarnesHut;
@@ -71,6 +72,7 @@ class ParticlesView
         mInputConverter = new MotionEventConverter();
 
         mParticles = new ArrayList<>();
+        mPointMasses = new ArrayList<>();
         mNeighborSearch = new KDTree<>();
 
         mBound = new Rectangle(-2.3f, -3.5f, 2.3f, 3.5f);
@@ -113,12 +115,14 @@ class ParticlesView
 
     private void setParticles() {
         mParticles.clear();
+        mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
         for(int i = 0; i < 700; i++) {
             Particle p = new Particle();
             p.pos = sRandom.uniformInRect(mBound);//sRandom.uniformUnit().scale(0.7f + 0.2f * sRandom.nextFloat());
             p.vel = new Vec2();//sRandom.uniformUnit().scale(0.1f * sRandom.nextFloat());
             mParticles.add(p);
+            mPointMasses.add(new PointMass(p.pos, 1));
             ppvps.add(new PointValuePair<>(p.pos, p));
         }
         mNeighborSearch.load(ppvps);
@@ -154,19 +158,14 @@ class ParticlesView
             */
 
             mBarnesHut.clear();
-            ArrayList<PointMass> pointMasses = new ArrayList<>();
-            for(Particle p : mParticles) {
-                pointMasses.add(new PointMass(p.pos, 1));
-            }
-            mBarnesHut.load(pointMasses);
-
+            mBarnesHut.load(mPointMasses);
             Vec2 force = new Vec2();
             for(int i = 0; i < mParticles.size(); i++) {
                 Particle pi = mParticles.get(i);
                 force.setZero();
                 mBarnesHut.getForce(pi.pos, force);
-                force.clampMagnitude(0, 50.0f);
-                pi.acc.addScaled(force, -0.0001f);
+                force.clampMagnitude(0, 100.0f);
+                pi.acc.addScaled(force, -0.00005f);
             }
 
             /*
@@ -206,8 +205,8 @@ class ParticlesView
                         if(vdot < 0) {
                             float f = (d - distance) / d;
                             float f1 = 0.01f + 1f * f * f;
-                            if(f > 0.5f)
-                                f1 = 1.0f;
+                            if(f > 0.4f)
+                                f1 = 0.7f;
                             p.acc.addScaled(diff, f1);
                             q.acc.addScaled(diff, -f1);
                             //float f2 = 0.05f * f * vdot;
@@ -256,7 +255,7 @@ class ParticlesView
         brush.setAlpha(1f);
         synchronized(mParticles) {
             for(Particle p : mParticles) {
-                brush.drawSpot(p.pos, 0.02f);
+                brush.drawSpot(p.pos, 0.012f);
             }
         }
 
