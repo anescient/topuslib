@@ -146,7 +146,7 @@ public class DotsBrush extends Brush {
         glUniformMatrix4fv(mMVPHandle, 1, false, matPV, 0);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, mLoader.getTexture(R.drawable.blurwhitespot));
+        glBindTexture(GL_TEXTURE_2D, mLoader.getTexture(R.drawable.whitespot));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

@@ -10,7 +10,7 @@ import net.chaosworship.topuslib.tuple.PointMass;
 
 class BarnesHutNode {
 
-    private static final float OPENINGRATIO = 0.1f;
+    private static final float OPENINGRATIO = 1.0f;
 
     private static int nodecount = 0;
 
