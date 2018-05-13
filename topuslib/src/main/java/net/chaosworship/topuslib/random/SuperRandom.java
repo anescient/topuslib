@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib.random;
 
+import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 
@@ -36,6 +37,10 @@ public class SuperRandom extends Random {
         return new Vec2(
                 uniformInRange(rect.minx, rect.maxx),
                 uniformInRange(rect.miny, rect.maxy));
+    }
+
+    public Vec2 uniformInCircle(Circle circle) {
+        return uniformUnit().scale(((float)Math.sqrt(nextFloat())) * circle.radius).add(circle.center);
     }
 
     public void setUniformUnit(Vec2 v) {
