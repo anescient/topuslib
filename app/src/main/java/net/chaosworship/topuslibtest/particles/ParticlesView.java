@@ -17,6 +17,7 @@ import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslib.tuple.PointMass;
 import net.chaosworship.topuslib.tuple.PointValuePair;
+import net.chaosworship.topuslibtest.gl.DotsBrush;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
 import java.util.ArrayList;
@@ -39,12 +40,14 @@ class ParticlesView
         Vec2 pos;
         Vec2 vel;
         Vec2 acc;
+        float age;
 
         private Particle() {
             id = nextId++;
             pos = new Vec2();
             vel = new Vec2();
             acc = new Vec2();
+            age = 0;
         }
     }
 
@@ -75,7 +78,7 @@ class ParticlesView
         mPointMasses = new ArrayList<>();
         mNeighborSearch = new KDTree<>();
 
-        mBound = new Rectangle(-2.3f, -3.5f, 2.3f, 3.5f);
+        mBound = new Rectangle(-2.4f, -4.2f, 2.4f, 4.2f);
 
         mBarnesHut = new BarnesHutTree(mBound);
 
@@ -117,10 +120,10 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 700; i++) {
+        for(int i = 0; i < 4000; i++) {
             Particle p = new Particle();
             p.pos = sRandom.uniformInRect(mBound);//sRandom.uniformUnit().scale(0.7f + 0.2f * sRandom.nextFloat());
-            p.vel = new Vec2();//sRandom.uniformUnit().scale(0.1f * sRandom.nextFloat());
+            p.vel = sRandom.uniformUnit().scale(0.1f * sRandom.nextFloat());
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, 1));
             ppvps.add(new PointValuePair<>(p.pos, p));
@@ -135,27 +138,30 @@ class ParticlesView
                 setParticles();
             }
 
+
+            Vec2 avgVel = null;
             for(Particle p : mParticles) {
                 if(!mBound.contains(p.pos)) {
-                    if((p.pos.x < mBound.minx && p.vel.x < 0) || (p.pos.x > mBound.maxx && p.vel.x > 0)) {
-                        p.vel.x *= -0.9f;
-                        p.vel.y *= 0.5f;
-                        p.vel.setZero();
+                    if(avgVel == null) {
+                        avgVel = new Vec2();
+                        for(Particle cp : mParticles) {
+                            avgVel.add(cp.vel);
+                        }
+                        avgVel.scaleInverse(mParticles.size());
                     }
-                    if((p.pos.y < mBound.miny && p.vel.y < 0) || (p.pos.y > mBound.maxy && p.vel.y > 0)) {
-                        p.vel.y *= -0.9f;
-                        p.vel.x *= 0.5f;
-                        p.vel.setZero();
-                    }
-                    p.acc.addScaled(p.pos.normalized(), -0.002f);
+                    //p.pos.setUnit(sRandom.nextDouble() * Math.PI * 2).scale(sRandom.nextFloat());
+                    p.pos.set(sRandom.uniformInRect(mBound));
+                    p.vel.set(avgVel).negate().scale(3f);
+                    p.age = 0;
                 }
             }
 
-            /*
+
             for(Particle p : mParticles) {
-                p.acc.addScaled(p.pos.normalized(), -0.001f);
+                //p.acc.addScaled(p.pos.normalized(), -0.02f);
+                p.acc.addScaled(p.pos.normalized().rotate90(), 0.001f);
             }
-            */
+
 
             mBarnesHut.clear();
             mBarnesHut.load(mPointMasses);
@@ -165,32 +171,13 @@ class ParticlesView
                 force.setZero();
                 mBarnesHut.getForce(pi.pos, force);
                 force.clampMagnitude(0, 100.0f);
-                pi.acc.addScaled(force, -0.00005f);
+                pi.acc.addScaled(force, -0.0004f);
             }
-
-            /*
-            for(int i = 0; i < mParticles.size(); i++) {
-                Particle pi = mParticles.get(i);
-                for(int j = i + 1; j < mParticles.size(); j++) {
-                    Particle pj = mParticles.get(j);
-                    Vec2 pdiff = Vec2.difference(pj.pos, pi.pos);
-                    float dist = pdiff.magnitude();
-                    if(dist <= 0) {
-                        continue;
-                    }
-                    pdiff.scaleInverse(dist);
-                    float f = 0.000001f / (dist * dist);
-                    f = Math.min(f, 0.01f);
-                    pi.acc.addScaled(pdiff, f);
-                    pj.acc.addScaled(pdiff, -f);
-                }
-            }
-            */
 
             mNeighborSearch.reload();
             Rectangle searchRect = new Rectangle();
 
-            float d = 0.04f;
+            float d = 0.05f;
             for(Particle p : mParticles) {
                 searchRect.setWithCenter(p.pos, 2 * d, 2 * d);
                 for(Particle q : mNeighborSearch.search(searchRect)) {
@@ -202,36 +189,45 @@ class ParticlesView
                     if(distance < d) {
                         Vec2 vdiff = p.vel.difference(q.vel);
                         float vdot = vdiff.dot(diff);
-                        if(vdot < 0) {
-                            float f = (d - distance) / d;
-                            float f1 = 0.01f + 1f * f * f;
-                            if(f > 0.4f)
-                                f1 = 0.7f;
-                            p.acc.addScaled(diff, f1);
-                            q.acc.addScaled(diff, -f1);
-                            //float f2 = 0.05f * f * vdot;
-                            //p.acc.addScaled(vdiff, f2);
-                            //q.acc.addScaled(vdiff, -f2);
-                        }
+                        float f = (d - distance) / d;
+                        float f1 = 1f * f - 0.05f * vdot;
+                        p.acc.addScaled(diff, f1);
+                        q.acc.addScaled(diff, -f1);
+                        //float f2 = 0.05f * f * vdot;
+                        //p.acc.addScaled(vdiff, f2);
+                        //q.acc.addScaled(vdiff, -f2);
                     }
                 }
             }
 
             for(Particle p : mParticles) {
                 p.vel.add(p.acc);
-                //p.vel.scale(0.99f);
+                //p.vel.scale(0.999f);
                 p.pos.addScaled(p.vel, 0.01f);
                 p.acc.setZero();
+                p.age += 0.01f;
+                //if(p.age > 1)
+                //    p.age = 1;
             }
 
+            /*
             Vec2 centroid = new Vec2();
+            int centroidCount = 0;
             for(Particle p : mParticles) {
-                centroid.add(p.pos);
+                if(mBound.contains(p.pos)) {
+                    centroid.add(p.pos);
+                    centroidCount++;
+                }
             }
-            centroid.scaleInverse(mParticles.size());
-            for(Particle p : mParticles) {
-                p.pos.subtract(centroid);
+            if(centroidCount > 0) {
+                centroid.scaleInverse(centroidCount);
+                for(Particle p : mParticles) {
+                    if(mBound.contains(p.pos)) {
+                        p.pos.addScaled(centroid, -0.05f);
+                    }
+                }
             }
+            */
         }
     }
 
@@ -244,21 +240,21 @@ class ParticlesView
         glClearColor(0, 0, 0.2f, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        final ShapesBrush brush = mLoader.getShapesBrush();
-        brush.begin(mViewTransform.getViewMatrix());
-
-        brush.setColor(Color.WHITE);
-
-        brush.setAlpha(0.2f);
-        brush.drawRectangle(mBound, 0.01f);
-
-        brush.setAlpha(1f);
+        final DotsBrush dotsBrush = mLoader.getDotsBrush();
+        dotsBrush.begin(mViewTransform.getViewMatrix());
         synchronized(mParticles) {
             for(Particle p : mParticles) {
-                brush.drawSpot(p.pos, 0.012f);
+                float a = Math.min(p.age, (float)(Math.sin(p.age) * 0.5 + 0.5) * 0.5f + 0.2f);
+                dotsBrush.add(p.pos, 0.07f, a);
             }
         }
+        dotsBrush.end();
 
+        final ShapesBrush brush = mLoader.getShapesBrush();
+        brush.begin(mViewTransform.getViewMatrix());
+        brush.setColor(Color.WHITE);
+        brush.setAlpha(0.2f);
+        brush.drawRectangle(mBound, 0.01f);
         brush.end();
     }
 }
