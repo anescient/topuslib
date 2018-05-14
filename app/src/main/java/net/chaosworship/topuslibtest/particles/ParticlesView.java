@@ -53,6 +53,7 @@ class ParticlesView
         }
     }
 
+    private static final float TIMERATE = 0.01f;
 
     private static final SuperRandom sRandom = new SuperRandom();
     private final TestLoader mLoader;
@@ -187,8 +188,8 @@ class ParticlesView
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
                         Vec2 vdiff = p.vel.difference(q.vel);
-                        p.acc.addScaled(pdiff, (d - distance) * 50);
-                        q.acc.addScaled(pdiff, (d - distance) * -50);
+                        p.acc.addScaled(pdiff, (d - distance) * 0.5f / TIMERATE);
+                        q.acc.addScaled(pdiff, (d - distance) * 0.5f / -TIMERATE);
                         if(vdiff.dot(pdiff) < 0) {
                             float pFraction = p.mass / (p.mass + q.mass);
                             float qFraction = q.mass / (p.mass + q.mass);
@@ -202,7 +203,7 @@ class ParticlesView
             for(Particle p : mParticles) {
                 p.vel.add(p.acc);
                 //p.vel.scale(0.999f);
-                p.pos.addScaled(p.vel, 0.01f);
+                p.pos.addScaled(p.vel, TIMERATE);
                 p.acc.setZero();
             }
 
