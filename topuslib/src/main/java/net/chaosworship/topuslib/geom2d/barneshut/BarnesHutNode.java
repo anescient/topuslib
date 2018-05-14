@@ -55,19 +55,18 @@ class BarnesHutNode {
             return;
         }
 
-        if(mChildLessXLessY == null) {
-            createChildren();
-        }
-
         if(mPointCount == 0) {
             mSumPointMass.position.set(pointMass.position);
             mSumPointMass.mass = pointMass.mass;
-            mChildLessXLessY.clear();
-            mChildLessXMoreY.clear();
-            mChildMoreXLessY.clear();
-            mChildMoreXMoreY.clear();
         } else {
+            if(mChildLessXLessY == null) {
+                createChildren();
+            }
             if(mPointCount == 1) {
+                mChildLessXLessY.clear();
+                mChildLessXMoreY.clear();
+                mChildMoreXLessY.clear();
+                mChildMoreXMoreY.clear();
                 putToChild(mSumPointMass);
             }
             mSumPointMass.mass += pointMass.mass;
