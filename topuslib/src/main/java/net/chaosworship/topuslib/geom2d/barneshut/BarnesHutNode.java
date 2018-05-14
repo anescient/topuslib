@@ -10,7 +10,7 @@ import net.chaosworship.topuslib.tuple.PointMass;
 
 class BarnesHutNode {
 
-    private static final float OPENINGRATIO = 1.0f;
+    private static final float OPENINGRATIO = 0.1f;
 
     private static int nodecount = 0;
 
@@ -143,9 +143,6 @@ class BarnesHutNode {
             mTempDiff.setDifference(position, mSumPointMass.position);
             float distance = mTempDiff.magnitude();
             if(distance > 0) {
-                if(distance < 0.01f) {
-                    return;
-                }
                 mTempDiff.scaleInverse(distance);
                 forceAccum.addScaled(mTempDiff, mSumPointMass.mass / (distance * distance));
             }
