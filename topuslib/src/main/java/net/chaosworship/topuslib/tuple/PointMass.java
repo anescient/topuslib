@@ -10,7 +10,7 @@ public class PointMass {
 
     public PointMass() {
         position = new Vec2();
-        mass = 1;
+        mass = 0;
     }
 
     public PointMass(Vec2 position, float mass) {

@@ -122,11 +122,11 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 200; i++) {
             Particle p = new Particle();
-            p.pos = sRandom.uniformUnit().scale(2.0f + sRandom.nextFloat());//sRandom.uniformInRect(mBound);
+            p.pos = sRandom.uniformInRect(mBound);
             p.vel.setZero();
-            p.radius = 0.1f;//0.03f + sRandom.nextFloat() * sRandom.nextFloat() * 0.1f;
+            p.radius = 0.05f;// + sRandom.nextFloat() * sRandom.nextFloat() * 0.2f;
             p.mass = 1.0f * p.radius * p.radius;
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
@@ -144,14 +144,15 @@ class ParticlesView
 
             for(Particle p : mParticles) {
                 if(!mBound.contains(p.pos)) {
-                    float speed = p.vel.magnitude();
-                    p.vel.set(p.pos).normalize().scale(-speed);
+                    if(p.vel.dot(p.pos) > 0) {
+                        p.vel.setZero();
+                    }
                 }
             }
 
 
             for(Particle p : mParticles) {
-                p.acc.addScaled(p.pos.normalized(), -0.1f);
+                //p.acc.addScaled(p.pos.normalized(), -0.001f);
                 //p.acc.addScaled(p.pos.normalized().rotate90(), 0.001f);
             }
 
@@ -163,7 +164,7 @@ class ParticlesView
                 force.setZero();
                 mBarnesHut.getForce(p.pos, force);
                 //force.clampMagnitude(0, 1);
-                //p.acc.addScaled(force, -0.1f);
+                p.acc.addScaled(force, -0.0001f / p.mass);
             }
 
             mNeighborSearch.reload();
@@ -185,19 +186,21 @@ class ParticlesView
                     if(distSq < d * d) {
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
-                        p.pos.addScaled(pdiff, (d - distance) * 0.5f);
-                        q.pos.addScaled(pdiff, (d - distance) * -0.5f);
                         Vec2 vdiff = p.vel.difference(q.vel);
+                        p.acc.addScaled(pdiff, (d - distance) * 50);
+                        q.acc.addScaled(pdiff, (d - distance) * -50);
                         if(vdiff.dot(pdiff) < 0) {
-                            p.vel.addScaled(pdiff, -vdiff.dot(pdiff) * 0.5f);
-                            q.vel.addScaled(pdiff, vdiff.dot(pdiff) * 0.5f);
+                            float pFraction = p.mass / (p.mass + q.mass);
+                            float qFraction = q.mass / (p.mass + q.mass);
+                            p.acc.addScaled(pdiff, -vdiff.dot(pdiff) * 0.5f * qFraction);
+                            q.acc.addScaled(pdiff, vdiff.dot(pdiff) * 0.5f * pFraction);
                         }
                     }
                 }
             }
 
             for(Particle p : mParticles) {
-                p.vel.addScaled(p.acc, 0.001f / p.mass);
+                p.vel.add(p.acc);
                 //p.vel.scale(0.999f);
                 p.pos.addScaled(p.vel, 0.01f);
                 p.acc.setZero();
