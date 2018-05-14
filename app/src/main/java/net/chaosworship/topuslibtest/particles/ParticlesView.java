@@ -123,11 +123,11 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 200; i++) {
+        for(int i = 0; i < 250; i++) {
             Particle p = new Particle();
             p.pos = sRandom.uniformInRect(mBound);
             p.vel.setZero();
-            p.radius = 0.05f;// + sRandom.nextFloat() * sRandom.nextFloat() * 0.2f;
+            p.radius = 0.05f + sRandom.nextFloat() * sRandom.nextFloat() * 0.2f;
             p.mass = 1.0f * p.radius * p.radius;
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
@@ -153,7 +153,7 @@ class ParticlesView
 
 
             for(Particle p : mParticles) {
-                //p.acc.addScaled(p.pos.normalized(), -0.001f);
+                //p.acc.addScaled(p.pos.normalized(), -0.005f);
                 //p.acc.addScaled(p.pos.normalized().rotate90(), 0.001f);
             }
 
@@ -164,8 +164,7 @@ class ParticlesView
             for(Particle p : mParticles) {
                 force.setZero();
                 mBarnesHut.getForce(p.pos, force);
-                //force.clampMagnitude(0, 1);
-                p.acc.addScaled(force, -0.0001f / p.mass);
+                p.acc.addScaled(force, -0.01f);
             }
 
             mNeighborSearch.reload();
@@ -188,13 +187,12 @@ class ParticlesView
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
                         Vec2 vdiff = p.vel.difference(q.vel);
-                        p.acc.addScaled(pdiff, (d - distance) * 0.5f / TIMERATE);
-                        q.acc.addScaled(pdiff, (d - distance) * 0.5f / -TIMERATE);
+                        p.pos.addScaled(pdiff, (d - distance) * 0.4f);
+                        q.pos.addScaled(pdiff, (d - distance) * -0.4f);
                         if(vdiff.dot(pdiff) < 0) {
-                            float pFraction = p.mass / (p.mass + q.mass);
-                            float qFraction = q.mass / (p.mass + q.mass);
-                            p.acc.addScaled(pdiff, -vdiff.dot(pdiff) * 0.5f * qFraction);
-                            q.acc.addScaled(pdiff, vdiff.dot(pdiff) * 0.5f * pFraction);
+                            float f = 0.7f * 2 * vdiff.dot(pdiff) / (p.mass + q.mass);
+                            p.acc.addScaled(pdiff, q.mass * -f);
+                            q.acc.addScaled(pdiff, p.mass * f);
                         }
                     }
                 }
@@ -202,7 +200,7 @@ class ParticlesView
 
             for(Particle p : mParticles) {
                 p.vel.add(p.acc);
-                //p.vel.scale(0.999f);
+                //p.vel.scale(0.99f);
                 p.pos.addScaled(p.vel, TIMERATE);
                 p.acc.setZero();
             }
