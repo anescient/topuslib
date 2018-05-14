@@ -122,11 +122,11 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 444; i++) {
+        for(int i = 0; i < 10; i++) {
             Particle p = new Particle();
-            p.pos = sRandom.uniformInRect(mBound);
+            p.pos = sRandom.uniformUnit().scale(2.0f + sRandom.nextFloat());//sRandom.uniformInRect(mBound);
             p.vel.setZero();
-            p.radius = 0.03f + sRandom.nextFloat() * sRandom.nextFloat() * 0.1f;
+            p.radius = 0.1f;//0.03f + sRandom.nextFloat() * sRandom.nextFloat() * 0.1f;
             p.mass = 1.0f * p.radius * p.radius;
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
@@ -151,7 +151,7 @@ class ParticlesView
 
 
             for(Particle p : mParticles) {
-                //p.acc.addScaled(p.pos.normalized(), -0.02f);
+                p.acc.addScaled(p.pos.normalized(), -0.1f);
                 //p.acc.addScaled(p.pos.normalized().rotate90(), 0.001f);
             }
 
@@ -159,12 +159,11 @@ class ParticlesView
             mBarnesHut.clear();
             mBarnesHut.load(mPointMasses);
             Vec2 force = new Vec2();
-            for(int i = 0; i < mParticles.size(); i++) {
-                Particle pi = mParticles.get(i);
+            for(Particle p : mParticles) {
                 force.setZero();
-                mBarnesHut.getForce(pi.pos, force);
-                force.clampMagnitude(0, 1.0f);
-                pi.acc.addScaled(force, -0.01f);
+                mBarnesHut.getForce(p.pos, force);
+                //force.clampMagnitude(0, 1);
+                //p.acc.addScaled(force, -0.1f);
             }
 
             mNeighborSearch.reload();
@@ -181,20 +180,18 @@ class ParticlesView
                     if(q.id <= p.id)
                         continue;
                     float d = q.radius + p.radius;
-                    Vec2 diff = p.pos.difference(q.pos);
-                    float distance = diff.magnitude();
-                    diff.scaleInverse(distance);
-                    if(distance < d) {
+                    Vec2 pdiff = p.pos.difference(q.pos);
+                    float distSq = pdiff.magnitudeSq();
+                    if(distSq < d * d) {
+                        float distance = (float)Math.sqrt(distSq);
+                        pdiff.scaleInverse(distance);
+                        p.pos.addScaled(pdiff, (d - distance) * 0.5f);
+                        q.pos.addScaled(pdiff, (d - distance) * -0.5f);
                         Vec2 vdiff = p.vel.difference(q.vel);
-                        float vdot = vdiff.dot(diff);
-                        float f = (d - distance) / d;
-                        float f1 = 0.02f + 10f * f * f - 0.1f * vdot;
-                        p.acc.addScaled(diff, f1);
-                        q.acc.addScaled(diff, -f1);
-
-                        //float f2 = 0.05f * f * vdot;
-                        //p.acc.addScaled(vdiff, f2);
-                        //q.acc.addScaled(vdiff, -f2);
+                        if(vdiff.dot(pdiff) < 0) {
+                            p.vel.addScaled(pdiff, -vdiff.dot(pdiff) * 0.5f);
+                            q.vel.addScaled(pdiff, vdiff.dot(pdiff) * 0.5f);
+                        }
                     }
                 }
             }
