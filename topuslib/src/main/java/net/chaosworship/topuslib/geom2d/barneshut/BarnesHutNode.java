@@ -95,14 +95,14 @@ class BarnesHutNode {
     }
 
     void clear() {
-        mPointCount = 0;
-        if(mDepth > 8) {
+        if(mDepth > 7 && mPointCount == 0) {
             nodecount -= treeSize() - 1;
             mChildLessXLessY = null;
             mChildLessXMoreY = null;
             mChildMoreXLessY = null;
             mChildMoreXMoreY = null;
         }
+        mPointCount = 0;
     }
 
     void insert(PointMass pointMass) {
