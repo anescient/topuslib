@@ -29,7 +29,7 @@ public class BarnesHutTree {
         //Log.d("bht size", String.valueOf(mRoot.treeSize()));
     }
 
-    public void getForce(Vec2 position, Vec2 forceAccum) {
-        mRoot.getForce(position, forceAccum);
+    public void getForce(Vec2 position, Vec2 forceAccum, float minDistance) {
+        mRoot.getForce(position, forceAccum, minDistance);
     }
 }

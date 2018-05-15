@@ -180,7 +180,7 @@ class BarnesHutNode {
         mChildMoreXMoreY = new BarnesHutNode(childRect, mDepth + 1);
     }
 
-    void getForce(Vec2 position, Vec2 forceAccum) {
+    void getForce(Vec2 position, Vec2 forceAccum, float minDistance) {
         if(mPointCount == 0) {
             return;
         }
@@ -197,14 +197,17 @@ class BarnesHutNode {
         open &= mPointCount > 1;
 
         if(open) {
-            mChildLessXLessY.getForce(position, forceAccum);
-            mChildLessXMoreY.getForce(position, forceAccum);
-            mChildMoreXLessY.getForce(position, forceAccum);
-            mChildMoreXMoreY.getForce(position, forceAccum);
+            mChildLessXLessY.getForce(position, forceAccum, minDistance);
+            mChildLessXMoreY.getForce(position, forceAccum, minDistance);
+            mChildMoreXLessY.getForce(position, forceAccum, minDistance);
+            mChildMoreXMoreY.getForce(position, forceAccum, minDistance);
         } else {
             mTempDiff.setDifference(position, mSumPointMass.position);
             float distance = mTempDiff.magnitude();
-            if(distance > 0.01f) {
+            if(distance > 0) {
+                if(distance < minDistance) {
+                    distance = minDistance;
+                }
                 mTempDiff.scaleInverse(distance);
                 forceAccum.addScaled(mTempDiff, mSumPointMass.mass / (distance * distance));
             }

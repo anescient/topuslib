@@ -164,7 +164,7 @@ class ParticlesView
             Vec2 force = new Vec2();
             for(Particle p : mParticles) {
                 force.setZero();
-                mBarnesHut.getForce(p.pos, force);
+                mBarnesHut.getForce(p.pos, force, p.radius);
                 p.acc.addScaled(force, -0.02f);
             }
 
