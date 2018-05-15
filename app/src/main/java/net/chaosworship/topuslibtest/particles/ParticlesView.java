@@ -123,11 +123,11 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 250; i++) {
+        for(int i = 0; i < 4000; i++) {
             Particle p = new Particle();
             p.pos = sRandom.uniformInRect(mBound);
             p.vel.setZero();
-            p.radius = 0.05f + sRandom.nextFloat() * sRandom.nextFloat() * 0.2f;
+            p.radius = 0.02f + sRandom.nextFloat() * sRandom.nextFloat() * 0.03f;
             p.mass = 1.0f * p.radius * p.radius;
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
@@ -148,6 +148,7 @@ class ParticlesView
                     if(p.vel.dot(p.pos) > 0) {
                         p.vel.setZero();
                     }
+                    p.acc.addScaled(p.pos.normalized(), -0.05f);
                 }
             }
 
@@ -164,7 +165,7 @@ class ParticlesView
             for(Particle p : mParticles) {
                 force.setZero();
                 mBarnesHut.getForce(p.pos, force);
-                p.acc.addScaled(force, -0.01f);
+                p.acc.addScaled(force, -0.02f);
             }
 
             mNeighborSearch.reload();

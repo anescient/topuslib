@@ -1,5 +1,7 @@
 package net.chaosworship.topuslib.geom2d.barneshut;
 
+import android.util.Log;
+
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.tuple.PointMass;
@@ -24,6 +26,7 @@ public class BarnesHutTree {
         for(PointMass pointMass : pointMasses) {
             mRoot.insert(pointMass);
         }
+        Log.d("bht depth", String.valueOf(mRoot.maxLeafDepth()));
     }
 
     public void getForce(Vec2 position, Vec2 forceAccum) {

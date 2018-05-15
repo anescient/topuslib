@@ -10,7 +10,7 @@ import net.chaosworship.topuslib.tuple.PointMass;
 
 class BarnesHutNode {
 
-    private static final float OPENINGRATIO = 0.1f;
+    private static final float OPENINGRATIO = 0.5f;
 
     private static int nodecount = 0;
     private static int maxdepth = 0;
@@ -34,7 +34,7 @@ class BarnesHutNode {
 
     private BarnesHutNode(Rectangle area, int depth) {
         nodecount++;
-        if(nodecount % 100 == 0)
+        if(nodecount % 1000 == 0)
             Log.d("bht nodes", String.valueOf(nodecount));
 
         mDepth = depth;
@@ -53,6 +53,32 @@ class BarnesHutNode {
         mChildMoreXLessY = null;
         mChildMoreXMoreY = null;
         mTempDiff = new Vec2();
+    }
+
+    float avgLeafDepth() {
+        if(mPointCount <= 1)
+            return mDepth;
+        else {
+            float s = 0;
+            s += 0.25 * mChildLessXLessY.avgLeafDepth();
+            s += 0.25 * mChildLessXMoreY.avgLeafDepth();
+            s += 0.25 * mChildMoreXLessY.avgLeafDepth();
+            s += 0.25 * mChildMoreXMoreY.avgLeafDepth();
+            return s;
+        }
+    }
+
+    int maxLeafDepth() {
+        if(mPointCount <= 1)
+            return mDepth;
+        else {
+            int d = 0;
+            d = Math.max(d, mChildLessXLessY.maxLeafDepth());
+            d = Math.max(d, mChildLessXMoreY.maxLeafDepth());
+            d = Math.max(d, mChildMoreXLessY.maxLeafDepth());
+            d = Math.max(d, mChildMoreXMoreY.maxLeafDepth());
+            return d;
+        }
     }
 
     void clear() {
@@ -158,7 +184,7 @@ class BarnesHutNode {
         } else {
             mTempDiff.setDifference(position, mSumPointMass.position);
             float distance = mTempDiff.magnitude();
-            if(distance > 0) {
+            if(distance > 0.01f) {
                 mTempDiff.scaleInverse(distance);
                 forceAccum.addScaled(mTempDiff, mSumPointMass.mass / (distance * distance));
             }
