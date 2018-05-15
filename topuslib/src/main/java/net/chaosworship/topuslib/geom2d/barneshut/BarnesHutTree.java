@@ -26,7 +26,7 @@ public class BarnesHutTree {
         for(PointMass pointMass : pointMasses) {
             mRoot.insert(pointMass);
         }
-        Log.d("bht depth", String.valueOf(mRoot.maxLeafDepth()));
+        //Log.d("bht size", String.valueOf(mRoot.treeSize()));
     }
 
     public void getForce(Vec2 position, Vec2 forceAccum) {

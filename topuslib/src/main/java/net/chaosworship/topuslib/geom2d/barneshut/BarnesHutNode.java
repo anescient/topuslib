@@ -81,8 +81,28 @@ class BarnesHutNode {
         }
     }
 
+    int treeSize() {
+        int n = 1;
+        if(mChildLessXLessY != null)
+            n += mChildLessXLessY.treeSize();
+        if(mChildLessXMoreY != null)
+            n += mChildLessXMoreY.treeSize();
+        if(mChildMoreXLessY != null)
+            n += mChildMoreXLessY.treeSize();
+        if(mChildMoreXMoreY != null)
+            n += mChildMoreXMoreY.treeSize();
+        return n;
+    }
+
     void clear() {
         mPointCount = 0;
+        if(mDepth > 8) {
+            nodecount -= treeSize() - 1;
+            mChildLessXLessY = null;
+            mChildLessXMoreY = null;
+            mChildMoreXLessY = null;
+            mChildMoreXMoreY = null;
+        }
     }
 
     void insert(PointMass pointMass) {
