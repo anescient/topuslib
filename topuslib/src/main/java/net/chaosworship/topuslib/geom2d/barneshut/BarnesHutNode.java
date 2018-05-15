@@ -13,7 +13,9 @@ class BarnesHutNode {
     private static final float OPENINGRATIO = 0.1f;
 
     private static int nodecount = 0;
+    private static int maxdepth = 0;
 
+    private final int mDepth;
     private final Rectangle mArea;
     private final float mSplitX;
     private final float mSplitY;
@@ -27,9 +29,19 @@ class BarnesHutNode {
     private final Vec2 mTempDiff;
 
     BarnesHutNode(Rectangle area) {
+        this(area, 0);
+    }
+
+    private BarnesHutNode(Rectangle area, int depth) {
         nodecount++;
         if(nodecount % 100 == 0)
-            Log.d("bht", String.valueOf(nodecount));
+            Log.d("bht nodes", String.valueOf(nodecount));
+
+        mDepth = depth;
+        if(mDepth > maxdepth) {
+            maxdepth = mDepth;
+            Log.d("bht depth", String.valueOf(maxdepth));
+        }
 
         mArea = area;
         mSplitX = mArea.centerX();
@@ -52,6 +64,10 @@ class BarnesHutNode {
             throw new IllegalArgumentException();
         }
         if(pointMass.mass == 0) {
+            return;
+        }
+
+        if(mDepth == 0 && !mArea.contains(pointMass.position)) {
             return;
         }
 
@@ -106,16 +122,16 @@ class BarnesHutNode {
         Rectangle childRect;
 
         childRect = new Rectangle(mArea.minx, mArea.miny, mSplitX, mSplitY);
-        mChildLessXLessY = new BarnesHutNode(childRect);
+        mChildLessXLessY = new BarnesHutNode(childRect, mDepth + 1);
 
         childRect = new Rectangle(mArea.minx, mSplitY, mSplitX, mArea.maxy);
-        mChildLessXMoreY = new BarnesHutNode(childRect);
+        mChildLessXMoreY = new BarnesHutNode(childRect, mDepth + 1);
 
         childRect = new Rectangle(mSplitX, mArea.miny, mArea.maxx, mSplitY);
-        mChildMoreXLessY = new BarnesHutNode(childRect);
+        mChildMoreXLessY = new BarnesHutNode(childRect, mDepth + 1);
 
         childRect = new Rectangle(mSplitX, mSplitY, mArea.maxx, mArea.maxy);
-        mChildMoreXMoreY = new BarnesHutNode(childRect);
+        mChildMoreXMoreY = new BarnesHutNode(childRect, mDepth + 1);
     }
 
     void getForce(Vec2 position, Vec2 forceAccum) {
