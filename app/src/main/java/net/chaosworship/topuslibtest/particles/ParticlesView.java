@@ -37,9 +37,9 @@ class ParticlesView
     private static class Particle {
         static int nextId = 0;
         final int id;
-        Vec2 pos;
-        Vec2 vel;
-        Vec2 acc;
+        final Vec2 pos;
+        final Vec2 vel;
+        final Vec2 acc;
         float radius;
         float mass;
 
@@ -125,7 +125,7 @@ class ParticlesView
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
         for(int i = 0; i < 1500; i++) {
             Particle p = new Particle();
-            p.pos = sRandom.uniformInRect(mBound);
+            p.pos.set(sRandom.uniformInRect(mBound));
             p.vel.setZero();
             p.radius = 0.03f;//0.04f + sRandom.nextFloat() * sRandom.nextFloat() * 0.1f;
             if(i < 20)
