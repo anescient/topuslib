@@ -123,11 +123,13 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 4000; i++) {
+        for(int i = 0; i < 1500; i++) {
             Particle p = new Particle();
             p.pos = sRandom.uniformInRect(mBound);
             p.vel.setZero();
-            p.radius = 0.02f + sRandom.nextFloat() * sRandom.nextFloat() * 0.03f;
+            p.radius = 0.03f;//0.04f + sRandom.nextFloat() * sRandom.nextFloat() * 0.1f;
+            if(i < 20)
+                p.radius = 0.2f;
             p.mass = 1.0f * p.radius * p.radius;
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
@@ -188,8 +190,8 @@ class ParticlesView
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
                         Vec2 vdiff = p.vel.difference(q.vel);
-                        p.pos.addScaled(pdiff, (d - distance) * 0.4f);
-                        q.pos.addScaled(pdiff, (d - distance) * -0.4f);
+                        p.pos.addScaled(pdiff, (d - distance) * 0.5f * q.radius / d);
+                        q.pos.addScaled(pdiff, (d - distance) * 0.5f * -p.radius / d);
                         if(vdiff.dot(pdiff) < 0) {
                             float f = 0.7f * 2 * vdiff.dot(pdiff) / (p.mass + q.mass);
                             p.acc.addScaled(pdiff, q.mass * -f);
