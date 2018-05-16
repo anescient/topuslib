@@ -127,7 +127,7 @@ class ParticlesView
             Particle p = new Particle();
             p.pos.set(sRandom.uniformInRect(mBound));
             p.vel.setZero();
-            p.radius = 0.03f;//0.04f + sRandom.nextFloat() * sRandom.nextFloat() * 0.1f;
+            p.radius = 0.03f + sRandom.nextFloat() * sRandom.nextFloat() * 0.1f;
             if(i < 20)
                 p.radius = 0.2f;
             p.mass = 1.0f * p.radius * p.radius;
@@ -167,7 +167,7 @@ class ParticlesView
             for(Particle p : mParticles) {
                 force.setZero();
                 mBarnesHut.getForce(p.pos, force, p.radius);
-                p.acc.addScaled(force, -0.02f);
+                p.acc.addScaled(force, -0.01f);
             }
 
             mNeighborSearch.reload();
@@ -190,8 +190,11 @@ class ParticlesView
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
                         Vec2 vdiff = p.vel.difference(q.vel);
-                        p.pos.addScaled(pdiff, (d - distance) * 0.5f * q.radius / d);
-                        q.pos.addScaled(pdiff, (d - distance) * 0.5f * -p.radius / d);
+                        float moveApart = (d - distance) / d;
+                        p.pos.addScaled(pdiff, 0.8f * moveApart * q.radius);
+                        q.pos.addScaled(pdiff, 0.8f * -moveApart * p.radius);
+                        p.acc.addScaled(pdiff, 0.2f * moveApart * q.radius / TIMERATE);
+                        q.acc.addScaled(pdiff, 0.2f * -moveApart * p.radius / TIMERATE);
                         if(vdiff.dot(pdiff) < 0) {
                             float f = 0.7f * 2 * vdiff.dot(pdiff) / (p.mass + q.mass);
                             p.acc.addScaled(pdiff, q.mass * -f);
