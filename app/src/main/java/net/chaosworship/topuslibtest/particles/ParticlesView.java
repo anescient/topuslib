@@ -81,7 +81,7 @@ class ParticlesView
         mPointMasses = new ArrayList<>();
         mNeighborSearch = new KDTree<>();
 
-        mBound = new Rectangle(-2.4f, -4.2f, 2.4f, 4.2f);
+        mBound = new Rectangle(-2.7f, -2.7f, 2.7f, 2.7f);
 
         mBarnesHut = new BarnesHutTree(mBound);
 
@@ -123,13 +123,12 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 1500; i++) {
+        for(int i = 0; i < 700; i++) {
             Particle p = new Particle();
             p.pos.set(sRandom.uniformInRect(mBound));
             p.vel.setZero();
-            p.radius = 0.03f + sRandom.nextFloat() * sRandom.nextFloat() * 0.1f;
-            if(i < 20)
-                p.radius = 0.2f;
+            float r = sRandom.nextFloat();
+            p.radius = 0.03f + (float)Math.pow(r, 3) * 0.07f;
             p.mass = 1.0f * p.radius * p.radius;
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
@@ -156,6 +155,10 @@ class ParticlesView
 
 
             for(Particle p : mParticles) {
+                if(p.pos.magnitude() > 2.0f) {
+                    p.vel.scale(0.95f);
+                    p.acc.addScaled(p.pos, -0.01f);
+                }
                 //p.acc.addScaled(p.pos.normalized(), -0.005f);
                 //p.acc.addScaled(p.pos.normalized().rotate90(), 0.001f);
             }
@@ -167,7 +170,7 @@ class ParticlesView
             for(Particle p : mParticles) {
                 force.setZero();
                 mBarnesHut.getForce(p.pos, force, p.radius);
-                p.acc.addScaled(force, -0.01f);
+                p.acc.addScaled(force, -0.02f);
             }
 
             mNeighborSearch.reload();
@@ -196,7 +199,7 @@ class ParticlesView
                         p.acc.addScaled(pdiff, 0.2f * moveApart * q.radius / TIMERATE);
                         q.acc.addScaled(pdiff, 0.2f * -moveApart * p.radius / TIMERATE);
                         if(vdiff.dot(pdiff) < 0) {
-                            float f = 0.7f * 2 * vdiff.dot(pdiff) / (p.mass + q.mass);
+                            float f = 0.5f * 2 * vdiff.dot(pdiff) / (p.mass + q.mass);
                             p.acc.addScaled(pdiff, q.mass * -f);
                             q.acc.addScaled(pdiff, p.mass * f);
                         }
@@ -211,24 +214,47 @@ class ParticlesView
                 p.acc.setZero();
             }
 
-            /*
             Vec2 centroid = new Vec2();
-            int centroidCount = 0;
+            Vec2 meanVelocity = new Vec2();
+            float angularVelocity = 0;
+            int inBoundCount = 0;
             for(Particle p : mParticles) {
                 if(mBound.contains(p.pos)) {
                     centroid.add(p.pos);
-                    centroidCount++;
+                    meanVelocity.add(p.vel);
+                    inBoundCount++;
                 }
+
+                angularVelocity += p.vel.dot(p.pos.normalized().rotate90());
             }
-            if(centroidCount > 0) {
-                centroid.scaleInverse(centroidCount);
+
+            if(inBoundCount > 0) {
+                centroid.scaleInverse(inBoundCount);
+                meanVelocity.scaleInverse(inBoundCount);
+
+
                 for(Particle p : mParticles) {
                     if(mBound.contains(p.pos)) {
-                        p.pos.addScaled(centroid, -0.05f);
+                        p.pos.addScaled(centroid, -0.01f);
+                        p.vel.subtract(meanVelocity);
+                        p.vel.addScaled(p.pos.normalized().rotate90(), angularVelocity * -0.3f / inBoundCount);
+                    }
+                }
+
+                float meanSpeed = 0;
+                for(Particle p : mParticles) {
+                    if(mBound.contains(p.pos)) {
+                        meanSpeed += p.vel.magnitude();
+                    }
+                }
+                meanSpeed /= inBoundCount;
+                float speedAdjust = 0.4f / meanSpeed;
+                for(Particle p : mParticles) {
+                    if(mBound.contains(p.pos)) {
+                        p.vel.scale(speedAdjust);
                     }
                 }
             }
-            */
         }
     }
 
