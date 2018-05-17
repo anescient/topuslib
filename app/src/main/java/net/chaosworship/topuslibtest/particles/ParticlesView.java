@@ -180,6 +180,8 @@ class ParticlesView
             for(Particle p : mParticles) {
                 maxradius = Math.max(maxradius, p.radius);
             }
+            Vec2 pdiff = new Vec2();
+            Vec2 vdiff = new Vec2();
             for(Particle p : mParticles) {
                 float searchRadius = maxradius + p.radius;
                 searchRect.setWithCenter(p.pos, 2 * searchRadius, 2 * searchRadius);
@@ -187,12 +189,12 @@ class ParticlesView
                     if(q.id <= p.id)
                         continue;
                     float d = q.radius + p.radius;
-                    Vec2 pdiff = p.pos.difference(q.pos);
+                    pdiff.setDifference(p.pos, q.pos);
                     float distSq = pdiff.magnitudeSq();
                     if(distSq < d * d) {
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
-                        Vec2 vdiff = p.vel.difference(q.vel);
+                        vdiff.setDifference(p.vel, q.vel);
                         float moveApart = (d - distance) / d;
                         p.pos.addScaled(pdiff, 0.8f * moveApart * q.radius);
                         q.pos.addScaled(pdiff, 0.8f * -moveApart * p.radius);
