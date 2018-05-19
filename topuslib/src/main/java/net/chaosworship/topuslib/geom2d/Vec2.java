@@ -129,6 +129,13 @@ public class Vec2 implements Cloneable {
         return this;
     }
 
+    // set filtered value at c
+    public Vec2 setSavitzkyGolay(Vec2 a, Vec2 b, Vec2 c, Vec2 d, Vec2 e) {
+        x = Spline.SavitzkyGolay(a.x, b.x, c.x, d.x, e.x);
+        y = Spline.SavitzkyGolay(a.y, b.y, c.y, d.y, e.y);
+        return this;
+    }
+
     public static Vec2 midpoint(Vec2 a, Vec2 b) {
         return new Vec2().setMidpoint(a, b);
     }

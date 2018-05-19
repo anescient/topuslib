@@ -7,6 +7,7 @@ public abstract class Spline {
     private static final float OVER2 = 1.0f / 2.0f;
     private static final float OVER6 = 1.0f / 6.0f;
     private static final float OVER24 = 1.0f / 24.0f;
+    private static final float OVER35 = 1.0f / 35.0f;
 
     // u in [0,1] for approximation from b to c
     public static float CubicBSpline(float a, float b, float c, float d, float u) {
@@ -73,5 +74,11 @@ public abstract class Spline {
         final float b3 = (-4 * u2 + 6 * u - 1) * OVER2;
         final float b4 = (u2 - 2 * u + 1) * OVER2;
         return b0 * e + b1 * d + b2 * c + b3 * b + b4 * a;
+    }
+
+    // https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter
+    // smoothed value at c
+    public static float SavitzkyGolay(float a, float b, float c, float d, float e) {
+        return (-3 * a + 12 * b + 17 * c + 12 * d - 3 * e) * OVER35;
     }
 }
