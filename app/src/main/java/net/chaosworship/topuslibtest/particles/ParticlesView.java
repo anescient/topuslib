@@ -43,6 +43,8 @@ class ParticlesView
         float radius;
         float mass;
 
+        float phase;
+
         private Particle() {
             id = nextId++;
             pos = new Vec2();
@@ -123,13 +125,14 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 700; i++) {
+        for(int i = 0; i < 400; i++) {
             Particle p = new Particle();
             p.pos.set(sRandom.uniformInRect(mBound));
             p.vel.setZero();
             float r = sRandom.nextFloat();
             p.radius = 0.03f + (float)Math.pow(r, 3) * 0.07f;
             p.mass = 1.0f * p.radius * p.radius;
+            p.phase = sRandom.nextFloat();
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
             ppvps.add(new PointValuePair<>(p.pos, p));
@@ -151,14 +154,16 @@ class ParticlesView
                     }
                     p.acc.addScaled(p.pos.normalized(), -0.05f);
                 }
+
+                p.phase += TIMERATE * 0.1f;
+                if(p.phase > 1)
+                    p.phase -= 1;
+                p.radius = 0.02f + 0.03f * ((float)Math.sin(Math.PI * 2 * p.phase) + 1);
+                p.mass = p.radius * p.radius;
             }
 
 
             for(Particle p : mParticles) {
-                if(p.pos.magnitude() > 2.0f) {
-                    p.vel.scale(0.95f);
-                    p.acc.addScaled(p.pos, -0.01f);
-                }
                 //p.acc.addScaled(p.pos.normalized(), -0.005f);
                 //p.acc.addScaled(p.pos.normalized().rotate90(), 0.001f);
             }
@@ -170,7 +175,7 @@ class ParticlesView
             for(Particle p : mParticles) {
                 force.setZero();
                 mBarnesHut.getForce(p.pos, force, p.radius);
-                p.acc.addScaled(force, -0.02f);
+                p.acc.addScaled(force, -0.01f);
             }
 
             mNeighborSearch.reload();
@@ -243,6 +248,7 @@ class ParticlesView
                     }
                 }
 
+                /*
                 float meanSpeed = 0;
                 for(Particle p : mParticles) {
                     if(mBound.contains(p.pos)) {
@@ -256,6 +262,7 @@ class ParticlesView
                         p.vel.scale(speedAdjust);
                     }
                 }
+                */
             }
         }
     }
