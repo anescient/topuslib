@@ -84,7 +84,6 @@ public class RectViewTransform implements ViewTransform {
         return mViewMatrix;
     }
 
-    @Override
     public Vec2Transformer getViewToWorldTransformer() {
         updateTransform();
         return mViewWorldTransformer;

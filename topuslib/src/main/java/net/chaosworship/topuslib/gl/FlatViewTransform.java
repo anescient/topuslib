@@ -170,7 +170,6 @@ public class FlatViewTransform implements ViewTransform {
         }
     }
 
-    @Override
     public Vec2Transformer getViewToWorldTransformer() {
         if(mViewToWorldDirty) {
             setViewWorldTransformer();

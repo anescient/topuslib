@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.gl;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 
 
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public interface ViewTransform {
 
     // return true if view actually changes
@@ -17,6 +18,4 @@ public interface ViewTransform {
     int getViewportHeight();
 
     float[] getViewMatrix();
-
-    Vec2Transformer getViewToWorldTransformer();
 }
