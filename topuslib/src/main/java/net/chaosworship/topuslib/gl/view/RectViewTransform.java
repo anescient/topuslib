@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib.gl;
+package net.chaosworship.topuslib.gl.view;
 
 import android.opengl.Matrix;
 

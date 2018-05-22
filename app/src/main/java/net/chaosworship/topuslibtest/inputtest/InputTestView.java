@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
-import net.chaosworship.topuslib.gl.FlatViewTransform;
+import net.chaosworship.topuslib.gl.view.FlatViewTransform;
 import net.chaosworship.topuslib.gl.ShapesBrush;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslibtest.gl.TestLoader;

@@ -1,4 +1,4 @@
-package net.chaosworship.topuslib.gl;
+package net.chaosworship.topuslib.gl.view;
 
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 

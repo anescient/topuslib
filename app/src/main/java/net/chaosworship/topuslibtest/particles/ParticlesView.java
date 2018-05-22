@@ -11,7 +11,7 @@ import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.barneshut.BarnesHutTree;
 import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
-import net.chaosworship.topuslib.gl.FlatViewTransform;
+import net.chaosworship.topuslib.gl.view.FlatViewTransform;
 import net.chaosworship.topuslib.gl.ShapesBrush;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
