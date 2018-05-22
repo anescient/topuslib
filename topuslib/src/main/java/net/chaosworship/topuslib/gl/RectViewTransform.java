@@ -2,12 +2,11 @@ package net.chaosworship.topuslib.gl;
 
 import android.opengl.Matrix;
 
-import static android.opengl.GLES20.glViewport;
-
 import net.chaosworship.topuslib.BuildConfig;
 import net.chaosworship.topuslib.geom2d.Rectangle;
-import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
+
+import static android.opengl.GLES20.glViewport;
 
 
 // handles transformations for a simple rectangular view of a 2D world
@@ -15,41 +14,8 @@ import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 // projection is such that:
 //   largest dimension (viewport width or height) fits to world coordinates spanning [-1,1]
 //   smaller dimension spans a range that makes world coordinates square
+@SuppressWarnings("unused")
 public class RectViewTransform implements ViewTransform {
-
-    ///////////////////////////////////////////////////////////////
-
-    private class ViewWorldTransformer implements Vec2Transformer {
-
-        private final float[] mMatrix;
-        private float[] mInputVector;
-        private float[] mOutputVector;
-
-        private ViewWorldTransformer() {
-            mMatrix = new float[16];
-            mInputVector = new float[4];
-            mInputVector[2] = 0;
-            mInputVector[3] = 1;
-            mOutputVector = new float[4];
-        }
-
-        private void setInverse(float[] inverseMatrix) {
-            Matrix.invertM(mMatrix, 0, inverseMatrix, 0);
-        }
-
-        @Override
-        public Vec2 transform(Vec2 coord) {
-            if(mViewportWidth == 0 || mViewportHeight == 0) {
-                throw new IllegalStateException();
-            }
-            mInputVector[0] = 2 * coord.x / mViewportWidth - 1;
-            mInputVector[1] = -(2 * coord.y / mViewportHeight - 1);
-            Matrix.multiplyMV(mOutputVector, 0, mMatrix, 0, mInputVector, 0);
-            return new Vec2(mOutputVector[0], mOutputVector[1]);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
 
     private int mViewportWidth;
     private int mViewportHeight;
@@ -60,14 +26,14 @@ public class RectViewTransform implements ViewTransform {
 
     private final float[] mViewMatrix;
 
-    private final ViewWorldTransformer mViewWorldTransformer;
+    private final FlatViewWorldTransformer mViewWorldTransformer;
 
     public RectViewTransform() {
         mViewportWidth = 0;
         mViewportHeight = 0;
         mVisibleRect = null;
         mViewMatrix = new float[16];
-        mViewWorldTransformer = new ViewWorldTransformer();
+        mViewWorldTransformer = new FlatViewWorldTransformer();
     }
 
     @Override
@@ -149,6 +115,6 @@ public class RectViewTransform implements ViewTransform {
             Matrix.orthoM(mViewMatrix, 0, -halfVisibleWidth, halfVisibleWidth, -halfVisibleHeight, halfVisibleHeight, -1, 1);
         }
 
-        mViewWorldTransformer.setInverse(mViewMatrix);
+        mViewWorldTransformer.setInverse(mViewMatrix, mViewportWidth, mViewportHeight);
     }
 }

@@ -2,8 +2,6 @@ package net.chaosworship.topuslib.gl;
 
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.gl.Brush;
-import net.chaosworship.topuslib.gl.Loader;
 
 import java.nio.FloatBuffer;
 
