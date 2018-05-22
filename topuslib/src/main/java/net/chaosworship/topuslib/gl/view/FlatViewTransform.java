@@ -7,16 +7,11 @@ import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 
-import static android.opengl.GLES20.glViewport;
-
 
 // handles the dirty work of viewing a 2D area in a GLSurfaceView
 // converts screen coords into world coords for doing input, etc.
 @SuppressWarnings({"SameParameterValue", "unused", "WeakerAccess"})
-public class FlatViewTransform implements ViewTransform {
-
-    private int mViewportWidth;
-    private int mViewportHeight;
+public class FlatViewTransform extends ViewportTransform implements ViewTransform {
 
     private final Vec2 mViewCenter; // world coordinates centered in view
     private float mZoom;
@@ -31,9 +26,6 @@ public class FlatViewTransform implements ViewTransform {
     private boolean mViewToWorldDirty;
 
     public FlatViewTransform() {
-        mViewportWidth = 0;
-        mViewportHeight = 0;
-
         // arbitrary sane initial values
         mViewCenter = new Vec2(0, 0);
         mZoom = 1.0f;
@@ -43,6 +35,13 @@ public class FlatViewTransform implements ViewTransform {
 
         mViewMatrix = new float[16];
         mViewWorldTransformer = new FlatViewWorldTransformer();
+        setDirty();
+    }
+
+    @Override
+    void viewportChanged() {
+        mVisibleHeight = getViewportHeight() / mZoom;
+        mVisibleWidth = getViewportWidth() / mZoom;
         setDirty();
     }
 
@@ -59,44 +58,6 @@ public class FlatViewTransform implements ViewTransform {
         mViewToWorldDirty = true;
     }
 
-    @Override
-    public boolean isDegenerate() {
-        return mViewportWidth <= 0 || mViewportHeight <= 0;
-    }
-
-    @Override
-    public boolean setViewport(int width, int height) {
-        if(width <= 0 || height <= 0) {
-            throw new IllegalArgumentException();
-        }
-
-        if(mViewportWidth == width && mViewportHeight == height) {
-            return false;
-        }
-
-        mViewportWidth = width;
-        mViewportHeight = height;
-        mVisibleHeight = mViewportHeight / mZoom;
-        mVisibleWidth = mViewportWidth / mZoom;
-        setDirty();
-        return true;
-    }
-
-    @Override
-    public void callGlViewport() {
-        glViewport(0, 0, mViewportWidth, mViewportHeight);
-    }
-
-    @Override
-    public int getViewportWidth() {
-        return mViewportWidth;
-    }
-
-    @Override
-    public int getViewportHeight() {
-        return mViewportHeight;
-    }
-
     // center and zoom such that a given rectangular area is visible
     // rectangle won't necessarily fill the viewport
     public void setVisibleRectangle(Rectangle rect) {
@@ -110,7 +71,7 @@ public class FlatViewTransform implements ViewTransform {
         }
         setViewRotationRadians(0);
         setViewCenter(rect.center());
-        float viewAspect = (float)mViewportWidth / mViewportHeight;
+        float viewAspect = (float)getViewportWidth() / getViewportHeight();
         float rectAspect = rect.width() / rect.height();
         if(rectAspect > viewAspect) {
             setVisibleWidth(rect.width());
@@ -122,8 +83,8 @@ public class FlatViewTransform implements ViewTransform {
     public void setViewZoom(float zoom) {
         if(mZoom != zoom) {
             mZoom = zoom;
-            mVisibleHeight = mViewportHeight / mZoom;
-            mVisibleWidth = mViewportWidth / mZoom;
+            mVisibleHeight = getViewportHeight() / mZoom;
+            mVisibleWidth = getViewportWidth() / mZoom;
             setDirty();
         }
     }
@@ -132,14 +93,14 @@ public class FlatViewTransform implements ViewTransform {
         if(width <=0) {
             throw new IllegalArgumentException();
         }
-        setViewZoom(mViewportWidth / width);
+        setViewZoom(getViewportWidth() / width);
     }
 
     public void setVisibleHeight(float height) {
         if(height <= 0) {
             throw new IllegalArgumentException();
         }
-        setViewZoom(mViewportHeight / height);
+        setViewZoom(getViewportHeight() / height);
     }
 
     public void setViewCenter(Vec2 worldCoord) {
@@ -200,7 +161,7 @@ public class FlatViewTransform implements ViewTransform {
             throw new AssertionError();
         }
 
-        mViewWorldTransformer.setInverse(getViewMatrix(), mViewportWidth, mViewportHeight);
+        mViewWorldTransformer.setInverse(getViewMatrix(), getViewportWidth(), getViewportHeight());
         mViewToWorldDirty = false;
     }
 }
