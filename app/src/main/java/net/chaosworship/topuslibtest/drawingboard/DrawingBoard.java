@@ -7,21 +7,12 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import net.chaosworship.topuslib.collection.SegmentConsumer;
-import net.chaosworship.topuslib.geom2d.Arc;
-import net.chaosworship.topuslib.geom2d.Circle;
-import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
-import net.chaosworship.topuslib.geom2d.sampling.PoissonDiskFill;
-import net.chaosworship.topuslib.geom2d.triangulation.DelaunayTriangulator;
-import net.chaosworship.topuslib.gl.ShapesBrush;
+import net.chaosworship.topuslib.gl.GLLinesBrush;
 import net.chaosworship.topuslib.gl.view.FlatViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
-import net.chaosworship.topuslib.math.RadianMultiInterval;
 import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslibtest.gl.TestLoader;
-
-import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -51,11 +42,13 @@ public class DrawingBoard
         mInputConverter = new MotionEventConverter();
         mTouch = new Vec2();
 
+        mViewTransform.setViewZoom(200);
+
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
         setRenderer(this);
-        setRenderMode(RENDERMODE_WHEN_DIRTY);
-        //setRenderMode(RENDERMODE_CONTINUOUSLY);
+        //setRenderMode(RENDERMODE_WHEN_DIRTY);
+        setRenderMode(RENDERMODE_CONTINUOUSLY);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -91,45 +84,11 @@ public class DrawingBoard
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Rectangle bound = new Rectangle(-1, -1, 1, 1);
-
-        mViewTransform.setVisibleRectangle(bound);
-        final ShapesBrush brush = mLoader.getShapesBrush();
-        brush.begin(mViewTransform.getViewMatrix());
-
-        brush.setColor(Color.WHITE);
-        brush.setAlpha(1f);
-
-        Rectangle testBox = new Rectangle(-0.7f, -1, 0.7f, 1);
-        brush.drawRectangle(testBox, 0.003f);
-
-        float spacing = 0.1f;
-        ArrayList<Vec2> poissonPoints = PoissonDiskFill.fill(testBox, spacing);
-
-        brush.setColor(Color.WHITE);
-        brush.setAlpha(0.7f);
-        for(Vec2 p : poissonPoints) {
-            brush.drawSpot(p, 0.01f);
-        }
-
-        DelaunayTriangulator triangulator = new DelaunayTriangulator();
-        try {
-            triangulator.triangulate(poissonPoints);
-        } catch (DelaunayTriangulator.NumericalFailure e) {
-            e.printStackTrace();
-        }
-        triangulator.getTriangulation().outputSegments(new SegmentConsumer() {
-            @Override
-            public void addSegment(Vec2 a, Vec2 b) {
-                brush.drawSegment(a, b, 0.005f);
-            }
-        });
-
-        /*
-        Circle c = new Circle(mTouch, 0.2f);
-        brush.setAlpha(0.5f);
-        brush.drawCircle(c, 0.005f);
-*/
-        brush.end();
+        GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
+        linesBrush.begin(mViewTransform.getViewMatrix(), 1);
+        linesBrush.setColor(Color.WHITE);
+        linesBrush.setAlpha(0.7f);
+        linesBrush.addGrid();
+        linesBrush.end();
     }
 }

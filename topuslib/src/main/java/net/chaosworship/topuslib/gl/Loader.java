@@ -97,6 +97,7 @@ public class Loader {
 
     private ShapesBrush mShapesBrush;
     private TrianglesBrush mTrianglesBrush;
+    private GLLinesBrush mGLLinesBrush;
 
     public Loader(Context context) {
         mContext = context;
@@ -114,6 +115,7 @@ public class Loader {
         mFrameBuffers.clear();
         mShapesBrush = null;
         mTrianglesBrush = null;
+        mGLLinesBrush = null;
     }
 
     public int useProgram(String name) {
@@ -198,6 +200,13 @@ public class Loader {
             mTrianglesBrush = new TrianglesBrush(this);
         }
         return mTrianglesBrush;
+    }
+
+    public GLLinesBrush getGLLinesBrush() {
+        if(mGLLinesBrush == null) {
+            mGLLinesBrush = new GLLinesBrush(this);
+        }
+        return mGLLinesBrush;
     }
 
     private int loadProgram(String shader_v, String shader_f) throws LoaderException {
