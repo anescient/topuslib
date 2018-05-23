@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.support.annotation.ColorInt;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.geom3d.Cuboid;
 import net.chaosworship.topuslib.geom3d.Vec3;
 
 import java.nio.FloatBuffer;
@@ -164,6 +165,29 @@ public class GLLinesBrush extends Brush {
             }
             previous = point;
         }
+    }
+
+    public void addCuboid(Cuboid cube) {
+        Vec3 a = new Vec3(cube.minx, cube.miny, cube.minz);
+        Vec3 b = new Vec3(cube.minx, cube.miny, cube.maxz);
+        Vec3 c = new Vec3(cube.maxx, cube.miny, cube.maxz);
+        Vec3 d = new Vec3(cube.maxx, cube.miny, cube.minz);
+        Vec3 e = new Vec3(cube.minx, cube.maxy, cube.minz);
+        Vec3 f = new Vec3(cube.minx, cube.maxy, cube.maxz);
+        Vec3 g = new Vec3(cube.maxx, cube.maxy, cube.maxz);
+        Vec3 h = new Vec3(cube.maxx, cube.maxy, cube.minz);
+        addLine(a, b);
+        addLine(b, c);
+        addLine(c, d);
+        addLine(d, a);
+        addLine(e, f);
+        addLine(f, g);
+        addLine(g, h);
+        addLine(h, e);
+        addLine(a, e);
+        addLine(b, f);
+        addLine(c, g);
+        addLine(d, h);
     }
 
     private void flush() {

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 
-@SuppressWarnings("UnusedReturnValue")
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class Rectangle implements SolidShape {
 
     public float minx;
