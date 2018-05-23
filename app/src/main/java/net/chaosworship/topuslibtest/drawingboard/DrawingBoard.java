@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import net.chaosworship.topuslib.collection.CuboidMap;
 import net.chaosworship.topuslib.collection.RectangularMap;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
@@ -37,7 +38,7 @@ public class DrawingBoard
         implements GLSurfaceView.Renderer {
 
     private static final float CELLSIZE = 0.5f;
-    private static final int GRIDSIZE = 8;
+    private static final int GRIDSIZE = 7;
 
     private static final SuperRandom sRandom = new SuperRandom();
 
@@ -72,30 +73,44 @@ public class DrawingBoard
     public void go() {
         HashSimpleGraph graph = new HashSimpleGraph();
         HashMap<Integer, Vec3> points = new HashMap<>();
-        RectangularMap<Integer> grid = new RectangularMap<>(GRIDSIZE + 1, GRIDSIZE + 1);
+        CuboidMap<Integer> grid = new CuboidMap<>(GRIDSIZE, GRIDSIZE, GRIDSIZE);
 
-        for(int xi = 0; xi < GRIDSIZE + 1; xi++) {
-            float x = (xi - GRIDSIZE / 2) * CELLSIZE;
-            for(int yi = 0; yi < GRIDSIZE + 1; yi++) {
-                float y = (yi - GRIDSIZE / 2) * CELLSIZE;
-                Integer vertex = graph.addVertex();
-                grid.set(xi, yi, vertex);
-                points.put(vertex, new Vec3(x, y, 0));
+        for(int zi = 0; zi < GRIDSIZE; zi++) {
+            float z = (zi - GRIDSIZE / 2) * CELLSIZE;
+            for(int xi = 0; xi < GRIDSIZE; xi++) {
+                float x = (xi - GRIDSIZE / 2) * CELLSIZE;
+                for(int yi = 0; yi < GRIDSIZE; yi++) {
+                    float y = (yi - GRIDSIZE / 2) * CELLSIZE;
+                    Integer vertex = graph.addVertex();
+                    grid.set(xi, yi, zi, vertex);
+                    points.put(vertex, new Vec3(x, y, z));
+                }
             }
         }
 
-        for(int i = 0; i < GRIDSIZE + 1; i++) {
-            for(int j = 0; j < GRIDSIZE; j++) {
-                Integer a;
-                Integer b;
+        for(int k = 0; k < GRIDSIZE; k++) {
+            for(int i = 0; i < GRIDSIZE; i++) {
+                for(int j = 0; j < GRIDSIZE - 1; j++) {
+                    Integer a;
+                    Integer b;
 
-                a = grid.get(i, j);
-                b = grid.get(i, j + 1);
-                graph.addEdge(a, b);
+                    a = grid.get(i, j, k);
+                    b = grid.get(i, j + 1, k);
+                    graph.addEdge(a, b);
 
-                a = grid.get(j, i);
-                b = grid.get(j + 1, i);
-                graph.addEdge(a, b);
+                    a = grid.get(j, i, k);
+                    b = grid.get(j + 1, i, k);
+                    graph.addEdge(a, b);
+                }
+            }
+            if(k > 0) {
+                for(int i = 0; i < GRIDSIZE; i++) {
+                    for(int j = 0; j < GRIDSIZE; j++) {
+                        Integer a = grid.get(i, j, k);
+                        Integer b = grid.get(i, j, k - 1);
+                        graph.addEdge(a, b);
+                    }
+                }
             }
         }
 
@@ -152,7 +167,9 @@ public class DrawingBoard
         linesBrush.begin(mViewTransform.getViewMatrix(), 3);
         linesBrush.setColor(Color.WHITE);
         linesBrush.setAlpha(0.1f);
-        linesBrush.addXYGrid(GRIDSIZE, CELLSIZE, 0);
+        for(int layer = 0; layer < GRIDSIZE; layer++) {
+            linesBrush.addXYGrid(GRIDSIZE - 1, CELLSIZE, (layer - GRIDSIZE / 2) * CELLSIZE);
+        }
         if(!mPath.isEmpty()) {
             linesBrush.setAlpha(1.0f);
             linesBrush.addPath(mPath);
