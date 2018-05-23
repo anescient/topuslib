@@ -173,9 +173,9 @@ public class GLLinesBrush extends Brush {
 
     // todo void addGrid(Vec3 center, Vec3 tangent)
 
-    public void addGrid() {
-        Vec3 a = new Vec3(0, 0, 0);
-        Vec3 b = new Vec3(0, 0, 0);
+    public void addGrid(float z) {
+        Vec3 a = new Vec3(0, 0, z);
+        Vec3 b = new Vec3(0, 0, z);
         float cellSize = 0.5f;
         for(int i = -4; i < 5; i++) {
             a.x = i * cellSize;

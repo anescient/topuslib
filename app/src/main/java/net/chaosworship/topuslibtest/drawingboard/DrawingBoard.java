@@ -4,12 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.GLLinesBrush;
 import net.chaosworship.topuslib.gl.view.FlatViewTransform;
+import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslibtest.gl.TestLoader;
@@ -30,7 +32,7 @@ public class DrawingBoard
     private static final SuperRandom sRandom = new SuperRandom();
 
     private final TestLoader mLoader;
-    private final FlatViewTransform mViewTransform;
+    private final TurnTableViewTransform mViewTransform;
     private final MotionEventConverter mInputConverter;
     private final Vec2 mTouch;
 
@@ -38,11 +40,10 @@ public class DrawingBoard
         super(context, attrs);
 
         mLoader = new TestLoader(context);
-        mViewTransform = new FlatViewTransform();
+        mViewTransform = new TurnTableViewTransform();
         mInputConverter = new MotionEventConverter();
         mTouch = new Vec2();
 
-        mViewTransform.setViewZoom(200);
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
@@ -77,18 +78,23 @@ public class DrawingBoard
             touch = dp;
         }
         if(touch != null) {
-            mTouch.set(mViewTransform.getViewToWorldTransformer().transform(touch));
+            //mTouch.set(mViewTransform.getViewToWorldTransformer().transform(touch));
         }
+
+        mViewTransform.setRotation(SystemClock.uptimeMillis() / 2000f);
+        mViewTransform.setEyeDistance(10);
+        mViewTransform.setEyeHeight(3);
 
         mViewTransform.callGlViewport();
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
-        linesBrush.begin(mViewTransform.getViewMatrix(), 1);
+        linesBrush.begin(mViewTransform.getViewMatrix(), 2);
         linesBrush.setColor(Color.WHITE);
-        linesBrush.setAlpha(0.7f);
-        linesBrush.addGrid();
+        linesBrush.setAlpha(1f);
+        linesBrush.addGrid(0);
+        linesBrush.addGrid(1.5f);
         linesBrush.end();
     }
 }

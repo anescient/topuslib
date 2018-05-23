@@ -1,6 +1,7 @@
 package net.chaosworship.topuslib.geom3d;
 
 import android.annotation.SuppressLint;
+import android.opengl.Matrix;
 
 
 @SuppressWarnings({"unused", "WeakerAccess"})
@@ -206,5 +207,14 @@ public class Vec3 implements Cloneable {
             z /= m;
         }
         return this;
+    }
+
+    ////////////////////////////////////////////////////
+
+    public static void setLookAtM(float[] m, Vec3 eye, Vec3 center, Vec3 up) {
+        Matrix.setLookAtM(m, 0,
+                eye.x, eye.y, eye.z,
+                center.x, center.y, center.z,
+                up.x, up.y, up.z);
     }
 }
