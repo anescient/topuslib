@@ -16,7 +16,7 @@ public class DrawingBoardActivity extends AppCompatActivity {
     }
 
     public void go(View view) {
-        DrawingBoard drawingBoard = findViewById(R.id.triangulation_meshview);
-        drawingBoard.requestRender();
+        DrawingBoard drawingBoard = findViewById(R.id.drawingboard);
+        drawingBoard.go();
     }
 }

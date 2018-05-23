@@ -8,7 +8,7 @@
     tools:context="net.chaosworship.topuslibtest.drawingboard.DrawingBoardActivity">
 
     <net.chaosworship.topuslibtest.drawingboard.DrawingBoard
-        android:id="@+id/triangulation_meshview"
+        android:id="@+id/drawingboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

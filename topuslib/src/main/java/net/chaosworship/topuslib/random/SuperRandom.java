@@ -4,8 +4,11 @@ import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 
 @SuppressWarnings("WeakerAccess")
@@ -105,5 +108,17 @@ public class SuperRandom extends Random {
             throw new IllegalArgumentException();
         }
         return list.get(nextInt(list.size()));
+    }
+
+    public <E> E choice(Collection<E> collection) {
+        if(collection.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        int i = nextInt(collection.size());
+        Iterator<E> iterator = collection.iterator();
+        while(i-- > 0) {
+            iterator.next();
+        }
+        return iterator.next();
     }
 }

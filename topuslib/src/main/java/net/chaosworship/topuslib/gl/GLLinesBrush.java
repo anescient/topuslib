@@ -7,6 +7,7 @@ import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom3d.Vec3;
 
 import java.nio.FloatBuffer;
+import java.util.Collection;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_BLEND;
@@ -155,6 +156,16 @@ public class GLLinesBrush extends Brush {
         mLinesBuffered++;
     }
 
+    public void addPath(Collection<Vec3> points) {
+        Vec3 previous = null;
+        for(Vec3 point : points) {
+            if(previous != null) {
+                addLine(previous, point);
+            }
+            previous = point;
+        }
+    }
+
     private void flush() {
         mVertexBuffer.position(0);
         mVertexBuffer.put(mVertexPreBuffer, 0, mLinesBuffered * VERTEXSIZE * VERTICESPER);
@@ -173,21 +184,21 @@ public class GLLinesBrush extends Brush {
 
     // todo void addGrid(Vec3 center, Vec3 tangent)
 
-    public void addGrid(float z) {
+    public void addXYGrid(int divisions, float cellSize, float z) {
         Vec3 a = new Vec3(0, 0, z);
         Vec3 b = new Vec3(0, 0, z);
-        float cellSize = 0.5f;
-        for(int i = -4; i < 5; i++) {
+        int n = Math.max(divisions / 2, 1);
+        for(int i = -n; i <= n; i++) {
             a.x = i * cellSize;
             b.x = a.x;
-            a.y = -4 * cellSize;
-            b.y = 4 * cellSize;
+            a.y = -n * cellSize;
+            b.y = n * cellSize;
             addLine(a, b);
 
             a.y = i * cellSize;
             b.y = a.y;
-            a.x = -4 * cellSize;
-            b.x = 4 * cellSize;
+            a.x = -n * cellSize;
+            b.x = n * cellSize;
             addLine(a, b);
         }
     }

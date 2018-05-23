@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "WeakerAccess", "unused"})
+@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "unused"})
 @SuppressLint("UseSparseArrays")
 public class HashSimpleGraph implements SimpleGraph {
 
@@ -20,7 +20,7 @@ public class HashSimpleGraph implements SimpleGraph {
 
     // the keys here are the vertex collection
     // every edge is represented twice
-    final HashMap<Integer, HashSet<Integer>> mNeighborSets;
+    private final HashMap<Integer, HashSet<Integer>> mNeighborSets;
 
     public HashSimpleGraph() {
         mNextVertex = 1;

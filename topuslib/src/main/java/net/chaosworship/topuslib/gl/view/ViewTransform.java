@@ -18,4 +18,6 @@ public interface ViewTransform {
     int getViewportHeight();
 
     float[] getViewMatrix();
+
+    Vec2Transformer getViewToNormalTransformer();
 }

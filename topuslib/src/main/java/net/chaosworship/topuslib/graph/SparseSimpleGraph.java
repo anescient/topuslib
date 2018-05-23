@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+@SuppressWarnings("WeakerAccess")
 public class SparseSimpleGraph implements SimpleGraph {
 
     private int mNextVertex;

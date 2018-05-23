@@ -1,5 +1,9 @@
 package net.chaosworship.topuslib.gl.view;
 
+import net.chaosworship.topuslib.geom2d.Rectangle;
+import net.chaosworship.topuslib.geom2d.transform.RectangularMapping;
+import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
+
 import static android.opengl.GLES20.glViewport;
 
 
@@ -49,5 +53,12 @@ abstract class ViewportTransform implements ViewTransform {
     @Override
     public int getViewportHeight() {
         return mViewportHeight;
+    }
+
+    @Override
+    public Vec2Transformer getViewToNormalTransformer() {
+        Rectangle from = new Rectangle(0, 0, mViewportWidth, mViewportHeight);
+        Rectangle to = new Rectangle(-1, -1, 1, 1);
+        return new RectangularMapping(from, to);
     }
 }
