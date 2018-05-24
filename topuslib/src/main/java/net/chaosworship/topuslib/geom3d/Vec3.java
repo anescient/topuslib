@@ -3,6 +3,8 @@ package net.chaosworship.topuslib.geom3d;
 import android.annotation.SuppressLint;
 import android.opengl.Matrix;
 
+import net.chaosworship.topuslib.tuple.IntTriple;
+
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Vec3 implements Cloneable {
@@ -19,6 +21,12 @@ public class Vec3 implements Cloneable {
         this.x = source.x;
         this.y = source.y;
         this.z = source.z;
+    }
+
+    public Vec3(IntTriple xyz) {
+        x = xyz.a;
+        y = xyz.b;
+        z = xyz.c;
     }
 
     public Vec3(float x, float y, float z) {

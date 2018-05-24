@@ -8,6 +8,9 @@ public class CuboidMap<E> {
     private final ArrayList<RectangularMap<E>> mLayers;
 
     public CuboidMap(int width, int height, int depth) {
+        if(depth < 1) {
+            throw new IllegalArgumentException();
+        }
         mLayers = new ArrayList<>(depth);
         for(int k = 0; k < depth; k++) {
             mLayers.add(new RectangularMap<E>(width, height));

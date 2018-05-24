@@ -8,21 +8,23 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import net.chaosworship.topuslib.collection.CuboidMap;
-import net.chaosworship.topuslib.collection.RectangularMap;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 import net.chaosworship.topuslib.geom3d.Vec3;
 import net.chaosworship.topuslib.gl.GLLinesBrush;
 import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
+import net.chaosworship.topuslib.graph.GenerateGraph;
 import net.chaosworship.topuslib.graph.HashSimpleGraph;
+import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.graph.Walk;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
+import net.chaosworship.topuslib.tuple.IntTriple;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -37,8 +39,8 @@ public class DrawingBoard
         extends GLSurfaceView
         implements GLSurfaceView.Renderer {
 
-    private static final float CELLSIZE = 0.5f;
-    private static final int GRIDSIZE = 7;
+    private static final float CELLSIZE = 0.7f;
+    private static final int GRIDSIZE = 9;
 
     private static final SuperRandom sRandom = new SuperRandom();
 
@@ -50,6 +52,10 @@ public class DrawingBoard
     private float mEyeHeight;
 
     private final ArrayList<Vec3> mPath;
+    private float mPathStepsShown;
+
+    private SimpleGraph mGridGraph;
+    private Map<Integer, Vec3> mGridPoints;
 
     public DrawingBoard(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -62,6 +68,16 @@ public class DrawingBoard
         mEyeHeight = 3;
 
         mPath = new ArrayList<>();
+        mPathStepsShown = 0;
+
+        mGridGraph = new HashSimpleGraph();
+        Map<Integer, IntTriple> gridCoords = GenerateGraph.cuboidGrid(mGridGraph, GRIDSIZE, GRIDSIZE, GRIDSIZE);
+        mGridPoints = new HashMap<>();
+        Vec3 offset = new Vec3(-0.5f, -0.5f, -0.5f).scale(CELLSIZE * (GRIDSIZE - 1));
+        for(Integer vertex : gridCoords.keySet()) {
+            IntTriple coord = gridCoords.get(vertex);
+            mGridPoints.put(vertex, new Vec3(coord).scale(CELLSIZE).add(offset));
+        }
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
@@ -71,52 +87,9 @@ public class DrawingBoard
     }
 
     public void go() {
-        HashSimpleGraph graph = new HashSimpleGraph();
-        HashMap<Integer, Vec3> points = new HashMap<>();
-        CuboidMap<Integer> grid = new CuboidMap<>(GRIDSIZE, GRIDSIZE, GRIDSIZE);
-
-        for(int zi = 0; zi < GRIDSIZE; zi++) {
-            float z = (zi - GRIDSIZE / 2) * CELLSIZE;
-            for(int xi = 0; xi < GRIDSIZE; xi++) {
-                float x = (xi - GRIDSIZE / 2) * CELLSIZE;
-                for(int yi = 0; yi < GRIDSIZE; yi++) {
-                    float y = (yi - GRIDSIZE / 2) * CELLSIZE;
-                    Integer vertex = graph.addVertex();
-                    grid.set(xi, yi, zi, vertex);
-                    points.put(vertex, new Vec3(x, y, z));
-                }
-            }
-        }
-
-        for(int k = 0; k < GRIDSIZE; k++) {
-            for(int i = 0; i < GRIDSIZE; i++) {
-                for(int j = 0; j < GRIDSIZE - 1; j++) {
-                    Integer a;
-                    Integer b;
-
-                    a = grid.get(i, j, k);
-                    b = grid.get(i, j + 1, k);
-                    graph.addEdge(a, b);
-
-                    a = grid.get(j, i, k);
-                    b = grid.get(j + 1, i, k);
-                    graph.addEdge(a, b);
-                }
-            }
-            if(k > 0) {
-                for(int i = 0; i < GRIDSIZE; i++) {
-                    for(int j = 0; j < GRIDSIZE; j++) {
-                        Integer a = grid.get(i, j, k);
-                        Integer b = grid.get(i, j, k - 1);
-                        graph.addEdge(a, b);
-                    }
-                }
-            }
-        }
-
         mPath.clear();
-        for(Integer v : Walk.randomWalk(graph)) {
-            mPath.add(points.get(v));
+        for(Integer v : Walk.randomWalk(mGridGraph)) {
+            mPath.add(mGridPoints.get(v));
         }
     }
 
@@ -150,7 +123,7 @@ public class DrawingBoard
             mEyeHeight = 10 * topBottom;
         }
 
-        float extraSpin = (SystemClock.uptimeMillis() / (float)10000) % (float)(2 * Math.PI);
+        float extraSpin = 0;//(SystemClock.uptimeMillis() / (float)10000) % (float)(2 * Math.PI);
         mViewTransform.setRotation(mSpin + extraSpin);
         mViewTransform.setEyeDistance(10);
         mViewTransform.setEyeHeight(mEyeHeight);
@@ -160,16 +133,31 @@ public class DrawingBoard
         glClear(GL_COLOR_BUFFER_BIT);
 
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
-        linesBrush.begin(mViewTransform.getViewMatrix(), 3);
+        linesBrush.begin(mViewTransform.getViewMatrix(), 2);
         linesBrush.setColor(Color.WHITE);
-        linesBrush.setAlpha(0.1f);
-        for(int layer = 0; layer < GRIDSIZE; layer++) {
-            linesBrush.addXYGrid(GRIDSIZE - 1, CELLSIZE, (layer - GRIDSIZE / 2) * CELLSIZE);
-        }
-        if(!mPath.isEmpty()) {
-            linesBrush.setAlpha(1.0f);
-            linesBrush.addPath(mPath);
-        }
+        linesBrush.setAlpha(0.05f);
+        linesBrush.addGraph(mGridGraph, mGridPoints);
         linesBrush.end();
+
+        linesBrush.begin(mViewTransform.getViewMatrix(), 5);
+        linesBrush.setColor(Color.WHITE);
+        linesBrush.setAlpha(1);
+
+        mPathStepsShown += 0.3f;
+        int showCount = (int)(mPathStepsShown);
+        if(showCount > mPath.size()) {
+            go();
+            mPathStepsShown = 0;
+            showCount = 0;
+        }
+        ArrayList<Vec3> subPath = new ArrayList<>();
+        for(int i = 0; i < showCount; i++) {
+            subPath.add(mPath.get(i));
+        }
+        linesBrush.setAlpha(1.0f);
+        linesBrush.addPath(subPath);
+
+        linesBrush.end();
+
     }
 }

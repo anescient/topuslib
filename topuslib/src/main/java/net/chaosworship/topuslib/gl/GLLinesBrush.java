@@ -6,9 +6,12 @@ import android.support.annotation.ColorInt;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom3d.Cuboid;
 import net.chaosworship.topuslib.geom3d.Vec3;
+import net.chaosworship.topuslib.graph.SimpleGraph;
+import net.chaosworship.topuslib.tuple.IntPair;
 
 import java.nio.FloatBuffer;
 import java.util.Collection;
+import java.util.Map;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_BLEND;
@@ -208,6 +211,12 @@ public class GLLinesBrush extends Brush {
         addLine(b, f);
         addLine(c, g);
         addLine(d, h);
+    }
+
+    public void addGraph(SimpleGraph graph, Map<Integer, Vec3> vertexPositions) {
+        for(IntPair p : graph.getEdges()) {
+            addLine(vertexPositions.get(p.a), vertexPositions.get(p.b));
+        }
     }
 
     private void flush() {

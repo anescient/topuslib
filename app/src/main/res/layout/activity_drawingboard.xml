@@ -24,7 +24,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="go"
-            android:onClick="go"/>
+            android:onClick="go"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

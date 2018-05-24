@@ -7,6 +7,7 @@ public class RectangularMap<E> {
 
     private final ArrayList<ArrayList<E>> mRows;
 
+    @SuppressWarnings("WeakerAccess")
     public RectangularMap(int width, int height) {
         if(width < 1 || height < 1) {
             throw new IllegalArgumentException();
