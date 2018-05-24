@@ -141,21 +141,17 @@ public class DrawingBoard
     @Override
     public void onDrawFrame(GL10 gl10) {
 
-        Vec2 touch = null;
-        for(Vec2 dp : mInputConverter.dumpDowns()) {
-            touch = dp;
-        }
+        Vec2 touch = mInputConverter.getActivePointerMean();
         if(touch != null) {
             Vec2Transformer touchTransform = mViewTransform.getViewToNormalTransformer();
             float leftRight = touchTransform.transform(touch).x;
             float topBottom = touchTransform.transform(touch).y;
-            mSpin = -leftRight;
+            mSpin = -4 * leftRight;
             mEyeHeight = 10 * topBottom;
         }
 
-        if(mSpin != 0) {
-            mViewTransform.setRotation(SystemClock.uptimeMillis() / ((1000f / mSpin)));
-        }
+        float extraSpin = (SystemClock.uptimeMillis() / (float)10000) % (float)(2 * Math.PI);
+        mViewTransform.setRotation(mSpin + extraSpin);
         mViewTransform.setEyeDistance(10);
         mViewTransform.setEyeHeight(mEyeHeight);
 

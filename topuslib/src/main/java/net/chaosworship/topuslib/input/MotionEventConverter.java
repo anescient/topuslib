@@ -213,6 +213,23 @@ public class MotionEventConverter {
         }
     }
 
+    public Vec2 getActivePointerMean() {
+        Vec2 mean = new Vec2(0, 0);
+        int count = 0;
+        synchronized(mActivePointers) {
+            for(Pointer p : mActivePointers.values()) {
+                mean.add(p.getLastPosition());
+                count++;
+            }
+        }
+        if(count > 0) {
+            mean.scaleInverse(count);
+            return mean;
+        } else {
+            return null;
+        }
+    }
+
     // return null if none, otherwise return and discard
     public Pointer pollFinishedPointers() {
         synchronized(mFinishedPointers) {

@@ -167,6 +167,26 @@ public class GLLinesBrush extends Brush {
         }
     }
 
+    // todo addGrid(Vec3 center, Vec3 normal, float rotation)
+    public void addXYGrid(int divisions, float cellSize, float z) {
+        Vec3 a = new Vec3(0, 0, z);
+        Vec3 b = new Vec3(0, 0, z);
+        int n = Math.max(divisions / 2, 1);
+        for(int i = -n; i <= n; i++) {
+            a.x = i * cellSize;
+            b.x = a.x;
+            a.y = -n * cellSize;
+            b.y = n * cellSize;
+            addLine(a, b);
+
+            a.y = i * cellSize;
+            b.y = a.y;
+            a.x = -n * cellSize;
+            b.x = n * cellSize;
+            addLine(a, b);
+        }
+    }
+
     public void addCuboid(Cuboid cube) {
         Vec3 a = new Vec3(cube.minx, cube.miny, cube.minz);
         Vec3 b = new Vec3(cube.minx, cube.miny, cube.maxz);
@@ -204,26 +224,5 @@ public class GLLinesBrush extends Brush {
         glDisableVertexAttribArray(mPosHandle);
         glDisableVertexAttribArray(mColorHandle);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-
-    // todo void addGrid(Vec3 center, Vec3 tangent)
-
-    public void addXYGrid(int divisions, float cellSize, float z) {
-        Vec3 a = new Vec3(0, 0, z);
-        Vec3 b = new Vec3(0, 0, z);
-        int n = Math.max(divisions / 2, 1);
-        for(int i = -n; i <= n; i++) {
-            a.x = i * cellSize;
-            b.x = a.x;
-            a.y = -n * cellSize;
-            b.y = n * cellSize;
-            addLine(a, b);
-
-            a.y = i * cellSize;
-            b.y = a.y;
-            a.x = -n * cellSize;
-            b.x = n * cellSize;
-            addLine(a, b);
-        }
     }
 }
