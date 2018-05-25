@@ -207,6 +207,21 @@ public class Vec3 implements Cloneable {
         return (float)Math.sqrt(distanceSq(a, b));
     }
 
+    public static Vec3 cross(Vec3 lhs, Vec3 rhs) {
+        return new Vec3().setCross(lhs, rhs);
+    }
+
+    public Vec3 setCross(Vec3 lhs, Vec3 rhs) {
+        x = lhs.y * rhs.z - lhs.z * rhs.y;
+        y = lhs.z * rhs.x - lhs.x * rhs.z;
+        z = lhs.x * rhs.y - lhs.y * rhs.x;
+        return this;
+    }
+
+    public float dot(Vec3 rhs) {
+        return x * rhs.x + y * rhs.y + z * rhs.z;
+    }
+
     public Vec3 normalize() {
         float m = magnitude();
         if(m > 0) {
