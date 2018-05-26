@@ -29,7 +29,7 @@ import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
 
-public class TrianglesBrush extends Brush {
+public class FlatTrianglesBrush extends Brush {
 
     // floats per vertex
     // x, y, r, g, b, a
@@ -66,7 +66,7 @@ public class TrianglesBrush extends Brush {
     private final float[] mVertexPreBuffer;
     private int mTrianglesBuffered;
 
-    TrianglesBrush(Loader loader) {
+    FlatTrianglesBrush(Loader loader) {
         mLoader = loader;
 
         int program = mLoader.useProgram(mProgram);

@@ -18,13 +18,13 @@ public class FlatShapesBrush extends Brush {
     private static final int SPOTSEGMENTS = 13;
 
     private final float[] mColor;
-    private final TrianglesBrush mTrianglesBrush;
+    private final FlatTrianglesBrush mTrianglesBrush;
 
     private final Vec2[] mSpotVerts;
 
     FlatShapesBrush(Loader loader) {
         mColor = new float[] { 1, 1, 1, 1 };
-        mTrianglesBrush = loader.getTrianglesBrush();
+        mTrianglesBrush = loader.getFlatTrianglesBrush();
 
         mSpotVerts = new Vec2[SPOTSEGMENTS];
         for(int i = 0; i < SPOTSEGMENTS; i++) {

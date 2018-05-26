@@ -96,7 +96,7 @@ public class Loader {
     private final HashMap<String, FrameBuffer> mFrameBuffers;
 
     private FlatShapesBrush mFlatShapesBrush;
-    private TrianglesBrush mTrianglesBrush;
+    private FlatTrianglesBrush mFlatTrianglesBrush;
     private GLLinesBrush mGLLinesBrush;
 
     public Loader(Context context) {
@@ -114,7 +114,7 @@ public class Loader {
         mTextures.clear();
         mFrameBuffers.clear();
         mFlatShapesBrush = null;
-        mTrianglesBrush = null;
+        mFlatTrianglesBrush = null;
         mGLLinesBrush = null;
     }
 
@@ -195,11 +195,11 @@ public class Loader {
         return mFlatShapesBrush;
     }
 
-    public TrianglesBrush getTrianglesBrush() {
-        if(mTrianglesBrush == null) {
-            mTrianglesBrush = new TrianglesBrush(this);
+    public FlatTrianglesBrush getFlatTrianglesBrush() {
+        if(mFlatTrianglesBrush == null) {
+            mFlatTrianglesBrush = new FlatTrianglesBrush(this);
         }
-        return mTrianglesBrush;
+        return mFlatTrianglesBrush;
     }
 
     public GLLinesBrush getGLLinesBrush() {
