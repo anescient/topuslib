@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 public class TurnTableViewTransform extends ViewportTransform implements ViewTransform {
 
     private float mRotation;
+    private float mFOV;
     private float mEyeDistance;
     private float mEyeHeight;
 
@@ -14,6 +15,7 @@ public class TurnTableViewTransform extends ViewportTransform implements ViewTra
 
     public TurnTableViewTransform() {
         mRotation = 0;
+        mFOV = 45;
         mEyeDistance = 1;
         mEyeHeight = 0;
         mViewMatrix = new float[16];
@@ -24,6 +26,13 @@ public class TurnTableViewTransform extends ViewportTransform implements ViewTra
     public void setRotation(float rotation) {
         if(mRotation != rotation) {
             mRotation = rotation;
+            mViewMatrixDirty = true;
+        }
+    }
+
+    public void setFOV(float fov) {
+        if(mFOV != fov) {
+            mFOV = fov;
             mViewMatrixDirty = true;
         }
     }
@@ -69,7 +78,7 @@ public class TurnTableViewTransform extends ViewportTransform implements ViewTra
                 0, 0, 0,
                 0, 0, 1);
         float aspect = (float)getViewportWidth() / getViewportHeight();
-        Matrix.perspectiveM(p, 0, 45, aspect, -1, 1);
+        Matrix.perspectiveM(p, 0, mFOV, aspect, -1, 1);
         Matrix.multiplyMM(mViewMatrix, 0, p, 0, v, 0);
     }
 }

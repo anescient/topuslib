@@ -125,7 +125,8 @@ public class DrawingBoard
 
         float extraSpin = 0;//(SystemClock.uptimeMillis() / (float)10000) % (float)(2 * Math.PI);
         mViewTransform.setRotation(mSpin + extraSpin);
-        mViewTransform.setEyeDistance(10);
+        mViewTransform.setFOV(120);
+        mViewTransform.setEyeDistance(5);
         mViewTransform.setEyeHeight(mEyeHeight);
 
         mViewTransform.callGlViewport();
