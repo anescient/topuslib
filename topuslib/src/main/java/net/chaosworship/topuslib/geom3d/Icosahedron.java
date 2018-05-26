@@ -2,6 +2,7 @@ package net.chaosworship.topuslib.geom3d;
 
 import android.annotation.SuppressLint;
 
+import net.chaosworship.topuslib.collection.TriangleConsumer;
 import net.chaosworship.topuslib.gl.GLLinesBrush;
 import net.chaosworship.topuslib.graph.HashSimpleGraph;
 import net.chaosworship.topuslib.graph.SimpleGraph;
@@ -82,5 +83,14 @@ public class Icosahedron {
 
     public void drawEdges(GLLinesBrush linesBrush) {
         linesBrush.addGraph(mEdgeGraph, mVertices);
+    }
+
+    public void outputTriangles(TriangleConsumer consumer) {
+        for(IntTriple face : mFaces) {
+            consumer.addTriangle(
+                    mVertices.get(face.a),
+                    mVertices.get(face.b),
+                    mVertices.get(face.c));
+        }
     }
 }

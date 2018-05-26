@@ -14,12 +14,14 @@ import net.chaosworship.topuslib.gl.GLLinesBrush;
 import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
+import net.chaosworship.topuslibtest.gl.ShadedTrianglesBrush;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
 
@@ -100,7 +102,7 @@ public class DrawingBoard
 
         mViewTransform.callGlViewport();
         glClearColor(0, 0.2f, 0, 1);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
         linesBrush.begin(mViewTransform.getViewMatrix(), 2);
@@ -108,5 +110,10 @@ public class DrawingBoard
         linesBrush.setAlpha(0.5f);
         mShape.drawEdges(linesBrush);
         linesBrush.end();
+
+        ShadedTrianglesBrush trianglesBrush = mLoader.getShadedTrianglesBrush();
+        trianglesBrush.begin(mViewTransform.getViewMatrix());
+        mShape.outputTriangles(trianglesBrush);
+        trianglesBrush.end();
     }
 }

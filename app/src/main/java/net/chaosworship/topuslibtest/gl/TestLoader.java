@@ -8,6 +8,7 @@ import net.chaosworship.topuslib.gl.Loader;
 public class TestLoader extends Loader {
 
     private DotsBrush mDotsBrush;
+    private ShadedTrianglesBrush mShadedTrianglesBrush;
 
     public TestLoader(Context context) {
         super(context);
@@ -17,6 +18,7 @@ public class TestLoader extends Loader {
     public void invalidateAll() {
         super.invalidateAll();
         mDotsBrush = null;
+        mShadedTrianglesBrush = null;
     }
 
     public DotsBrush getDotsBrush() {
@@ -24,5 +26,12 @@ public class TestLoader extends Loader {
             mDotsBrush = new DotsBrush(this);
         }
         return mDotsBrush;
+    }
+
+    public ShadedTrianglesBrush getShadedTrianglesBrush() {
+        if(mShadedTrianglesBrush == null) {
+            mShadedTrianglesBrush = new ShadedTrianglesBrush(this);
+        }
+        return mShadedTrianglesBrush;
     }
 }

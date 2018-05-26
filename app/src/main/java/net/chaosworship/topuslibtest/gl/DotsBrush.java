@@ -2,7 +2,6 @@ package net.chaosworship.topuslibtest.gl;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.Brush;
-import net.chaosworship.topuslib.gl.Loader;
 import net.chaosworship.topuslibtest.R;
 
 import java.nio.FloatBuffer;
@@ -62,7 +61,7 @@ public class DotsBrush extends Brush {
     // tex coord y
     // alpha
 
-    private final Loader mLoader;
+    private final TestLoader mLoader;
 
     private final float[] mVertexPreBuffer;
     private int mQuadsBuffered;
@@ -78,7 +77,7 @@ public class DotsBrush extends Brush {
     private final int mAlphaHandle;
 
     @SuppressWarnings("PointlessArithmeticExpression")
-    DotsBrush(Loader loader) {
+    DotsBrush(TestLoader loader) {
         mLoader = loader;
 
         mVertexPreBuffer = new float[BATCHSIZE * VERTEXSIZE * VERTICESPER];
