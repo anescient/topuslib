@@ -95,7 +95,7 @@ public class Loader {
     private final SparseIntArray mTextures;
     private final HashMap<String, FrameBuffer> mFrameBuffers;
 
-    private ShapesBrush mShapesBrush;
+    private FlatShapesBrush mFlatShapesBrush;
     private TrianglesBrush mTrianglesBrush;
     private GLLinesBrush mGLLinesBrush;
 
@@ -113,7 +113,7 @@ public class Loader {
         mLiteralPrograms.clear();
         mTextures.clear();
         mFrameBuffers.clear();
-        mShapesBrush = null;
+        mFlatShapesBrush = null;
         mTrianglesBrush = null;
         mGLLinesBrush = null;
     }
@@ -188,11 +188,11 @@ public class Loader {
         return mTextures.get(resourceId);
     }
 
-    public ShapesBrush getShapesBrush() {
-        if(mShapesBrush == null) {
-            mShapesBrush = new ShapesBrush(this);
+    public FlatShapesBrush getFlatShapesBrush() {
+        if(mFlatShapesBrush == null) {
+            mFlatShapesBrush = new FlatShapesBrush(this);
         }
-        return mShapesBrush;
+        return mFlatShapesBrush;
     }
 
     public TrianglesBrush getTrianglesBrush() {

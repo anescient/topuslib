@@ -12,7 +12,7 @@ import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.barneshut.BarnesHutTree;
 import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
 import net.chaosworship.topuslib.gl.view.FlatViewTransform;
-import net.chaosworship.topuslib.gl.ShapesBrush;
+import net.chaosworship.topuslib.gl.FlatShapesBrush;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslib.tuple.PointMass;
@@ -285,7 +285,7 @@ class ParticlesView
         }
         dotsBrush.end();
 
-        final ShapesBrush brush = mLoader.getShapesBrush();
+        final FlatShapesBrush brush = mLoader.getFlatShapesBrush();
         brush.begin(mViewTransform.getViewMatrix());
         brush.setColor(Color.WHITE);
         brush.setAlpha(0.2f);

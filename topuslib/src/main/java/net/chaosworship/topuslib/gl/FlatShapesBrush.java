@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @SuppressWarnings({"WeakerAccess", "SameParameterValue", "unused"})
-public class ShapesBrush extends Brush {
+public class FlatShapesBrush extends Brush {
 
     private static final int SPOTSEGMENTS = 13;
 
@@ -22,7 +22,7 @@ public class ShapesBrush extends Brush {
 
     private final Vec2[] mSpotVerts;
 
-    ShapesBrush(Loader loader) {
+    FlatShapesBrush(Loader loader) {
         mColor = new float[] { 1, 1, 1, 1 };
         mTrianglesBrush = loader.getTrianglesBrush();
 

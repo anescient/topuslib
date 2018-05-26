@@ -11,7 +11,7 @@ import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 import net.chaosworship.topuslib.gl.view.FlatViewTransform;
-import net.chaosworship.topuslib.gl.ShapesBrush;
+import net.chaosworship.topuslib.gl.FlatShapesBrush;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
@@ -83,7 +83,7 @@ public class InputTestView
         mViewTransform.callGlViewport();
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
-        ShapesBrush brush = mLoader.getShapesBrush();
+        FlatShapesBrush brush = mLoader.getFlatShapesBrush();
         brush.begin(mViewTransform.getViewMatrix());
         brush.setColor(Color.WHITE);
         brush.setAlpha(1);
