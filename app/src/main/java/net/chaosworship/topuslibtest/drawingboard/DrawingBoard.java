@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -94,8 +95,9 @@ public class DrawingBoard
             mEyeHeight = 10 * topBottom;
         }
 
-        float extraSpin = 0;//(SystemClock.uptimeMillis() / (float)10000) % (float)(2 * Math.PI);
-        mViewTransform.setRotation(mSpin + extraSpin);
+        float modelSpin = (SystemClock.uptimeMillis() / (float)100) % (float)(360);
+
+        mViewTransform.setRotation(mSpin);
         mViewTransform.setFOV(120);
         mViewTransform.setEyeDistance(2);
         mViewTransform.setEyeHeight(mEyeHeight);
@@ -104,15 +106,8 @@ public class DrawingBoard
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
-        linesBrush.begin(mViewTransform.getViewMatrix(), 2);
-        linesBrush.setColor(Color.WHITE);
-        linesBrush.setAlpha(0.5f);
-        mShape.drawEdges(linesBrush);
-        linesBrush.end();
-
         ShadedTrianglesBrush trianglesBrush = mLoader.getShadedTrianglesBrush();
-        trianglesBrush.begin(mViewTransform.getViewMatrix());
+        trianglesBrush.begin(mViewTransform.getViewMatrix(), modelSpin);
         mShape.outputTriangles(trianglesBrush);
         trianglesBrush.end();
     }

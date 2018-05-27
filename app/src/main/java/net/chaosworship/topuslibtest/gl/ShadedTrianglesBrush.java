@@ -1,5 +1,7 @@
 package net.chaosworship.topuslibtest.gl;
 
+import android.opengl.Matrix;
+
 import net.chaosworship.topuslib.collection.TriangleConsumer;
 import net.chaosworship.topuslib.geom3d.Vec3;
 import net.chaosworship.topuslib.gl.Brush;
@@ -12,7 +14,6 @@ import static android.opengl.GLES20.GL_CULL_FACE;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
 import static android.opengl.GLES20.GL_DYNAMIC_DRAW;
 import static android.opengl.GLES20.GL_FLOAT;
-import static android.opengl.GLES20.GL_ONE;
 import static android.opengl.GLES20.GL_ONE_MINUS_SRC_ALPHA;
 import static android.opengl.GLES20.GL_SRC_ALPHA;
 import static android.opengl.GLES20.GL_TRIANGLES;
@@ -53,7 +54,8 @@ public class ShadedTrianglesBrush extends Brush implements TriangleConsumer {
     private final FloatBuffer mVertexBuffer;
     private final int mVertexBufferHandle;
 
-    private final int mMVPHandle;
+    private final int mMMatrixHandle;
+    private final int mVPMatrixHandle;
     private final int mColorHandle;
     private final int mLightHandle;
 
@@ -77,7 +79,8 @@ public class ShadedTrianglesBrush extends Brush implements TriangleConsumer {
 
         int program = mLoader.useProgram(PROGRAMNAME);
 
-        mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
+        mMMatrixHandle = glGetUniformLocation(program, "uMMatrix");
+        mVPMatrixHandle = glGetUniformLocation(program, "uVPMatrix");
         mColorHandle = glGetUniformLocation(program, "uColor");
         mLightHandle = glGetUniformLocation(program, "uLight");
 
@@ -85,14 +88,19 @@ public class ShadedTrianglesBrush extends Brush implements TriangleConsumer {
         mNormalHandle = glGetAttribLocation(program, "aNormal");
     }
 
-    public void begin(float[] matPV) {
+    public void begin(float[] matPV, float rotation) {
         mLoader.useProgram(PROGRAMNAME);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
 
-        glUniformMatrix4fv(mMVPHandle, 1, false, matPV, 0);
+        float[] matM = new float[16];
+        Matrix.setIdentityM(matM, 0);
+        Matrix.rotateM(matM, 0, rotation, 0, 0, 1);
+        glUniformMatrix4fv(mMMatrixHandle, 1, false, matM, 0);
+
+        glUniformMatrix4fv(mVPMatrixHandle, 1, false, matPV, 0);
         glUniform3fv(mColorHandle, 1, new float[] {1.0f, 1.0f, 1.0f}, 0);
-        glUniform3fv(mLightHandle, 1, new float[] {0.0f, 0.0f, 1.0f}, 0);
+        glUniform3fv(mLightHandle, 1, new float[] {0.0f, 1.0f, 0.0f}, 0);
 
         glVertexAttribPointer(mPosHandle, 3, GL_FLOAT, false, VERTEXSIZE * FLOATSIZE, 0);
         glEnableVertexAttribArray(mPosHandle);
