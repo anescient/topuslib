@@ -171,5 +171,4 @@ public class ShadedTrianglesBrush extends Brush implements TriangleConsumer {
         glDisableVertexAttribArray(mNormalHandle);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-
 }

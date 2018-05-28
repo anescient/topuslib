@@ -2,7 +2,6 @@ package net.chaosworship.topuslibtest.drawingboard;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -10,8 +9,8 @@ import android.view.MotionEvent;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
-import net.chaosworship.topuslib.geom3d.Icosahedron;
-import net.chaosworship.topuslib.gl.GLLinesBrush;
+import net.chaosworship.topuslib.geom3d.TriangleMesh;
+import net.chaosworship.topuslib.geom3d.TriangulatedSphere;
 import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
@@ -41,7 +40,7 @@ public class DrawingBoard
     private float mSpin;
     private float mEyeHeight;
 
-    private Icosahedron mShape;
+    private TriangleMesh mShape;
 
     public DrawingBoard(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -53,7 +52,7 @@ public class DrawingBoard
         mSpin = 0.1f;
         mEyeHeight = 3;
 
-        mShape = new Icosahedron();
+        mShape = TriangulatedSphere.generateIcosphere(3);
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);

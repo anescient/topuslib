@@ -92,6 +92,17 @@ public class Vec3 implements Cloneable {
         return this;
     }
 
+    public static Vec3 midpoint(Vec3 a, Vec3 b) {
+        return new Vec3().setMidpoint(a, b);
+    }
+
+    public Vec3 setMidpoint(Vec3 a, Vec3 b) {
+        x = (a.x + b.x) * 0.5f;
+        y = (a.y + b.y) * 0.5f;
+        z = (a.z + b.z) * 0.5f;
+        return this;
+    }
+
     public Vec3 add(Vec3 rhs) {
         x += rhs.x;
         y += rhs.y;
