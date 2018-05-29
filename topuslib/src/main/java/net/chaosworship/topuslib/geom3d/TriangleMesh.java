@@ -1,37 +1,29 @@
 package net.chaosworship.topuslib.geom3d;
 
 import android.annotation.SuppressLint;
-import android.util.SparseIntArray;
 
 import net.chaosworship.topuslib.collection.TriangleConsumer;
 import net.chaosworship.topuslib.tuple.IntTriple;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 
 public class TriangleMesh {
 
-    private final Map<Integer, Vec3> mVertices;
+    private final List<Vec3> mVertices;
     private final List<IntTriple> mFaces;
-    private int mNextVertex;
 
     @SuppressLint("UseSparseArrays")
     TriangleMesh() {
-        mVertices = new HashMap<>();
+        mVertices = new ArrayList<>();
         mFaces = new ArrayList<>();
-        mNextVertex = 0;
     }
 
-    TriangleMesh(Map<Integer, Vec3> vertices) {
+    TriangleMesh(Collection<Vec3> vertices) {
         this();
-        for(Map.Entry<Integer, Vec3> entry : vertices.entrySet()) {
-            int v = entry.getKey();
-            mVertices.put(v, new Vec3(entry.getValue()));
-            mNextVertex = Math.max(mNextVertex, v + 1);
-        }
+        mVertices.addAll(vertices);
     }
 
     TriangleMesh(TriangleMesh source) {
@@ -41,17 +33,17 @@ public class TriangleMesh {
         }
     }
 
-    Map<Integer, Vec3> getVertices() {
+    public List<Vec3> getVertices() {
         return mVertices;
     }
 
-    List<IntTriple> getFaces() {
+    public List<IntTriple> getFaces() {
         return mFaces;
     }
 
     int addVertex(Vec3 position) {
-        mVertices.put(mNextVertex, position);
-        return mNextVertex++;
+        mVertices.add(position);
+        return mVertices.size() - 1;
     }
 
     void addFace(int a, int b, int c) {

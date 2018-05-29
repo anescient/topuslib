@@ -8,6 +8,7 @@ import net.chaosworship.topuslib.tuple.IntTriple;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -77,7 +78,7 @@ public class TriangulatedSphere {
 
     private static TriangleMesh subdivide(TriangleMesh base) {
         TriangleMesh submesh = new TriangleMesh(base.getVertices());
-        Map<Integer, Vec3> vertices = submesh.getVertices();
+        List<Vec3> vertices = submesh.getVertices();
         ArrayList<IntPair> edges = new ArrayList<>();
         HashMap<IntPair, Integer> midpointMap = new HashMap<>();
         for(IntTriple face : base.getFaces()) {
