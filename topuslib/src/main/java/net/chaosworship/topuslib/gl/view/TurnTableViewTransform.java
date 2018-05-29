@@ -78,7 +78,7 @@ public class TurnTableViewTransform extends ViewportTransform implements ViewTra
                 0, 0, 0,
                 0, 0, 1);
         float aspect = (float)getViewportWidth() / getViewportHeight();
-        Matrix.perspectiveM(p, 0, mFOV, aspect, -1, 1);
+        Matrix.perspectiveM(p, 0, mFOV, aspect, 1, -1);
         Matrix.multiplyMM(mViewMatrix, 0, p, 0, v, 0);
     }
 }
