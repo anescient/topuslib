@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.geom3d;
 import android.annotation.SuppressLint;
 import android.opengl.Matrix;
 
+import net.chaosworship.topuslib.BuildConfig;
 import net.chaosworship.topuslib.tuple.IntTriple;
 
 
@@ -231,6 +232,23 @@ public class Vec3 implements Cloneable {
 
     public float dot(Vec3 rhs) {
         return x * rhs.x + y * rhs.y + z * rhs.z;
+    }
+
+    @SuppressWarnings("SuspiciousNameCombination")
+    public Vec3 setArbitraryPerpendicular(Vec3 v) {
+        if(v.isZero()) {
+            set(0, 0, 1);
+        } else {
+            Vec3 u = new Vec3();
+            if(v.x == 0) {
+                u.set(v.x, -v.z, v.y);
+            } else {
+                u.set(-v.y, -v.x, v.z);
+            }
+            setCross(u, v);
+        }
+
+        return this;
     }
 
     public Vec3 normalize() {
