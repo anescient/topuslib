@@ -235,7 +235,7 @@ public class Vec3 implements Cloneable {
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
-    public Vec3 setArbitraryPerpendicular(Vec3 v) {
+    Vec3 setArbitraryPerpendicular(Vec3 v) {
         if(v.isZero()) {
             set(0, 0, 1);
         } else {

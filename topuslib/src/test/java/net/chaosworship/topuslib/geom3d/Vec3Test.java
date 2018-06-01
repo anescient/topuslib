@@ -11,14 +11,15 @@ import static junit.framework.Assert.*;
 
 public class Vec3Test {
 
+    private static SuperRandom sRandom = new SuperRandom(1234);
+
     @Test
     public void arbitraryPerpendicular() {
-        SuperRandom random = new SuperRandom(1234);
         Vec3 a = new Vec3();
         Vec3 b = new Vec3();
-        a.setArbitraryPerpendicular(b);
-        for(int i = 0; i < 100; i++) {
-            a.set(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f, random.nextFloat() - 0.5f);
+        a.setArbitraryPerpendicular(b); // check that it doesn't croak
+        for(Vec3 v : someRandomVectors(100)) {
+            a.set(v);
             b.setArbitraryPerpendicular(a);
             assertTrue(Math.abs(a.dot(b)) < 0.00001);
         }
@@ -36,5 +37,36 @@ public class Vec3Test {
             b.setArbitraryPerpendicular(a);
             assertTrue(Math.abs(a.dot(b)) < 0.000001);
         }
+    }
+
+    @Test
+    public void randomUnitVectorsAreUnit() {
+        for(Vec3 v : someRandomUnitVectors(100)) {
+            assertTrue(epsilonMagnitudeEquals(v, 1));
+        }
+    }
+
+    static boolean epsilonMagnitudeEquals(Vec3 v, float mag) {
+        return Math.abs(v.magnitude() - mag) < 0.000001;
+    }
+
+    static ArrayList<Vec3> someRandomUnitVectors(int count) {
+        ArrayList<Vec3> vectors = new ArrayList<>();
+        while(vectors.size() < count) {
+            Vec3 v = new Vec3(sRandom.nextFloat() - 0.5f, sRandom.nextFloat() - 0.5f, sRandom.nextFloat() - 0.5f);
+            if(!v.isZero()) {
+                v.normalize();
+                vectors.add(v);
+            }
+        }
+        return vectors;
+    }
+
+    static ArrayList<Vec3> someRandomVectors(int count) {
+        ArrayList<Vec3> vectors = someRandomUnitVectors(count);
+        for(Vec3 v : vectors) {
+            v.scale(0.1f + 4 * sRandom.nextFloat());
+        }
+        return vectors;
     }
 }
