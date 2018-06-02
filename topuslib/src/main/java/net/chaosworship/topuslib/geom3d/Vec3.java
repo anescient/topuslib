@@ -3,7 +3,7 @@ package net.chaosworship.topuslib.geom3d;
 import android.annotation.SuppressLint;
 import android.opengl.Matrix;
 
-import net.chaosworship.topuslib.BuildConfig;
+import net.chaosworship.topuslib.math.Spline;
 import net.chaosworship.topuslib.tuple.IntTriple;
 
 
@@ -90,6 +90,62 @@ public class Vec3 implements Cloneable {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
+    }
+
+    // u in [0,1]
+    public Vec3 setCubicBSpline(Vec3 a, Vec3 b, Vec3 c, Vec3 d, float u) {
+        x = Spline.CubicBSpline(a.x, b.x, c.x, d.x, u);
+        y = Spline.CubicBSpline(a.y, b.y, c.y, d.y, u);
+        z = Spline.CubicBSpline(a.z, b.z, c.z, d.z, u);
+        return this;
+    }
+
+    // first derivative (tangent)
+    public Vec3 setCubicBSplineFirst(Vec3 a, Vec3 b, Vec3 c, Vec3 d, float u) {
+        x = Spline.CubicBSplineFirst(a.x, b.x, c.x, d.x, u);
+        y = Spline.CubicBSplineFirst(a.y, b.y, c.y, d.y, u);
+        z = Spline.CubicBSplineFirst(a.z, b.z, c.z, d.z, u);
+        return this;
+    }
+
+    // second derivative (curvature)
+    public Vec3 setCubicBSplineSecond(Vec3 a, Vec3 b, Vec3 c, Vec3 d, float u) {
+        x = Spline.CubicBSplineSecond(a.x, b.x, c.x, d.x, u);
+        y = Spline.CubicBSplineSecond(a.y, b.y, c.y, d.y, u);
+        z = Spline.CubicBSplineSecond(a.z, b.z, c.z, d.z, u);
+        return this;
+    }
+
+    // u in [0,1]
+    public Vec3 setQuarticBSpline(Vec3 a, Vec3 b, Vec3 c, Vec3 d, Vec3 e, float u) {
+        x = Spline.QuarticBSpline(a.x, b.x, c.x, d.x, e.x, u);
+        y = Spline.QuarticBSpline(a.y, b.y, c.y, d.y, e.y, u);
+        z = Spline.QuarticBSpline(a.z, b.z, c.z, d.z, e.z, u);
+        return this;
+    }
+
+    // first derivative (tangent)
+    public Vec3 setQuarticBSplineFirst(Vec3 a, Vec3 b, Vec3 c, Vec3 d, Vec3 e, float u) {
+        x = Spline.QuarticBSplineFirst(a.x, b.x, c.x, d.x, e.x, u);
+        y = Spline.QuarticBSplineFirst(a.y, b.y, c.y, d.y, e.y, u);
+        z = Spline.QuarticBSplineFirst(a.z, b.z, c.z, d.z, e.z, u);
+        return this;
+    }
+
+    // second derivative (curvature)
+    public Vec3 setQuarticBSplineSecond(Vec3 a, Vec3 b, Vec3 c, Vec3 d, Vec3 e, float u) {
+        x = Spline.QuarticBSplineSecond(a.x, b.x, c.x, d.x, e.x, u);
+        y = Spline.QuarticBSplineSecond(a.y, b.y, c.y, d.y, e.y, u);
+        z = Spline.QuarticBSplineSecond(a.z, b.z, c.z, d.z, e.z, u);
+        return this;
+    }
+
+    // set filtered value at c
+    public Vec3 setSavitzkyGolay(Vec3 a, Vec3 b, Vec3 c, Vec3 d, Vec3 e) {
+        x = Spline.SavitzkyGolay(a.x, b.x, c.x, d.x, e.x);
+        y = Spline.SavitzkyGolay(a.y, b.y, c.y, d.y, e.y);
+        z = Spline.SavitzkyGolay(a.z, b.z, c.z, d.z, e.z);
         return this;
     }
 
