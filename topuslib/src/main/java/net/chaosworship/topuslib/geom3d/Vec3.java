@@ -235,7 +235,7 @@ public class Vec3 implements Cloneable {
     }
 
     @SuppressWarnings("SuspiciousNameCombination")
-    Vec3 setArbitraryPerpendicular(Vec3 v) {
+    public Vec3 setArbitraryPerpendicular(Vec3 v) {
         if(v.isZero()) {
             set(0, 0, 1);
         } else {
@@ -251,6 +251,10 @@ public class Vec3 implements Cloneable {
         return this;
     }
 
+    public static Vec3 arbitraryPerpendicular(Vec3 v) {
+        return new Vec3().setArbitraryPerpendicular(v);
+    }
+
     public Vec3 normalize() {
         float m = magnitude();
         if(m > 0) {
@@ -259,6 +263,10 @@ public class Vec3 implements Cloneable {
             z /= m;
         }
         return this;
+    }
+
+    public Vec3 normalized() {
+        return new Vec3(this).normalize();
     }
 
     ////////////////////////////////////////////////////
