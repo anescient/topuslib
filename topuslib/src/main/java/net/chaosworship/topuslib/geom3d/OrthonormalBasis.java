@@ -8,6 +8,7 @@ public class OrthonormalBasis {
     public final Vec3 v;
     public final Vec3 w;
 
+    @SuppressWarnings("WeakerAccess")
     public OrthonormalBasis() {
         u = new Vec3(1, 0, 0);
         v = new Vec3(0, 1, 0);

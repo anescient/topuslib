@@ -42,6 +42,18 @@ public class OrthonormalBasisTest {
         assertTrue(uvw.isRightHanded());
         uvw.v.negate();
         assertFalse(uvw.isRightHanded());
+        uvw.v.negate();
+        assertTrue(uvw.isRightHanded());
+    }
+
+    @Test
+    public void setRightHandedTest() {
+        OrthonormalBasis uvw = new OrthonormalBasis();
+        for(Vec3 p : Vec3Test.someRandomUnitVectors(100)) {
+            Vec3 q = new Vec3().setArbitraryPerpendicular(p);
+            uvw.setRightHanded(p, q);
+            assertTrue(uvw.isRightHanded());
+        }
     }
 
     @Test
