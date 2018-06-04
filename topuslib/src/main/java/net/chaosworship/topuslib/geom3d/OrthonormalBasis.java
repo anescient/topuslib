@@ -14,9 +14,15 @@ public class OrthonormalBasis {
         w = new Vec3(0, 0, 1);
     }
 
-    public void setArbitraryAboutUnit(Vec3 w) {
-        this.w.set(w);
+    public void setArbitraryAboutW(Vec3 w) {
+        this.w.set(w).normalize();
         u.setArbitraryPerpendicular(this.w).normalize();
+        v.setCross(this.w, u);
+    }
+
+    public void realignAboutW(Vec3 w) {
+        this.w.set(w).normalize();
+        u.setCross(v, this.w).normalize();
         v.setCross(this.w, u);
     }
 
@@ -29,14 +35,14 @@ public class OrthonormalBasis {
         }
     }
 
-    public void transform(Vec3 p) {
+    public void transformFromXYZ(Vec3 p) {
         float x = p.x;
         float y = p.y;
         float z = p.z;
         p.setZero().addScaled(u, x).addScaled(v, y).addScaled(w, z);
     }
 
-    public Vec3 transformed(Vec3 p) {
+    public Vec3 transformedFromXYZ(Vec3 p) {
         return new Vec3().addScaled(u, p.x).addScaled(v, p.y).addScaled(w, p.z);
     }
 
