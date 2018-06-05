@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.random;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.geom3d.Vec3;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,6 +45,15 @@ public class SuperRandom extends Random {
 
     public Vec2 uniformInCircle(Circle circle) {
         return uniformUnit().scale(((float)Math.sqrt(nextFloat())) * circle.radius).add(circle.center);
+    }
+
+    public Vec3 uniformOnUnitSphere() {
+        double theta = 2 * Math.PI * nextDouble();
+        float z = nextFloat() * 2 - 1;
+        float rt = (float)Math.sqrt(1 - z * z);
+        float x = rt * (float)Math.cos(theta);
+        float y = rt * (float)Math.sin(theta);
+        return new Vec3(x, y, z);
     }
 
     public void setUniformUnit(Vec2 v) {

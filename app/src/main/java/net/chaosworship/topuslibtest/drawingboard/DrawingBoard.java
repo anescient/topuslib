@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
+import net.chaosworship.topuslib.geom3d.Cuboid;
 import net.chaosworship.topuslib.geom3d.OrthonormalBasis;
 import net.chaosworship.topuslib.geom3d.TriangleMesh;
 import net.chaosworship.topuslib.geom3d.TriangulatedSphere;
@@ -58,21 +59,33 @@ public class DrawingBoard
         mSpin = 0.1f;
         mEyeHeight = 3;
 
-        mPath = new ArrayList<>();
-        mPath.add(new Vec3(0, 0, 0));
-        mPath.add(new Vec3(0.1f, 0.02f, 0.04f));
-        mPath.add(new Vec3(0.2f, 0.03f, 0.14f));
-        mPath.add(new Vec3(0.5f, 0.08f, 0.3f));
-        mPath.add(new Vec3(0.7f, 0.16f, 0.6f));
-        mPath.add(new Vec3(1.0f, 0.5f, 0.7f));
-        mPath.add(new Vec3(0.9f, 0.8f, 0.3f));
-        mPath.add(new Vec3(0.8f, 0.6f, 0.2f));
+        mPath = generateTestPath();
+
+        Vec3 avg = new Vec3();
+        for(Vec3 p : mPath) {
+            avg.add(p);
+        }
+        avg.scaleInverse(mPath.size());
+        for(Vec3 p : mPath) {
+            p.subtract(avg);
+        }
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
         setRenderer(this);
         //setRenderMode(RENDERMODE_WHEN_DIRTY);
         setRenderMode(RENDERMODE_CONTINUOUSLY);
+    }
+
+    private static ArrayList<Vec3> generateTestPath() {
+        ArrayList<Vec3> path = new ArrayList<>();
+        SuperRandom random = new SuperRandom();
+        random.setSeed(787);
+        path.add(new Vec3(random.nextFloat(), random.nextFloat(), random.nextFloat()));
+        for(int i = 0; i < 35; i++) {
+            path.add(path.get(path.size() - 1).sum(random.uniformOnUnitSphere().scale(0.4f)));
+        }
+        return path;
     }
 
     public void go() {
@@ -108,11 +121,12 @@ public class DrawingBoard
             mEyeHeight = 10 * topBottom;
         }
 
-        float modelSpin = (SystemClock.uptimeMillis() / (float)100) % (float)(360);
+        float phase = (SystemClock.uptimeMillis() / (float)10000) % 1.0f;
+        float modelSpin = (float)(2 * Math.PI * phase);
 
-        mViewTransform.setRotation(mSpin);
-        mViewTransform.setFOV(90);
-        mViewTransform.setEyeDistance(3);
+        mViewTransform.setRotation(mSpin + modelSpin);
+        mViewTransform.setFOV(60);
+        mViewTransform.setEyeDistance(6);
         mViewTransform.setEyeHeight(mEyeHeight);
 
         mViewTransform.callGlViewport();
@@ -122,12 +136,41 @@ public class DrawingBoard
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
         linesBrush.begin(mViewTransform.getViewMatrix(), 3);
 
-        linesBrush.addCube(new Vec3(0,0,0), new OrthonormalBasis(), 1.0f, Color.MAGENTA);
+        linesBrush.setColor(Color.YELLOW);
+        linesBrush.setAlpha(0.3f);
+        for(int i = 0; i < mPath.size() - 1; i++) {
+            //linesBrush.addLine(mPath.get(i), mPath.get(i + 1));
+        }
+
+        Cuboid boundBox = Cuboid.bound(mPath);
+        linesBrush.setColor(Color.WHITE);
+        linesBrush.setAlpha(0.5f);
+        linesBrush.addCuboid(boundBox);
+
+        linesBrush.end();
+        linesBrush.begin(mViewTransform.getViewMatrix(), 5);
 
         linesBrush.setColor(Color.WHITE);
-        for(int i = 0; i < mPath.size() - 1; i++) {
-            linesBrush.addLine(mPath.get(i), mPath.get(i + 1));
+        linesBrush.setAlpha(1.0f);
+        for(int skip = 0; skip < mPath.size() - 3; skip++) {
+            Vec3 lastPos = null;
+            for(float along = 0; along <= 1.0f; along += 0.1f) {
+                Vec3 pos = new Vec3().setCubicBSpline(
+                        mPath.get(skip),
+                        mPath.get(skip + 1),
+                        mPath.get(skip + 2),
+                        mPath.get(skip + 3),
+                        along);
+                if(lastPos != null) {
+                    linesBrush.addLine(lastPos, pos);
+                    lastPos = pos;
+                }
+                if(lastPos == null) {
+                    lastPos = new Vec3(pos);
+                }
+            }
         }
+
         linesBrush.end();
     }
 }

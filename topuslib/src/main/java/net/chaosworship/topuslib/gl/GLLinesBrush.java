@@ -181,7 +181,7 @@ public class GLLinesBrush extends Brush {
     }
 
     public void addCube(Vec3 zeroCorner, OrthonormalBasis basis, float size, @ColorInt int color) {
-    addCube(zeroCorner, basis, size, color, color, color);
+        addCube(zeroCorner, basis, size, color, color, color);
     }
 
     public void addCube(Vec3 zeroCorner, OrthonormalBasis basis, float size) {

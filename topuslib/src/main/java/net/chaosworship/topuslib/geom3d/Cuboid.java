@@ -161,7 +161,6 @@ public class Cuboid {
             c.maxy = Math.max(c.maxy, p.y);
             c.minz = Math.min(c.minz, p.z);
             c.maxz = Math.max(c.maxz, p.z);
-
         }
         return c;
     }
