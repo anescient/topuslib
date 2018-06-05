@@ -29,6 +29,11 @@ public class OrthonormalBasisTest {
             uvw.setArbitraryAboutW(p);
             assertOrthogonal(uvw);
             assertTrue(uvw.isRightHanded());
+            p.negate();
+            uvw.setArbitraryAboutW(p);
+            assertOrthogonal(uvw);
+            assertTrue(uvw.isRightHanded());
+
         }
     }
 

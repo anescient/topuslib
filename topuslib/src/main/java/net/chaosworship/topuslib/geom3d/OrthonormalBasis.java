@@ -15,10 +15,25 @@ public class OrthonormalBasis {
         w = new Vec3(0, 0, 1);
     }
 
+    public void set(OrthonormalBasis src) {
+        this.u.set(src.u);
+        this.v.set(src.v);
+        this.w.set(src.w);
+    }
+
+    public void renormalize() {
+        u.normalize();
+        v.normalize();
+        w.normalize();
+    }
+
     public void setArbitraryAboutW(Vec3 w) {
         this.w.set(w).normalize();
         u.setArbitraryPerpendicular(this.w).normalize();
         v.setCross(this.w, u);
+        if(!isRightHanded()) {
+            v.negate();
+        }
     }
 
     public void realignAboutW(Vec3 w) {

@@ -27,6 +27,16 @@ public class HashSimpleGraph implements SimpleGraph {
         mNeighborSets = new HashMap<>();
     }
 
+    public HashSimpleGraph(SimpleGraph source) {
+        this();
+        for(Integer v : source.getVertices()) {
+            addVertex(v);
+        }
+        for(IntPair p : source.getEdges()) {
+            addEdge(p.a, p.b);
+        }
+    }
+
     @Override
     public void clear() {
         mNextVertex = 1;
