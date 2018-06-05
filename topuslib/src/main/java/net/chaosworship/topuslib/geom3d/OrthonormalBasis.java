@@ -1,6 +1,7 @@
 package net.chaosworship.topuslib.geom3d;
 
 
+@SuppressWarnings("UnusedReturnValue")
 public class OrthonormalBasis {
 
     // these are expected to be unit length
@@ -15,40 +16,53 @@ public class OrthonormalBasis {
         w = new Vec3(0, 0, 1);
     }
 
-    public void set(OrthonormalBasis src) {
+    public OrthonormalBasis set(OrthonormalBasis src) {
         this.u.set(src.u);
         this.v.set(src.v);
         this.w.set(src.w);
+        return this;
     }
 
-    public void renormalize() {
+    public OrthonormalBasis renormalize() {
         u.normalize();
         v.normalize();
         w.normalize();
+        return this;
     }
 
-    public void setArbitraryAboutW(Vec3 w) {
+    public OrthonormalBasis setArbitraryAboutW(Vec3 w) {
         this.w.set(w).normalize();
         u.setArbitraryPerpendicular(this.w).normalize();
         v.setCross(this.w, u);
         if(!isRightHanded()) {
             v.negate();
         }
+        return this;
     }
 
-    public void realignAboutW(Vec3 w) {
+    public OrthonormalBasis realignAboutW(Vec3 w) {
         this.w.set(w).normalize();
         u.setCross(v, this.w).normalize();
         v.setCross(this.w, u);
+        return this;
     }
 
-    public void setRightHanded(Vec3 unitW, Vec3 unitU) {
+    public OrthonormalBasis setRightHanded(Vec3 unitW, Vec3 unitU) {
         w.set(unitW);
         u.set(unitU);
         v.setCross(u, w);
         if(!isRightHanded()) {
             v.negate();
         }
+        return this;
+    }
+
+    // ab in [0,1]
+    public OrthonormalBasis setMix(OrthonormalBasis a, OrthonormalBasis b, float ab) {
+        this.u.setZero().addScaled(a.u, 1 - ab).addScaled(b.u, ab);
+        this.v.setZero().addScaled(a.v, 1 - ab).addScaled(b.v, ab);
+        this.w.setZero().addScaled(a.w, 1 - ab).addScaled(b.w, ab);
+        return this;
     }
 
     public void transformFromXYZ(Vec3 p) {
