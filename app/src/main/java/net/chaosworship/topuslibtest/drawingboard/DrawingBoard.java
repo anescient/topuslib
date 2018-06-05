@@ -2,6 +2,7 @@ package net.chaosworship.topuslibtest.drawingboard;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -19,6 +20,8 @@ import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslibtest.gl.ShadedTrianglesBrush;
 import net.chaosworship.topuslibtest.gl.TestLoader;
+
+import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -43,6 +46,8 @@ public class DrawingBoard
     private float mSpin;
     private float mEyeHeight;
 
+    private final ArrayList<Vec3> mPath;
+
     public DrawingBoard(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -53,6 +58,15 @@ public class DrawingBoard
         mSpin = 0.1f;
         mEyeHeight = 3;
 
+        mPath = new ArrayList<>();
+        mPath.add(new Vec3(0, 0, 0));
+        mPath.add(new Vec3(0.1f, 0.02f, 0.04f));
+        mPath.add(new Vec3(0.2f, 0.03f, 0.14f));
+        mPath.add(new Vec3(0.5f, 0.08f, 0.3f));
+        mPath.add(new Vec3(0.7f, 0.16f, 0.6f));
+        mPath.add(new Vec3(1.0f, 0.5f, 0.7f));
+        mPath.add(new Vec3(0.9f, 0.8f, 0.3f));
+        mPath.add(new Vec3(0.8f, 0.6f, 0.2f));
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
@@ -97,8 +111,8 @@ public class DrawingBoard
         float modelSpin = (SystemClock.uptimeMillis() / (float)100) % (float)(360);
 
         mViewTransform.setRotation(mSpin);
-        mViewTransform.setFOV(120);
-        mViewTransform.setEyeDistance(2);
+        mViewTransform.setFOV(90);
+        mViewTransform.setEyeDistance(3);
         mViewTransform.setEyeHeight(mEyeHeight);
 
         mViewTransform.callGlViewport();
@@ -107,7 +121,13 @@ public class DrawingBoard
 
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
         linesBrush.begin(mViewTransform.getViewMatrix(), 3);
-        linesBrush.addAxes(new Vec3(0,0,0), new OrthonormalBasis(), 0.25f);
+
+        linesBrush.addCube(new Vec3(0,0,0), new OrthonormalBasis(), 1.0f, Color.MAGENTA);
+
+        linesBrush.setColor(Color.WHITE);
+        for(int i = 0; i < mPath.size() - 1; i++) {
+            linesBrush.addLine(mPath.get(i), mPath.get(i + 1));
+        }
         linesBrush.end();
     }
 }

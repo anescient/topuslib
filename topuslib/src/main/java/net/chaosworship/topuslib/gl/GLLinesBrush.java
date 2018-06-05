@@ -172,12 +172,47 @@ public class GLLinesBrush extends Brush {
     }
 
     public void addAxes(Vec3 position, OrthonormalBasis basis, float length) {
-        setColor(Color.WHITE);
-        addLine(position, position.sum(basis.w));
         setColor(Color.RED);
+        addLine(position, position.sum(basis.w));
+        setColor(Color.GREEN);
         addLine(position, position.sum(basis.u));
         setColor(Color.BLUE);
         addLine(position, position.sum(basis.v));
+    }
+
+    public void addCube(Vec3 zeroCorner, OrthonormalBasis basis, float size, @ColorInt int color) {
+    addCube(zeroCorner, basis, size, color, color, color);
+    }
+
+    public void addCube(Vec3 zeroCorner, OrthonormalBasis basis, float size) {
+        addCube(zeroCorner, basis, size, Color.GREEN, Color.RED, Color.BLUE);
+    }
+
+    private void addCube(Vec3 zeroCorner, OrthonormalBasis basis, float size, @ColorInt int colorA, @ColorInt int colorB, @ColorInt int colorC) {
+        @SuppressWarnings("UnnecessaryLocalVariable")
+        Vec3 a = zeroCorner;
+        Vec3 b = a.sum(basis.u.scaled(size));
+        Vec3 c = b.sum(basis.v.scaled(size));
+        Vec3 d = a.sum(basis.v.scaled(size));
+        Vec3 e = a.sum(basis.w.scaled(size));
+        Vec3 f = b.sum(basis.w.scaled(size));
+        Vec3 g = c.sum(basis.w.scaled(size));
+        Vec3 h = d.sum(basis.w.scaled(size));
+        setColor(colorA);
+        addLine(a, b);
+        addLine(d, c);
+        addLine(e, f);
+        addLine(h, g);
+        setColor(colorB);
+        addLine(a, e);
+        addLine(d, h);
+        addLine(c, g);
+        addLine(b, f);
+        setColor(colorC);
+        addLine(a, d);
+        addLine(b, c);
+        addLine(f, g);
+        addLine(e, h);
     }
 
     // todo addGrid(Vec3 center, Vec3 normal, float rotation)
