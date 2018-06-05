@@ -9,8 +9,11 @@ import android.view.MotionEvent;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
+import net.chaosworship.topuslib.geom3d.OrthonormalBasis;
 import net.chaosworship.topuslib.geom3d.TriangleMesh;
 import net.chaosworship.topuslib.geom3d.TriangulatedSphere;
+import net.chaosworship.topuslib.geom3d.Vec3;
+import net.chaosworship.topuslib.gl.GLLinesBrush;
 import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
@@ -40,8 +43,6 @@ public class DrawingBoard
     private float mSpin;
     private float mEyeHeight;
 
-    private TriangleMesh mShape;
-
     public DrawingBoard(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -52,7 +53,6 @@ public class DrawingBoard
         mSpin = 0.1f;
         mEyeHeight = 3;
 
-        mShape = TriangulatedSphere.generateIcosphere(3);
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
@@ -105,9 +105,9 @@ public class DrawingBoard
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        ShadedTrianglesBrush trianglesBrush = mLoader.getShadedTrianglesBrush();
-        trianglesBrush.begin(mViewTransform.getViewMatrix(), modelSpin);
-        mShape.outputTriangles(trianglesBrush);
-        trianglesBrush.end();
+        GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
+        linesBrush.begin(mViewTransform.getViewMatrix(), 3);
+        linesBrush.addAxes(new Vec3(0,0,0), new OrthonormalBasis(), 0.25f);
+        linesBrush.end();
     }
 }

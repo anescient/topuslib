@@ -5,6 +5,7 @@ import android.support.annotation.ColorInt;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom3d.Cuboid;
+import net.chaosworship.topuslib.geom3d.OrthonormalBasis;
 import net.chaosworship.topuslib.geom3d.Vec3;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.tuple.IntPair;
@@ -168,6 +169,15 @@ public class GLLinesBrush extends Brush {
             }
             previous = point;
         }
+    }
+
+    public void addAxes(Vec3 position, OrthonormalBasis basis, float length) {
+        setColor(Color.WHITE);
+        addLine(position, position.sum(basis.w));
+        setColor(Color.RED);
+        addLine(position, position.sum(basis.u));
+        setColor(Color.BLUE);
+        addLine(position, position.sum(basis.v));
     }
 
     // todo addGrid(Vec3 center, Vec3 normal, float rotation)
