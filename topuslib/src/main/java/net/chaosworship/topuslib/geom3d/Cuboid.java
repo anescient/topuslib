@@ -138,7 +138,6 @@ public class Cuboid {
                 point.z > minz && point.z < maxz;
     }
 
-
     public static Cuboid bound(Vec3 point, Vec3 ...more) {
         ArrayList<Vec3> points = new ArrayList<>();
         points.add(point);

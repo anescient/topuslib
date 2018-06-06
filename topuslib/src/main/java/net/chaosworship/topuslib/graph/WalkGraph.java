@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 
-public class Walk {
+public class WalkGraph {
 
     private static final SuperRandom sRandom = new SuperRandom();
 
-    private Walk() {}
+    private WalkGraph() {}
 
     public static ArrayList<Integer> randomWalk(SimpleGraph graph) {
         ArrayList<Integer> path = new ArrayList<>();
