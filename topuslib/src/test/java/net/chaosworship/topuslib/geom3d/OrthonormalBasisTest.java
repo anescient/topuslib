@@ -2,6 +2,8 @@ package net.chaosworship.topuslib.geom3d;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static junit.framework.Assert.*;
 
 
@@ -82,6 +84,26 @@ public class OrthonormalBasisTest {
         assertTrue(uvw.isRightHanded());
         for(Vec3 w : Vec3Test.someRandomVectors(100)) {
             uvw.realignAboutW(w);
+            assertOrthogonal(uvw);
+            assertTrue(uvw.isRightHanded());
+        }
+    }
+
+    @Test
+    public void reallignRightAngles() {
+        OrthonormalBasis uvw = new OrthonormalBasis();
+        ArrayList<Vec3> alignments = new ArrayList<>();
+        alignments.add(new Vec3(1, 0, 0));
+        alignments.add(new Vec3(0, 1, 0));
+        alignments.add(new Vec3(0, 0, 1));
+        alignments.add(new Vec3(1, 0, 0));
+        alignments.add(new Vec3(0, 0, 1));
+        alignments.add(new Vec3(-1, 0, 0));
+        alignments.add(new Vec3(0, -1, 0));
+        alignments.add(new Vec3(0, 1, 0));
+        alignments.add(new Vec3(0, 0, -1));
+        for(Vec3 alignment : alignments) {
+            uvw.realignAboutW(alignment);
             assertOrthogonal(uvw);
             assertTrue(uvw.isRightHanded());
         }

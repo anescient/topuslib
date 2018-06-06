@@ -41,6 +41,10 @@ public class OrthonormalBasis {
     }
 
     public OrthonormalBasis realignAboutW(Vec3 w) {
+        if(this.w.dot(w) == 0) {
+            // hacky but effective
+            realignAboutW(new Vec3().setMix(this.w, w, 0.5f));
+        }
         this.w.set(w).normalize();
         u.setCross(v, this.w).normalize();
         v.setCross(this.w, u);
