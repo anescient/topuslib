@@ -17,9 +17,9 @@ public class OrthonormalBasisTest {
         assertTrue(uvw.w.equals(new Vec3(0, 0, 1)));
         for(Vec3 p : Vec3Test.someRandomVectors(100)) {
             Vec3 q = new Vec3(p);
-            uvw.transformFromXYZ(q);
+            uvw.transformFromStandardBasis(q);
             assertTrue(p.epsilonEquals(q, 0.000001f));
-            assertTrue(q.epsilonEquals(uvw.transformedFromXYZ(p), 0.000001f));
+            assertTrue(q.epsilonEquals(uvw.transformedFromStandardBasis(p), 0.000001f));
         }
     }
 
@@ -70,7 +70,7 @@ public class OrthonormalBasisTest {
             uvw.setArbitraryAboutW(basis);
             for(Vec3 p : Vec3Test.someRandomVectors(100)) {
                 Vec3 q = new Vec3(p);
-                uvw.transformFromXYZ(q);
+                uvw.transformFromStandardBasis(q);
                 float pmag = p.magnitude();
                 float qmag = q.magnitude();
                 assertTrue(Math.abs(pmag - qmag) < 0.00001);

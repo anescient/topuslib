@@ -44,9 +44,9 @@ public class OrthonormalBasis {
 
     public OrthonormalBasis rotateToW(Vec3 w) {
         AxisAngleRotator rotator = AxisAngleRotator.capture(this.w, w);
-        this.u.set(rotator.rotated(this.u));
-        this.v.set(rotator.rotated(this.v));
-        this.w.set(rotator.rotated(this.w));
+        rotator.rotate(this.u);
+        rotator.rotate(this.v);
+        rotator.rotate(this.w);
         return this;
     }
 
@@ -68,14 +68,14 @@ public class OrthonormalBasis {
         return this;
     }
 
-    public void transformFromXYZ(Vec3 p) {
+    public void transformFromStandardBasis(Vec3 p) {
         float x = p.x;
         float y = p.y;
         float z = p.z;
         p.setZero().addScaled(u, x).addScaled(v, y).addScaled(w, z);
     }
 
-    public Vec3 transformedFromXYZ(Vec3 p) {
+    public Vec3 transformedFromStandardBasis(Vec3 p) {
         return new Vec3().addScaled(u, p.x).addScaled(v, p.y).addScaled(w, p.z);
     }
 
