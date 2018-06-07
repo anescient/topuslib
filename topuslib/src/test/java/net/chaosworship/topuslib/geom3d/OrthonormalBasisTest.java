@@ -83,7 +83,7 @@ public class OrthonormalBasisTest {
         OrthonormalBasis uvw = new OrthonormalBasis();
         assertTrue(uvw.isRightHanded());
         for(Vec3 w : Vec3Test.someRandomVectors(100)) {
-            uvw.realignAboutW(w);
+            uvw.rotateToW(w);
             assertOrthogonal(uvw);
             assertTrue(uvw.isRightHanded());
         }
@@ -103,7 +103,7 @@ public class OrthonormalBasisTest {
         alignments.add(new Vec3(0, 1, 0));
         alignments.add(new Vec3(0, 0, -1));
         for(Vec3 alignment : alignments) {
-            uvw.realignAboutW(alignment);
+            uvw.rotateToW(alignment);
             assertOrthogonal(uvw);
             assertTrue(uvw.isRightHanded());
         }

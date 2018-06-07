@@ -1,6 +1,8 @@
 package net.chaosworship.topuslib.geom3d;
 
 
+import net.chaosworship.topuslib.geom3d.transform.AxisAngleRotator;
+
 @SuppressWarnings("UnusedReturnValue")
 public class OrthonormalBasis {
 
@@ -40,14 +42,11 @@ public class OrthonormalBasis {
         return this;
     }
 
-    public OrthonormalBasis realignAboutW(Vec3 w) {
-        if(this.w.dot(w) == 0) {
-            // hacky but effective
-            realignAboutW(new Vec3().setMix(this.w, w, 0.5f));
-        }
-        this.w.set(w).normalize();
-        u.setCross(v, this.w).normalize();
-        v.setCross(this.w, u);
+    public OrthonormalBasis rotateToW(Vec3 w) {
+        AxisAngleRotator rotator = AxisAngleRotator.capture(this.w, w);
+        this.u.set(rotator.rotated(this.u));
+        this.v.set(rotator.rotated(this.v));
+        this.w.set(rotator.rotated(this.w));
         return this;
     }
 

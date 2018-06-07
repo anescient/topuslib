@@ -279,6 +279,10 @@ public class Vec3 implements Cloneable {
         return new Vec3().setCross(lhs, rhs);
     }
 
+    public Vec3 cross(Vec3 rhs) {
+        return cross(this, rhs);
+    }
+
     public Vec3 setCross(Vec3 lhs, Vec3 rhs) {
         x = lhs.y * rhs.z - lhs.z * rhs.y;
         y = lhs.z * rhs.x - lhs.x * rhs.z;
