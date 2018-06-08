@@ -4,6 +4,7 @@ import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom3d.Vec3;
 
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_DYNAMIC_DRAW;
@@ -15,16 +16,25 @@ import static android.opengl.GLES20.glBufferSubData;
 public class FloatVertexPreBuffer {
 
     private final boolean mDynamic;
-    private final float[] mPreBuffer;
-    private final FloatBuffer mFloatBuffer;
+    private float[] mPreBuffer;
+    private FloatBuffer mFloatBuffer;
     private int mFloatsBuffered;
     private boolean mGLBufferInitialized;
 
     public FloatVertexPreBuffer(int floatCount, boolean dynamic) {
         mDynamic = dynamic;
         mPreBuffer = new float[floatCount];
-        mFloatBuffer = Brush.makeFloatBuffer(floatCount);
+        mFloatBuffer = Brush.makeFloatBuffer(mPreBuffer.length);
         mFloatsBuffered = 0;
+        mGLBufferInitialized = false;
+    }
+
+    public void ensureCapacity(int floatCount) {
+        if(mPreBuffer.length >= floatCount) {
+            return;
+        }
+        mPreBuffer = Arrays.copyOf(mPreBuffer, floatCount);
+        mFloatBuffer = Brush.makeFloatBuffer(mPreBuffer.length);
         mGLBufferInitialized = false;
     }
 

@@ -139,7 +139,7 @@ public class DrawingBoard
         linesBrush.setColor(Color.YELLOW);
         linesBrush.setAlpha(0.3f);
         for(int i = 0; i < mPath.size() - 1; i++) {
-            //linesBrush.addLine(mPath.get(i), mPath.get(i + 1));
+            linesBrush.addLine(mPath.get(i), mPath.get(i + 1));
         }
 
         Cuboid boundBox = Cuboid.bound(mPath);

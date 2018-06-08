@@ -213,6 +213,10 @@ public class Vec3 implements Cloneable {
         return this;
     }
 
+    public static Vec3 mix(Vec3 a, Vec3 b, float q) {
+        return new Vec3().setMix(a, b, q);
+    }
+
     public Vec3 negate() {
         x = -x;
         y = -y;
