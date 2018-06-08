@@ -10,22 +10,18 @@ import net.chaosworship.topuslib.geom3d.Vec3;
 import net.chaosworship.topuslib.graph.SimpleGraph;
 import net.chaosworship.topuslib.tuple.IntPair;
 
-import java.nio.FloatBuffer;
 import java.util.Collection;
 import java.util.Map;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_BLEND;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
-import static android.opengl.GLES20.GL_DYNAMIC_DRAW;
 import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_LINES;
 import static android.opengl.GLES20.GL_ONE_MINUS_SRC_ALPHA;
 import static android.opengl.GLES20.GL_SRC_ALPHA;
 import static android.opengl.GLES20.glBindBuffer;
 import static android.opengl.GLES20.glBlendFunc;
-import static android.opengl.GLES20.glBufferData;
-import static android.opengl.GLES20.glBufferSubData;
 import static android.opengl.GLES20.glDisable;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
@@ -71,9 +67,8 @@ public class GLLinesBrush extends Brush {
     private final int mPosHandle;
     private final int mColorHandle;
 
-    private final FloatBuffer mVertexBuffer;
     private final int mVertexBufferHandle;
-    private final float[] mVertexPreBuffer;
+    private final FloatVertexPreBuffer mVertexPreBuffer;
     private int mLinesBuffered;
 
     private final float[] mColor;
@@ -86,18 +81,10 @@ public class GLLinesBrush extends Brush {
         mPosHandle = glGetAttribLocation(program, "aPos");
         mColorHandle = glGetAttribLocation(program, "aColor");
 
-        mVertexBuffer = makeFloatBuffer(BATCHSIZE * VERTEXSIZE * VERTICESPER);
         mVertexBufferHandle = generateBuffer();
 
-        mVertexPreBuffer = new float[BATCHSIZE * VERTEXSIZE * VERTICESPER];
+        mVertexPreBuffer = new FloatVertexPreBuffer(BATCHSIZE * VERTEXSIZE * VERTICESPER, true);
         mLinesBuffered = 0;
-
-        mVertexBuffer.position(0);
-        mVertexBuffer.put(mVertexPreBuffer, 0, BATCHSIZE * VERTEXSIZE * VERTICESPER);
-        mVertexBuffer.position(0);
-        glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
-        glBufferData(GL_ARRAY_BUFFER, mVertexBuffer.capacity() * FLOATSIZE, mVertexBuffer, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         mColor = new float[]{1, 1, 1, 1};
     }
@@ -140,23 +127,22 @@ public class GLLinesBrush extends Brush {
         if(mLinesBuffered >= BATCHSIZE) {
             flush();
         }
-        int i = mLinesBuffered * VERTICESPER * VERTEXSIZE;
 
-        mVertexPreBuffer[i++] = a.x;
-        mVertexPreBuffer[i++] = a.y;
-        mVertexPreBuffer[i++] = a.z;
-        mVertexPreBuffer[i++] = mColor[0];
-        mVertexPreBuffer[i++] = mColor[1];
-        mVertexPreBuffer[i++] = mColor[2];
-        mVertexPreBuffer[i++] = mColor[3];
+        mVertexPreBuffer.put(a.x);
+        mVertexPreBuffer.put(a.y);
+        mVertexPreBuffer.put(a.z);
+        mVertexPreBuffer.put(mColor[0]);
+        mVertexPreBuffer.put(mColor[1]);
+        mVertexPreBuffer.put(mColor[2]);
+        mVertexPreBuffer.put(mColor[3]);
 
-        mVertexPreBuffer[i++] = b.x;
-        mVertexPreBuffer[i++] = b.y;
-        mVertexPreBuffer[i++] = b.z;
-        mVertexPreBuffer[i++] = mColor[0];
-        mVertexPreBuffer[i++] = mColor[1];
-        mVertexPreBuffer[i++] = mColor[2];
-        mVertexPreBuffer[i++] = mColor[3];
+        mVertexPreBuffer.put(b.x);
+        mVertexPreBuffer.put(b.y);
+        mVertexPreBuffer.put(b.z);
+        mVertexPreBuffer.put(mColor[0]);
+        mVertexPreBuffer.put(mColor[1]);
+        mVertexPreBuffer.put(mColor[2]);
+        mVertexPreBuffer.put(mColor[3]);
 
         mLinesBuffered++;
     }
@@ -265,10 +251,8 @@ public class GLLinesBrush extends Brush {
     }
 
     private void flush() {
-        mVertexBuffer.position(0);
-        mVertexBuffer.put(mVertexPreBuffer, 0, mLinesBuffered * VERTEXSIZE * VERTICESPER);
-        mVertexBuffer.position(0);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, mLinesBuffered * VERTEXSIZE * VERTICESPER * FLOATSIZE, mVertexBuffer);
+        mVertexPreBuffer.glBufferDataArray();
+        mVertexPreBuffer.reset();
         glDrawArrays(GL_LINES, 0, mLinesBuffered * VERTICESPER);
         mLinesBuffered = 0;
     }

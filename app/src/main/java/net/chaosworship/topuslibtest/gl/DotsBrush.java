@@ -2,9 +2,9 @@ package net.chaosworship.topuslibtest.gl;
 
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.gl.Brush;
+import net.chaosworship.topuslib.gl.FloatVertexPreBuffer;
 import net.chaosworship.topuslibtest.R;
 
-import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
@@ -12,7 +12,6 @@ import static android.opengl.GLES20.GL_BLEND;
 import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
 import static android.opengl.GLES20.GL_CULL_FACE;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
-import static android.opengl.GLES20.GL_DYNAMIC_DRAW;
 import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_LINEAR;
@@ -32,7 +31,6 @@ import static android.opengl.GLES20.glBindBuffer;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glBlendFunc;
 import static android.opengl.GLES20.glBufferData;
-import static android.opengl.GLES20.glBufferSubData;
 import static android.opengl.GLES20.glDisable;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawElements;
@@ -63,9 +61,8 @@ public class DotsBrush extends Brush {
 
     private final TestLoader mLoader;
 
-    private final float[] mVertexPreBuffer;
+    private final FloatVertexPreBuffer mVertexPreBuffer;
     private int mQuadsBuffered;
-    private final FloatBuffer mVertexBuffer;
     private final int mVertexBufferHandle;
     private final int mElementBufferHandle;
 
@@ -80,32 +77,27 @@ public class DotsBrush extends Brush {
     DotsBrush(TestLoader loader) {
         mLoader = loader;
 
-        mVertexPreBuffer = new float[BATCHSIZE * VERTEXSIZE * VERTICESPER];
+        mVertexPreBuffer = new FloatVertexPreBuffer(BATCHSIZE * VERTEXSIZE * VERTICESPER, true);
         for(int quadi = 0; quadi < BATCHSIZE; quadi++) {
-            int basei = quadi * VERTEXSIZE * VERTICESPER;
-
-            // texture coordinates
-            mVertexPreBuffer[basei + 2] = 0;
-            mVertexPreBuffer[basei + 3] = 1;
-            mVertexPreBuffer[basei + VERTEXSIZE + 2] = 1;
-            mVertexPreBuffer[basei + VERTEXSIZE + 3] = 1;
-            mVertexPreBuffer[basei + 2 * VERTEXSIZE + 2] = 1;
-            mVertexPreBuffer[basei + 2 * VERTEXSIZE + 3] = 0;
-            mVertexPreBuffer[basei + 3 * VERTEXSIZE + 2] = 0;
-            mVertexPreBuffer[basei + 3 * VERTEXSIZE + 3] = 0;
+            mVertexPreBuffer.skip(2);
+            mVertexPreBuffer.put(0); // texture coordinates
+            mVertexPreBuffer.put(1);
+            mVertexPreBuffer.skip(3);
+            mVertexPreBuffer.put(1);
+            mVertexPreBuffer.put(1);
+            mVertexPreBuffer.skip(3);
+            mVertexPreBuffer.put(1);
+            mVertexPreBuffer.put(0);
+            mVertexPreBuffer.skip(3);
+            mVertexPreBuffer.put(0);
+            mVertexPreBuffer.put(0);
+            mVertexPreBuffer.skip(1);
         }
+        mVertexPreBuffer.reset();
 
         mQuadsBuffered = 0;
 
-        mVertexBuffer = makeFloatBuffer(mVertexPreBuffer.length);
         mVertexBufferHandle = generateBuffer();
-
-        mVertexBuffer.position(0);
-        mVertexBuffer.put(mVertexPreBuffer, 0, BATCHSIZE * VERTEXSIZE * VERTICESPER);
-        mVertexBuffer.position(0);
-        glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
-        glBufferData(GL_ARRAY_BUFFER, mVertexBuffer.capacity() * FLOATSIZE, mVertexBuffer, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         mElementBufferHandle = generateBuffer();
         ShortBuffer elements = makeShortBuffer(BATCHSIZE * ELEMENTSPER);
@@ -174,27 +166,25 @@ public class DotsBrush extends Brush {
             flush();
         }
 
-        int floatIndex = mQuadsBuffered * VERTEXSIZE * VERTICESPER;
+        mVertexPreBuffer.put(position.x - radius);
+        mVertexPreBuffer.put(position.y - radius);
+        mVertexPreBuffer.skip(2); // skip texture coords
+        mVertexPreBuffer.put(alpha);
 
-        mVertexPreBuffer[floatIndex++] = position.x - radius;
-        mVertexPreBuffer[floatIndex++] = position.y - radius;
-        floatIndex += 2; // skip texture coords
-        mVertexPreBuffer[floatIndex++] = alpha;
+        mVertexPreBuffer.put(position.x - radius);
+        mVertexPreBuffer.put(position.y + radius);
+        mVertexPreBuffer.skip(2); // skip texture coords
+        mVertexPreBuffer.put(alpha);
 
-        mVertexPreBuffer[floatIndex++] = position.x - radius;
-        mVertexPreBuffer[floatIndex++] = position.y + radius;
-        floatIndex += 2; // skip texture coords
-        mVertexPreBuffer[floatIndex++] = alpha;
+        mVertexPreBuffer.put(position.x + radius);
+        mVertexPreBuffer.put(position.y + radius);
+        mVertexPreBuffer.skip(2); // skip texture coords
+        mVertexPreBuffer.put(alpha);
 
-        mVertexPreBuffer[floatIndex++] = position.x + radius;
-        mVertexPreBuffer[floatIndex++] = position.y + radius;
-        floatIndex += 2; // skip texture coords
-        mVertexPreBuffer[floatIndex++] = alpha;
-
-        mVertexPreBuffer[floatIndex++] = position.x + radius;
-        mVertexPreBuffer[floatIndex++] = position.y - radius;
-        floatIndex += 2; // skip texture coords
-        mVertexPreBuffer[floatIndex] = alpha;
+        mVertexPreBuffer.put(position.x + radius);
+        mVertexPreBuffer.put(position.y - radius);
+        mVertexPreBuffer.skip(2); // skip texture coords
+        mVertexPreBuffer.put(alpha);
 
         mQuadsBuffered++;
     }
@@ -203,10 +193,8 @@ public class DotsBrush extends Brush {
         if(mQuadsBuffered <= 0) {
             return;
         }
-        mVertexBuffer.position(0);
-        mVertexBuffer.put(mVertexPreBuffer, 0, mQuadsBuffered * VERTEXSIZE * VERTICESPER);
-        mVertexBuffer.position(0);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, mQuadsBuffered * VERTEXSIZE * VERTICESPER * FLOATSIZE, mVertexBuffer);
+        mVertexPreBuffer.glBufferDataArray();
+        mVertexPreBuffer.reset();
         glDrawElements(GL_TRIANGLES, mQuadsBuffered * ELEMENTSPER, GL_UNSIGNED_SHORT, 0);
         mQuadsBuffered = 0;
     }
