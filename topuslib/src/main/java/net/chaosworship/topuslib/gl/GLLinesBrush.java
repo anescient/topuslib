@@ -128,21 +128,11 @@ public class GLLinesBrush extends Brush {
             flush();
         }
 
-        mVertexPreBuffer.put(a.x);
-        mVertexPreBuffer.put(a.y);
-        mVertexPreBuffer.put(a.z);
-        mVertexPreBuffer.put(mColor[0]);
-        mVertexPreBuffer.put(mColor[1]);
-        mVertexPreBuffer.put(mColor[2]);
-        mVertexPreBuffer.put(mColor[3]);
+        mVertexPreBuffer.put(a);
+        mVertexPreBuffer.put(mColor);
 
-        mVertexPreBuffer.put(b.x);
-        mVertexPreBuffer.put(b.y);
-        mVertexPreBuffer.put(b.z);
-        mVertexPreBuffer.put(mColor[0]);
-        mVertexPreBuffer.put(mColor[1]);
-        mVertexPreBuffer.put(mColor[2]);
-        mVertexPreBuffer.put(mColor[3]);
+        mVertexPreBuffer.put(b);
+        mVertexPreBuffer.put(mColor);
 
         mLinesBuffered++;
     }

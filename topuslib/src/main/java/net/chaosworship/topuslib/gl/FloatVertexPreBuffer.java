@@ -1,5 +1,8 @@
 package net.chaosworship.topuslib.gl;
 
+import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.geom3d.Vec3;
+
 import java.nio.FloatBuffer;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
@@ -31,6 +34,23 @@ public class FloatVertexPreBuffer {
 
     public void put(float value) {
         mPreBuffer[mFloatsBuffered++] = value;
+    }
+
+    public void put(Vec2 v) {
+        mPreBuffer[mFloatsBuffered++] = v.x;
+        mPreBuffer[mFloatsBuffered++] = v.y;
+    }
+
+    public void put(Vec3 v) {
+        mPreBuffer[mFloatsBuffered++] = v.x;
+        mPreBuffer[mFloatsBuffered++] = v.y;
+        mPreBuffer[mFloatsBuffered++] = v.z;
+    }
+
+    public void put(float[] values) {
+        for(float value : values) {
+            mPreBuffer[mFloatsBuffered++] = value;
+        }
     }
 
     public void skip(int count) {
