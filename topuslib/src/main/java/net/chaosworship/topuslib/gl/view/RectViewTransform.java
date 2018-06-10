@@ -30,7 +30,7 @@ public class RectViewTransform extends ViewportTransform implements ViewTransfor
     }
 
     @Override
-    void viewportChanged() {
+    protected void viewportChanged() {
         mVisibleRect = null;
     }
 

@@ -7,12 +7,13 @@ import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 import static android.opengl.GLES20.glViewport;
 
 
-abstract class ViewportTransform implements ViewTransform {
+public abstract class ViewportTransform implements ViewTransform {
 
     private int mViewportWidth;
     private int mViewportHeight;
 
-    ViewportTransform() {
+    @SuppressWarnings("WeakerAccess")
+    public ViewportTransform() {
         mViewportWidth = 0;
         mViewportHeight = 0;
     }
@@ -33,7 +34,7 @@ abstract class ViewportTransform implements ViewTransform {
         return true;
     }
 
-    abstract void viewportChanged();
+    protected abstract void viewportChanged();
 
     @Override
     public boolean isDegenerate() {

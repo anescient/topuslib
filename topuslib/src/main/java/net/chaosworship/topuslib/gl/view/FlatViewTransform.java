@@ -39,7 +39,7 @@ public class FlatViewTransform extends ViewportTransform implements ViewTransfor
     }
 
     @Override
-    void viewportChanged() {
+    protected void viewportChanged() {
         mVisibleHeight = getViewportHeight() / mZoom;
         mVisibleWidth = getViewportWidth() / mZoom;
         setDirty();

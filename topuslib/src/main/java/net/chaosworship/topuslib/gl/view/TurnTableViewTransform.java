@@ -52,7 +52,7 @@ public class TurnTableViewTransform extends ViewportTransform implements ViewTra
     }
 
     @Override
-    void viewportChanged() {
+    protected void viewportChanged() {
         mViewMatrixDirty = true;
     }
 
