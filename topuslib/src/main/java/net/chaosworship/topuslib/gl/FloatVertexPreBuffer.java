@@ -51,10 +51,21 @@ public class FloatVertexPreBuffer {
         mPreBuffer[mFloatsBuffered++] = v.y;
     }
 
+    public void putSum(Vec2 a, Vec2 b) {
+        mPreBuffer[mFloatsBuffered++] = a.x + b.x;
+        mPreBuffer[mFloatsBuffered++] = a.y + b.y;
+    }
+
     public void put(Vec3 v) {
         mPreBuffer[mFloatsBuffered++] = v.x;
         mPreBuffer[mFloatsBuffered++] = v.y;
         mPreBuffer[mFloatsBuffered++] = v.z;
+    }
+
+    public void putSum(Vec3 a, Vec3 b) {
+        mPreBuffer[mFloatsBuffered++] = a.x + b.x;
+        mPreBuffer[mFloatsBuffered++] = a.y + b.y;
+        mPreBuffer[mFloatsBuffered++] = a.z + b.z;
     }
 
     public void put(float[] values) {

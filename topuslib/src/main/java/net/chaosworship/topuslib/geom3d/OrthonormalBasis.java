@@ -50,10 +50,10 @@ public class OrthonormalBasis {
         return this;
     }
 
-    public OrthonormalBasis setRightHanded(Vec3 unitW, Vec3 unitU) {
-        w.set(unitW);
-        u.set(unitU);
-        v.setCross(u, w);
+    public OrthonormalBasis setRightHanded(Vec3 w, Vec3 u) {
+        this.w.set(w).normalize();
+        this.u.set(u).normalize();
+        v.setCross(this.u, this.w);
         if(!isRightHanded()) {
             v.negate();
         }
