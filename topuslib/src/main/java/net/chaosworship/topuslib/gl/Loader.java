@@ -98,6 +98,7 @@ public class Loader {
     private FlatShapesBrush mFlatShapesBrush;
     private FlatTrianglesBrush mFlatTrianglesBrush;
     private GLLinesBrush mGLLinesBrush;
+    private FrameBrush mFrameBrush;
 
     public Loader(Context context) {
         mContext = context;
@@ -116,6 +117,7 @@ public class Loader {
         mFlatShapesBrush = null;
         mFlatTrianglesBrush = null;
         mGLLinesBrush = null;
+        mFrameBrush = null;
     }
 
     public int useProgram(String name) {
@@ -207,6 +209,13 @@ public class Loader {
             mGLLinesBrush = new GLLinesBrush(this);
         }
         return mGLLinesBrush;
+    }
+
+    public FrameBrush getFrameBrush() {
+        if(mFrameBrush == null) {
+            mFrameBrush = new FrameBrush(this);
+        }
+        return mFrameBrush;
     }
 
     private int loadProgram(String shader_v, String shader_f) throws LoaderException {

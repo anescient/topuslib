@@ -11,15 +11,13 @@ import android.view.MotionEvent;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 import net.chaosworship.topuslib.geom3d.Cuboid;
-import net.chaosworship.topuslib.geom3d.OrthonormalBasis;
-import net.chaosworship.topuslib.geom3d.TriangleMesh;
-import net.chaosworship.topuslib.geom3d.TriangulatedSphere;
 import net.chaosworship.topuslib.geom3d.Vec3;
+import net.chaosworship.topuslib.gl.FrameBuffer;
 import net.chaosworship.topuslib.gl.GLLinesBrush;
+import net.chaosworship.topuslib.gl.Loader;
 import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
-import net.chaosworship.topuslibtest.gl.ShadedTrianglesBrush;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
 import java.util.ArrayList;
@@ -29,6 +27,8 @@ import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
+import static android.opengl.GLES20.GL_FRAMEBUFFER;
+import static android.opengl.GLES20.glBindFramebuffer;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
 
@@ -129,7 +129,17 @@ public class DrawingBoard
         mViewTransform.setEyeDistance(6);
         mViewTransform.setEyeHeight(mEyeHeight);
 
-        mViewTransform.callGlViewport();
+        FrameBuffer fb;
+        try {
+            fb = mLoader.getFrameBuffer("butts", 200, 200);
+        } catch (Loader.LoaderException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, fb.getFBO());
+        fb.callGlViewport();
+
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -172,5 +182,10 @@ public class DrawingBoard
         }
 
         linesBrush.end();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        mViewTransform.callGlViewport();
+
+        mLoader.getFrameBrush().putTexture(fb.getTexture(), false);
     }
 }

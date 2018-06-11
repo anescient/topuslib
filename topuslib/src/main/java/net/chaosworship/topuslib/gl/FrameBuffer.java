@@ -49,8 +49,11 @@ public class FrameBuffer {
         return mWidth == width && mHeight == height;
     }
 
-    public void bindSetViewport() {
-        glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
+    public int getFBO() {
+        return mFBO;
+    }
+
+    public void callGlViewport() {
         glViewport(0, 0, mWidth, mHeight);
     }
 
