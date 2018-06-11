@@ -51,8 +51,8 @@ public class AxisAngleRotator {
         float axisNorm = axis.magnitude();
 
         // with trig
-        // double angle = Math.atan2(crossNorm, a.dot(b));
-        // return new AxisAngleRotator(cross.scaleInverse(crossNorm), angle);
+        // double angle = Math.atan2(axisNorm, a.dot(b));
+        // return new AxisAngleRotator(axis.scaleInverse(axisNorm), angle);
 
         // without trig
         float dot = a.dot(b);

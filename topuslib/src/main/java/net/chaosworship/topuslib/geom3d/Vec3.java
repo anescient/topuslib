@@ -341,6 +341,10 @@ public class Vec3 implements Cloneable {
         return new Vec3(this).normalize();
     }
 
+    public double internalAngle(Vec3 a, Vec3 b) {
+        return Math.atan2(a.cross(b).magnitude(), a.dot(b));
+    }
+
     ////////////////////////////////////////////////////
 
     public static void setLookAtM(float[] m, Vec3 eye, Vec3 center, Vec3 up) {
