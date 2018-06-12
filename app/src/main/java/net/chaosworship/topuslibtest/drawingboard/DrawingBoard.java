@@ -131,7 +131,7 @@ public class DrawingBoard
 
         FrameBuffer fb;
         try {
-            fb = mLoader.getFrameBuffer("butts", 200, 200);
+            fb = mLoader.getFrameBuffer("butts", 200, 200, FrameBuffer.Format.RGBA);
         } catch (Loader.LoaderException e) {
             e.printStackTrace();
             return;

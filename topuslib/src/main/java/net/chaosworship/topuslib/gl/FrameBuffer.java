@@ -18,17 +18,34 @@ import static android.opengl.GLES20.glViewport;
 
 public class FrameBuffer {
 
+    public enum Format {
+        RGBA,
+        RGB565
+    }
+
     private final int mWidth;
     private final int mHeight;
     private final int mFBO;
     private final int mColorTexture;
 
     FrameBuffer(int width, int height) throws Loader.LoaderException {
+        this(width, height, Format.RGBA);
+    }
+
+    FrameBuffer(int width, int height, Format format) throws Loader.LoaderException {
         mWidth = width;
         mHeight = height;
 
         mFBO = Loader.genFramebuffer();
-        mColorTexture = Loader.createTexture(mWidth, mHeight);
+        switch(format) {
+            default:
+            case RGBA:
+                mColorTexture = Loader.createTexture(mWidth, mHeight);
+                break;
+            case RGB565:
+                mColorTexture = Loader.createTexture565(mWidth, mHeight);
+                break;
+        }
 
         int depthRBO = Loader.genRenderBuffer();
         glBindRenderbuffer(GL_RENDERBUFFER, depthRBO);

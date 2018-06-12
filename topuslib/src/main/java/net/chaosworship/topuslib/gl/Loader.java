@@ -18,10 +18,12 @@ import java.util.Scanner;
 import static android.opengl.GLES20.GL_COMPILE_STATUS;
 import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
 import static android.opengl.GLES20.GL_LINK_STATUS;
+import static android.opengl.GLES20.GL_RGB;
 import static android.opengl.GLES20.GL_RGBA;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
 import static android.opengl.GLES20.GL_TRUE;
 import static android.opengl.GLES20.GL_UNSIGNED_BYTE;
+import static android.opengl.GLES20.GL_UNSIGNED_SHORT_5_6_5;
 import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.glAttachShader;
 import static android.opengl.GLES20.glBindTexture;
@@ -158,11 +160,11 @@ public class Loader {
         return program;
     }
 
-    public FrameBuffer getFrameBuffer(String name, int width, int height) throws LoaderException {
+    public FrameBuffer getFrameBuffer(String name, int width, int height, FrameBuffer.Format format) throws LoaderException {
         if(!mFrameBuffers.containsKey(name)) {
             FrameBuffer newFB;
             try {
-                newFB = new FrameBuffer(width, height);
+                newFB = new FrameBuffer(width, height, format);
             } catch (LoaderException e) {
                 e.printStackTrace();
                 newFB = null;
@@ -305,6 +307,14 @@ public class Loader {
         int handle = genTexture();
         glBindTexture(GL_TEXTURE_2D, handle);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return handle;
+    }
+
+    static int createTexture565(int width, int height) throws LoaderException {
+        int handle = genTexture();
+        glBindTexture(GL_TEXTURE_2D, handle);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, null);
         glBindTexture(GL_TEXTURE_2D, 0);
         return handle;
     }
