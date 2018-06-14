@@ -147,13 +147,32 @@ public class GLLinesBrush extends Brush {
         }
     }
 
+    public void addPointer(Vec3 a, Vec3 b) {
+        addLine(a, b);
+        Vec3 ab = b.difference(a);
+        Vec3 basis = Vec3.arbitraryPerpendicular(ab).normalize().scale(0.2f * ab.magnitude());
+        Vec3 q = Vec3.mix(a, b, 0.9f);
+        addLine(b, q.sum(basis));
+        addLine(b, q.difference(basis));
+    }
+
+    public void addPointer(Vec3 a, Vec3 b, float lengthScale) {
+        b = Vec3.mix(a, b, lengthScale);
+        addLine(a, b);
+        Vec3 ab = b.difference(a);
+        Vec3 basis = Vec3.arbitraryPerpendicular(ab).normalize().scale(0.2f * ab.magnitude());
+        Vec3 q = Vec3.mix(a, b, 0.8f);
+        addLine(b, q.sum(basis));
+        addLine(b, q.difference(basis));
+    }
+
     public void addAxes(Vec3 position, OrthonormalBasis basis, float length) {
         setColor(Color.RED);
-        addLine(position, position.sum(basis.w));
+        addPointer(position, position.sum(basis.w));
         setColor(Color.GREEN);
-        addLine(position, position.sum(basis.u));
+        addPointer(position, position.sum(basis.u));
         setColor(Color.BLUE);
-        addLine(position, position.sum(basis.v));
+        addPointer(position, position.sum(basis.v));
     }
 
     public void addCube(Vec3 zeroCorner, OrthonormalBasis basis, float size, @ColorInt int color) {

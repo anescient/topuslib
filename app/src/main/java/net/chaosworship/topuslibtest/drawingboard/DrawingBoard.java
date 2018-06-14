@@ -11,10 +11,9 @@ import android.view.MotionEvent;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 import net.chaosworship.topuslib.geom3d.Cuboid;
+import net.chaosworship.topuslib.geom3d.OrthonormalBasis;
 import net.chaosworship.topuslib.geom3d.Vec3;
-import net.chaosworship.topuslib.gl.FrameBuffer;
 import net.chaosworship.topuslib.gl.GLLinesBrush;
-import net.chaosworship.topuslib.gl.Loader;
 import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
@@ -47,8 +46,6 @@ public class DrawingBoard
     private float mSpin;
     private float mEyeHeight;
 
-    private final ArrayList<Vec3> mPath;
-
     public DrawingBoard(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -59,33 +56,11 @@ public class DrawingBoard
         mSpin = 0.1f;
         mEyeHeight = 3;
 
-        mPath = generateTestPath();
-
-        Vec3 avg = new Vec3();
-        for(Vec3 p : mPath) {
-            avg.add(p);
-        }
-        avg.scaleInverse(mPath.size());
-        for(Vec3 p : mPath) {
-            p.subtract(avg);
-        }
-
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
         setRenderer(this);
         //setRenderMode(RENDERMODE_WHEN_DIRTY);
         setRenderMode(RENDERMODE_CONTINUOUSLY);
-    }
-
-    private static ArrayList<Vec3> generateTestPath() {
-        ArrayList<Vec3> path = new ArrayList<>();
-        SuperRandom random = new SuperRandom();
-        random.setSeed(787);
-        path.add(new Vec3(random.nextFloat(), random.nextFloat(), random.nextFloat()));
-        for(int i = 0; i < 35; i++) {
-            path.add(path.get(path.size() - 1).sum(random.uniformOnUnitSphere().scale(0.4f)));
-        }
-        return path;
     }
 
     public void go() {
@@ -121,71 +96,43 @@ public class DrawingBoard
             mEyeHeight = 10 * topBottom;
         }
 
-        float phase = (SystemClock.uptimeMillis() / (float)10000) % 1.0f;
+        float phase = (SystemClock.uptimeMillis() / (float)70000) % 1.0f;
         float modelSpin = (float)(2 * Math.PI * phase);
+        modelSpin = 0;
 
         mViewTransform.setRotation(mSpin + modelSpin);
         mViewTransform.setFOV(60);
-        mViewTransform.setEyeDistance(6);
+        mViewTransform.setEyeDistance(4);
         mViewTransform.setEyeHeight(mEyeHeight);
 
-        FrameBuffer fb;
-        try {
-            fb = mLoader.getFrameBuffer("butts", 200, 200, FrameBuffer.Format.RGBA);
-        } catch (Loader.LoaderException e) {
-            e.printStackTrace();
-            return;
-        }
+        Vec3 startPos = new Vec3(1, 0, 0);
+        Vec3 startTangent = new Vec3(-1, 0, 0);
+        Vec3 endPos = new Vec3(0, 1, 0);
+        Vec3 endTangent = new Vec3(0, 1, 0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, fb.getFBO());
-        fb.callGlViewport();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        mViewTransform.callGlViewport();
 
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
+
         linesBrush.begin(mViewTransform.getViewMatrix(), 3);
-
-        linesBrush.setColor(Color.YELLOW);
+        linesBrush.setColor(Color.WHITE);
         linesBrush.setAlpha(0.3f);
-        for(int i = 0; i < mPath.size() - 1; i++) {
-            linesBrush.addLine(mPath.get(i), mPath.get(i + 1));
-        }
-
-        Cuboid boundBox = Cuboid.bound(mPath);
-        linesBrush.setColor(Color.WHITE);
-        linesBrush.setAlpha(0.5f);
-        linesBrush.addCuboid(boundBox);
+        linesBrush.addCuboid(new Cuboid(-1, 1, -1, 1, -1, 1));
 
         linesBrush.end();
+
         linesBrush.begin(mViewTransform.getViewMatrix(), 5);
+        linesBrush.setAlpha(1.0f);
+//        linesBrush.addAxes(new Vec3(), new OrthonormalBasis(), 1.0f);
 
         linesBrush.setColor(Color.WHITE);
-        linesBrush.setAlpha(1.0f);
-        for(int skip = 0; skip < mPath.size() - 3; skip++) {
-            Vec3 lastPos = null;
-            for(float along = 0; along <= 1.0f; along += 0.1f) {
-                Vec3 pos = new Vec3().setCubicBSpline(
-                        mPath.get(skip),
-                        mPath.get(skip + 1),
-                        mPath.get(skip + 2),
-                        mPath.get(skip + 3),
-                        along);
-                if(lastPos != null) {
-                    linesBrush.addLine(lastPos, pos);
-                    lastPos = pos;
-                }
-                if(lastPos == null) {
-                    lastPos = new Vec3(pos);
-                }
-            }
-        }
+        linesBrush.addPointer(startPos, startPos.sum(startTangent), 0.2f);
+        linesBrush.addPointer(endPos, endPos.sum(endTangent), 0.2f);
 
         linesBrush.end();
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        mViewTransform.callGlViewport();
-
-        mLoader.getFrameBrush().putTexture(fb.getTexture(), false);
     }
 }
