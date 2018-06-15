@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.gl;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
 
+import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom3d.Cuboid;
 import net.chaosworship.topuslib.geom3d.OrthonormalBasis;
@@ -145,6 +146,21 @@ public class GLLinesBrush extends Brush {
             }
             previous = point;
         }
+    }
+
+    public void addCircle(Vec2 center, float radius) {
+        final int n = 27;
+        double lasta = 0;
+        for(int i = 0; i < n + 1; i++) {
+            double a = 2 * Math.PI * (double)i / n;
+            addLine(center.sum(Vec2.unit(lasta).scale(radius)),
+                    center.sum(Vec2.unit(a).scale(radius)));
+            lasta = a;
+        }
+    }
+
+    public void addCircle(Circle c) {
+        addCircle(c.center, c.radius);
     }
 
     public void addPointer(Vec3 a, Vec3 b) {

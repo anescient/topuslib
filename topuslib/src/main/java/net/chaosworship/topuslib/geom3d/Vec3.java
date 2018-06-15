@@ -101,6 +101,10 @@ public class Vec3 implements Cloneable {
         return this;
     }
 
+    public Vec2 getXY() {
+        return new Vec2(this.x, this.y);
+    }
+
     // u in [0,1]
     public Vec3 setCubicBSpline(Vec3 a, Vec3 b, Vec3 c, Vec3 d, float u) {
         x = Spline.CubicBSpline(a.x, b.x, c.x, d.x, u);

@@ -66,6 +66,10 @@ public class Circle implements SolidShape {
         return Vec2.unit(theta).scale(radius).add(center);
     }
 
+    public double getTheta(Vec2 position) {
+        return position.difference(center).atan2();
+    }
+
     // generate an equilateral triangle that tightly fits inside the circle
     public Triangle getInscribedTriangle() {
         return new Triangle(
