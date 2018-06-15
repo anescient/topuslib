@@ -57,6 +57,7 @@ public class OrthonormalBasis {
         if(!isRightHanded()) {
             v.negate();
         }
+        this.u.setCross(v, w);
         return this;
     }
 
