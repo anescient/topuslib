@@ -1,5 +1,7 @@
 package net.chaosworship.topuslib.geom3d;
 
+import net.chaosworship.topuslib.geom2d.Vec2;
+
 
 public class LazyInternalAngle {
 
@@ -8,6 +10,10 @@ public class LazyInternalAngle {
     private final float mDot;
     private float mSineDivisor;
     private double mRadians;
+
+    public LazyInternalAngle(Vec2 a, Vec2 b) {
+        this(new Vec3(a.x, a.y, 0), new Vec3(b.x, b.y, 0));
+    }
 
     public LazyInternalAngle(Vec3 a, Vec3 b) {
         mCross = Vec3.cross(a, b);
