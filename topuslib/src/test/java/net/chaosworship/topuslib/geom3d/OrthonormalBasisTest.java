@@ -112,6 +112,18 @@ public class OrthonormalBasisTest {
         }
     }
 
+    @Test
+    public void roundTrip() {
+        OrthonormalBasis uvw = new OrthonormalBasis();
+        for(Vec3 w : Vec3Test.someRandomVectors(10)) {
+            uvw.setArbitraryAboutW(w);
+            for(Vec3 p : Vec3Test.someRandomVectors(100)) {
+                Vec3 q = uvw.transformedFromStandardBasis(p);
+                assertEqual(p, uvw.transformedToStandardBasis(q));
+            }
+        }
+    }
+
     private static void assertOrthogonal(OrthonormalBasis basis) {
         assertOrthogonal(basis.u, basis.v);
         assertOrthogonal(basis.v, basis.w);
@@ -121,5 +133,11 @@ public class OrthonormalBasisTest {
     private static void assertOrthogonal(Vec3 a, Vec3 b) {
         assertTrue(!a.isZero() && !b.isZero());
         assertTrue(Math.abs(a.dot(b)) < 0.00001f);
+    }
+
+    private static void assertEqual(Vec3 a, Vec3 b) {
+        assertTrue(Math.abs(a.x - b.x) < 0.00001f);
+        assertTrue(Math.abs(a.y - b.y) < 0.00001f);
+        assertTrue(Math.abs(a.z - b.z) < 0.00001f);
     }
 }

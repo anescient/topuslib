@@ -80,6 +80,16 @@ public class OrthonormalBasis {
         return new Vec3().addScaled(u, p.x).addScaled(v, p.y).addScaled(w, p.z);
     }
 
+    public void transformToStandardBasis(Vec3 p) {
+        p.set(this.u.dot(p), this.v.dot(p), this.w.dot(p));
+    }
+
+    public Vec3 transformedToStandardBasis(Vec3 p) {
+        Vec3 q = new Vec3(p);
+        transformToStandardBasis(q);
+        return q;
+    }
+
     public boolean isRightHanded() {
         return new Vec3().setCross(u, v).dot(w) > 0;
     }
