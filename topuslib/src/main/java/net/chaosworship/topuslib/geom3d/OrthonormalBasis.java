@@ -50,14 +50,36 @@ public class OrthonormalBasis {
         return this;
     }
 
-    public OrthonormalBasis setRightHanded(Vec3 w, Vec3 u) {
+    public OrthonormalBasis setRightHandedU(Vec3 w, Vec3 v) {
+        this.w.set(w).normalize();
+        this.v.set(v).normalize();
+        this.u.setCross(this.v, this.w);
+        if(!isRightHanded()) {
+            this.u.negate();
+        }
+        this.v.setCross(w, this.u);
+        return this;
+    }
+
+    public OrthonormalBasis setRightHandedV(Vec3 w, Vec3 u) {
         this.w.set(w).normalize();
         this.u.set(u).normalize();
-        v.setCross(this.u, this.w);
+        this.v.setCross(this.u, this.w);
         if(!isRightHanded()) {
-            v.negate();
+            this.v.negate();
         }
-        this.u.setCross(v, w);
+        this.u.setCross(this.v, this.w);
+        return this;
+    }
+
+    public OrthonormalBasis setRightHandedW(Vec3 u, Vec3 v) {
+        this.u.set(u).normalize();
+        this.v.set(v).normalize();
+        this.w.setCross(this.v, this.u);
+        if(!isRightHanded()) {
+            this.w.negate();
+        }
+        this.u.setCross(this.v, this.w);
         return this;
     }
 

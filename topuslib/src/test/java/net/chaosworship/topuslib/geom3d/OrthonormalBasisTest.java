@@ -56,9 +56,22 @@ public class OrthonormalBasisTest {
     @Test
     public void setRightHandedTest() {
         OrthonormalBasis uvw = new OrthonormalBasis();
-        for(Vec3 p : Vec3Test.someRandomUnitVectors(100)) {
-            Vec3 q = new Vec3(1, 2, 3);
-            uvw.setRightHanded(p, q);
+        Vec3 q = new Vec3(1, 2, 3);
+        for(Vec3 p : Vec3Test.someRandomVectors(100)) {
+
+            uvw.setRightHandedU(p, q);
+            assertTrue(uvw.isRightHanded());
+            assertOrthogonal(uvw.u, uvw.v);
+            assertOrthogonal(uvw.v, uvw.w);
+            assertOrthogonal(uvw.w, uvw.u);
+
+            uvw.setRightHandedV(p, q);
+            assertTrue(uvw.isRightHanded());
+            assertOrthogonal(uvw.u, uvw.v);
+            assertOrthogonal(uvw.v, uvw.w);
+            assertOrthogonal(uvw.w, uvw.u);
+
+            uvw.setRightHandedW(p, q);
             assertTrue(uvw.isRightHanded());
             assertOrthogonal(uvw.u, uvw.v);
             assertOrthogonal(uvw.v, uvw.w);
@@ -115,11 +128,12 @@ public class OrthonormalBasisTest {
     @Test
     public void roundTrip() {
         OrthonormalBasis uvw = new OrthonormalBasis();
-        for(Vec3 w : Vec3Test.someRandomVectors(10)) {
+        for(Vec3 w : Vec3Test.someRandomVectors(30)) {
             uvw.setArbitraryAboutW(w);
-            for(Vec3 p : Vec3Test.someRandomVectors(100)) {
+            for(Vec3 p : Vec3Test.someRandomVectors(50)) {
                 Vec3 q = uvw.transformedFromStandardBasis(p);
-                assertEqual(p, uvw.transformedToStandardBasis(q));
+                assertFalse(vectorsEqual(p, q));
+                assertTrue(vectorsEqual(p, uvw.transformedToStandardBasis(q)));
             }
         }
     }
@@ -135,9 +149,9 @@ public class OrthonormalBasisTest {
         assertTrue(Math.abs(a.dot(b)) < 0.00001f);
     }
 
-    private static void assertEqual(Vec3 a, Vec3 b) {
-        assertTrue(Math.abs(a.x - b.x) < 0.00001f);
-        assertTrue(Math.abs(a.y - b.y) < 0.00001f);
-        assertTrue(Math.abs(a.z - b.z) < 0.00001f);
+    private static boolean vectorsEqual(Vec3 a, Vec3 b) {
+        return Math.abs(a.x - b.x) < 0.00001f &&
+               Math.abs(a.y - b.y) < 0.00001f &&
+               Math.abs(a.z - b.z) < 0.00001f;
     }
 }
