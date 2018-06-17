@@ -25,13 +25,6 @@ public class OrthonormalBasis {
         return this;
     }
 
-    public OrthonormalBasis renormalize() {
-        u.normalize();
-        v.normalize();
-        w.normalize();
-        return this;
-    }
-
     public OrthonormalBasis setArbitraryAboutW(Vec3 w) {
         this.w.set(w).normalize();
         u.setArbitraryPerpendicular(this.w).normalize();
@@ -91,6 +84,13 @@ public class OrthonormalBasis {
         return this;
     }
 
+    public OrthonormalBasis negate() {
+        u.negate();
+        v.negate();
+        w.negate();
+        return this;
+    }
+
     public void transformFromStandardBasis(Vec3 p) {
         float x = p.x;
         float y = p.y;
@@ -103,7 +103,7 @@ public class OrthonormalBasis {
     }
 
     public void transformToStandardBasis(Vec3 p) {
-        p.set(this.u.dot(p), this.v.dot(p), this.w.dot(p));
+        p.set(u.dot(p), v.dot(p), w.dot(p));
     }
 
     public Vec3 transformedToStandardBasis(Vec3 p) {

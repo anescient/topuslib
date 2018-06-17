@@ -51,6 +51,10 @@ public class OrthonormalBasisTest {
         assertFalse(uvw.isRightHanded());
         uvw.v.negate();
         assertTrue(uvw.isRightHanded());
+        uvw.negate();
+        assertFalse(uvw.isRightHanded());
+        uvw.negate();
+        assertTrue(uvw.isRightHanded());
     }
 
     @Test
