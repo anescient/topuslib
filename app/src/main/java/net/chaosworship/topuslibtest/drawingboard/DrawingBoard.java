@@ -113,7 +113,7 @@ public class DrawingBoard
         Vec3 a = new Vec3(1, 0, 0).normalize().scale(4);
         Vec3 b = new Vec3(0, 0, 0);
         //Vec3 c = new Vec3(1, 2f, 0).normalize().scale(2);
-        Vec3 c = new Vec3((float)Math.sin(modelSpin), 0.4f, 0).normalize().scale(4);
+        Vec3 c = new Vec3((float)Math.sin(modelSpin), (float)Math.cos(modelSpin), 0).normalize().scale(4);
 
         AxisAngleRotator rotator;
         rotator = new AxisAngleRotator(new Vec3(1, 1.3f, 0.5f).normalize(), modelSpin);
@@ -153,27 +153,21 @@ public class DrawingBoard
         LazyInternalAngle angle = new LazyInternalAngle(startTangent.negated(), endTangent);
 
         float r = 0.5f;
-        double h = Math.sqrt(2) * r / Math.sqrt(1 - angle.cosine());
-
-        linesBrush.setColor(Color.MAGENTA);
-        linesBrush.addLine(new Vec3(), basis.transformedFromStandardBasis(binarySplitter).scaled((float)h));
+        double h = 2 * r;
 
         float cornerTrim = (float)h * (float)Math.sqrt((1 + angle.cosine()) / 2);
+        r = (float)Math.sqrt(h * h - cornerTrim * cornerTrim);
 
-        linesBrush.setColor(Color.WHITE);
         Vec3 inPoint = a.difference(b).normalize().scale(cornerTrim);
         Vec3 outPoint = c.difference(b).normalize().scale(cornerTrim);
-
         Circle circle = new Circle(new Vec2(0, 0), r);
         double startAngle = Math.PI + inPoint.getXY().rotated90().negated().atan2();
         double endAngle = Math.PI + outPoint.getXY().rotated90().atan2();
-/*
-        if(endAngle < startAngle) {
-            double temp = endAngle;
-            endAngle = startAngle;
-            startAngle = temp;
-        }
-*/
+
+        linesBrush.setColor(Color.MAGENTA);
+        linesBrush.addLine(new Vec3(), basis.transformedFromStandardBasis(binarySplitter).scaled((float)h));
+        linesBrush.setColor(Color.WHITE);
+
         Arc arc = new Arc(circle, startAngle, endAngle);
         int n = Math.max((int)(Math.abs(endAngle - startAngle) / 0.15), 3);
         ArrayList<Vec3> path3 = new ArrayList<>();
