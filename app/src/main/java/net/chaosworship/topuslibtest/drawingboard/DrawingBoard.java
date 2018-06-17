@@ -110,11 +110,11 @@ public class DrawingBoard
         mViewTransform.setEyeDistance(4);
         mViewTransform.setEyeHeight(mEyeHeight);
 
-        Vec3 a = new Vec3(1, 0, 0).normalize().scale(4);
+        Vec3 a = new Vec3(1, 0, 0).normalize().scale(2);
         Vec3 b = new Vec3((float)Math.sin(-modelSpin), (float)Math.cos(modelSpin), (float)Math.cos(-modelSpin));
         Vec3 bwas = new Vec3(b);
         //Vec3 c = new Vec3(1, 2f, 0).normalize().scale(2);
-        Vec3 c = new Vec3((float)Math.sin(modelSpin), (float)Math.cos(modelSpin), 0).normalize().scale(4);
+        Vec3 c = new Vec3((float)Math.sin(modelSpin), (float)Math.cos(modelSpin), 0).normalize().scale(2);
 
         AxisAngleRotator rotator;
         rotator = new AxisAngleRotator(new Vec3(1, 1.3f, 0.5f).normalize(), modelSpin);
@@ -157,11 +157,10 @@ public class DrawingBoard
 
         LazyInternalAngle angle = new LazyInternalAngle(startTangent.negated(), endTangent);
 
-        float r = 0.5f;
-        double h = 2 * r;
+        final float maxRadius = 0.3f;
 
-        float cornerTrim = (float)h * (float)Math.sqrt((1 + angle.cosine()) / 2);
-        r = (float)Math.sqrt(h * h - cornerTrim * cornerTrim);
+        float cornerTrim = 2 * maxRadius * (float)Math.sqrt((1 + angle.cosine()) / 2);
+        float r = (float)Math.sqrt(4 * maxRadius * maxRadius - cornerTrim * cornerTrim);
 
         Vec3 inPoint = a.difference(b).normalize().scale(cornerTrim);
         Vec3 outPoint = c.difference(b).normalize().scale(cornerTrim);
@@ -174,7 +173,7 @@ public class DrawingBoard
         ArrayList<Vec3> path3 = new ArrayList<>();
         for(Vec2 p2 : arc.getPointsAlong(n)) {
             Vec3 p3 = basis.transformedFromStandardBasis(new Vec3(p2.x, p2.y, 0));
-            path3.add(p3.sum(basis.transformedFromStandardBasis(binarySplitter).add(bwas).scaled((float)h)));
+            path3.add(p3.sum(basis.transformedFromStandardBasis(binarySplitter).scaled(2 * maxRadius).add(bwas)));
         }
         linesBrush.addPath(path3);
 
