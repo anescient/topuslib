@@ -111,7 +111,8 @@ public class DrawingBoard
         mViewTransform.setEyeHeight(mEyeHeight);
 
         Vec3 a = new Vec3(1, 0, 0).normalize().scale(4);
-        Vec3 b = new Vec3(0, 0, 0);
+        Vec3 b = new Vec3((float)Math.sin(-modelSpin), (float)Math.cos(modelSpin), (float)Math.cos(-modelSpin));
+        Vec3 bwas = new Vec3(b);
         //Vec3 c = new Vec3(1, 2f, 0).normalize().scale(2);
         Vec3 c = new Vec3((float)Math.sin(modelSpin), (float)Math.cos(modelSpin), 0).normalize().scale(4);
 
@@ -128,6 +129,10 @@ public class DrawingBoard
         basis.transformToStandardBasis(a);
         basis.transformToStandardBasis(b);
         basis.transformToStandardBasis(c);
+
+        a.subtract(b);
+        c.subtract(b);
+        b.subtract(b);
 
         Vec3 startTangent = b.difference(a).normalize();
         Vec3 endTangent = c.difference(b).normalize();
@@ -164,16 +169,12 @@ public class DrawingBoard
         double startAngle = Math.PI + inPoint.getXY().rotated90().negated().atan2();
         double endAngle = Math.PI + outPoint.getXY().rotated90().atan2();
 
-        linesBrush.setColor(Color.MAGENTA);
-        linesBrush.addLine(new Vec3(), basis.transformedFromStandardBasis(binarySplitter).scaled((float)h));
-        linesBrush.setColor(Color.WHITE);
-
         Arc arc = new Arc(circle, startAngle, endAngle);
-        int n = Math.max((int)(Math.abs(endAngle - startAngle) / 0.15), 3);
+        int n = Math.max((int)(Math.abs(endAngle - startAngle) / 0.1), 3);
         ArrayList<Vec3> path3 = new ArrayList<>();
         for(Vec2 p2 : arc.getPointsAlong(n)) {
             Vec3 p3 = basis.transformedFromStandardBasis(new Vec3(p2.x, p2.y, 0));
-            path3.add(p3.sum(basis.transformedFromStandardBasis(binarySplitter).scaled((float)h)));
+            path3.add(p3.sum(basis.transformedFromStandardBasis(binarySplitter).add(bwas).scaled((float)h)));
         }
         linesBrush.addPath(path3);
 
@@ -184,6 +185,12 @@ public class DrawingBoard
         basis.transformFromStandardBasis(outPoint);
         basis.transformFromStandardBasis(startTangent);
         basis.transformFromStandardBasis(endTangent);
+
+        a.add(bwas);
+        b.add(bwas);
+        c.add(bwas);
+        inPoint.add(bwas);
+        outPoint.add(bwas);
 
         linesBrush.addLine(a, inPoint);
         linesBrush.addLine(c, outPoint);
