@@ -113,6 +113,6 @@ public class OrthonormalBasis {
     }
 
     public boolean isRightHanded() {
-        return new Vec3().setCross(u, v).dot(w) > 0;
+        return Vec3.cross(u, v).dot(w) > 0;
     }
 }

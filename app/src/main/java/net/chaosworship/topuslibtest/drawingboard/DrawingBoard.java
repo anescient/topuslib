@@ -103,7 +103,7 @@ public class DrawingBoard
 
         float phase = (SystemClock.uptimeMillis() / (float)30000) % 1.0f;
         float modelSpin = (float)(2 * Math.PI * phase);
-        modelSpin = 0;
+        //modelSpin = 0;
 
         mViewTransform.setRotation(mSpin);
         mViewTransform.setFOV(60);
@@ -112,16 +112,18 @@ public class DrawingBoard
 
         Vec3 a = new Vec3(-2f, 0, 0);
         Vec3 b = new Vec3(0, 0, 0);
-        Vec3 c = new Vec3(-1.5f, 2f, 0);
+        Vec3 c = new Vec3(0, 2f, 0);
 
-        AxisAngleRotator rotator = new AxisAngleRotator(new Vec3(0, 0, 1), modelSpin);
+        AxisAngleRotator rotator = new AxisAngleRotator(new Vec3(1, 1.3f, 0.5f).normalize(), modelSpin);
         rotator.rotate(a);
         rotator.rotate(c);
 
-        Vec3 startTangent = b.difference(a).normalized();
-        Vec3 endTangent = c.difference(b).normalized();
+        Vec3 startTangent = b.difference(a).normalize();
+        Vec3 endTangent = c.difference(b).normalize();
+        Vec3 binarySplitter = startTangent.negated().sum(endTangent).normalize();
 
-        Vec3 binarySpliter = startTangent.negated().sum(endTangent).normalize();
+        OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(a.difference(b), c.difference(b));
+
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         mViewTransform.callGlViewport();
@@ -139,45 +141,35 @@ public class DrawingBoard
 
         linesBrush.begin(mViewTransform.getViewMatrix(), 5);
         linesBrush.setAlpha(1.0f);
-//        linesBrush.addAxes(new Vec3(), new OrthonormalBasis(), 1.0f);
-
-
-        linesBrush.setColor(Color.BLUE);
-
-        //linesBrush.addLine(new Vec3(), binarySpliter);
 
         LazyInternalAngle angle = new LazyInternalAngle(startTangent.negated(), endTangent);
 
         float r = 0.5f;
         double h = Math.sqrt(2) * r / Math.sqrt(1 - angle.cosine());
-        Circle circle = new Circle(binarySpliter.scaled((float)h).getXY(), r);
-        linesBrush.addCircle(circle);
 
-        //linesBrush.addLine(a, b);
-        //linesBrush.addLine(b, c);
+        linesBrush.setColor(Color.MAGENTA);
+        linesBrush.addLine(new Vec3(), binarySplitter.scaled((float)h));
 
-        float midclip = (float)h * (float)Math.sqrt((1 + angle.cosine()) / 2);
-        linesBrush.setColor(Color.RED);
-        //linesBrush.addLine(b, a.difference(b).normalized().scale(midclip));
-        //linesBrush.addLine(b, c.difference(b).normalized().scale(midclip));
+        float cornerTrim = (float)h * (float)Math.sqrt((1 + angle.cosine()) / 2);
 
         linesBrush.setColor(Color.WHITE);
-        Vec3 inPoint = a.difference(b).normalize().scale(midclip);
+        Vec3 inPoint = a.difference(b).normalize().scale(cornerTrim);
         linesBrush.addLine(a, inPoint);
-        Vec3 outPoint = c.difference(b).normalize().scale(midclip);
+        Vec3 outPoint = c.difference(b).normalize().scale(cornerTrim);
         linesBrush.addLine(c, outPoint);
 
-        double startAngle = inPoint.getXY().difference(circle.center).atan2();
-        double endAngle = outPoint.getXY().difference(circle.center).atan2();
-        while(endAngle < startAngle) {
+        Circle circle = new Circle(new Vec2(0, 0), r);
+        double startAngle = Math.PI + basis.transformedToStandardBasis(inPoint).getXY().difference(circle.center).atan2();
+        double endAngle = Math.PI + basis.transformedToStandardBasis(outPoint).getXY().difference(circle.center).atan2();
+        if(endAngle < startAngle) {
             endAngle += 2 * Math.PI;
         }
-        int n = Math.max((int)((endAngle - startAngle) / 0.2), 3);
-        ArrayList<Vec2> path = new Arc(circle, startAngle, endAngle).getPointsAlong(n);
-
+        int n = Math.max((int)((endAngle - startAngle) / 0.15), 3);
+        ArrayList<Vec2> path2 = new Arc(circle, startAngle, endAngle).getPointsAlong(n);
         ArrayList<Vec3> path3 = new ArrayList<>();
-        for(Vec2 p : path) {
-            path3.add(new Vec3(p.x, p.y, 0));
+        for(Vec2 p2 : path2) {
+            Vec3 p3 = basis.transformedFromStandardBasis(new Vec3(p2.x, p2.y, 0));
+            path3.add(p3.sum(binarySplitter.scaled((float)h)));
         }
         linesBrush.addPath(path3);
 
@@ -185,7 +177,6 @@ public class DrawingBoard
         linesBrush.addPointer(a, a.sum(startTangent), 0.2f);
         linesBrush.setColor(Color.YELLOW);
         linesBrush.addPointer(c, c.sum(endTangent), 0.2f);
-
 
         linesBrush.end();
     }
