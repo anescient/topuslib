@@ -18,6 +18,8 @@ public class Path {
         a = a.difference(b);
         c = c.difference(b);
 
+        maxRadius = Math.min(maxRadius, Vec3.distance(a, c) / 2);
+
         OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(a, c);
 
         Vec3 aTrans = basis.transformedToStandardBasis(a);
@@ -27,17 +29,14 @@ public class Path {
         Vec3 endTangent = cTrans.normalized();
 
         LazyInternalAngle angle = new LazyInternalAngle(startTangent.negated(), endTangent);
-        float sinHalfAngle = (float)Math.sqrt((1 - angle.cosine()) / 2);
         float cosHalfAngle = (float)Math.sqrt((1 + angle.cosine()) / 2);
         float tanHalfAngle = (1 - angle.cosine()) / angle.sine();
-
-        maxRadius = Math.min(maxRadius, Vec3.distance(a, c) / 2);
 
         float radius;
         float trim;
         if(angle.cosine() > 0) {
             // sharper than 90 deg., reduce radius
-            trim = sinHalfAngle * maxRadius / 0.7071f;
+            trim = maxRadius;
             radius = trim * tanHalfAngle;
 
         } else {
