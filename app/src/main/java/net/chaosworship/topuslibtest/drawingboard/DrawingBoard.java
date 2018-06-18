@@ -97,7 +97,7 @@ public class DrawingBoard
             mEyeHeight = 10 * topBottom;
         }
 
-        float phase = (SystemClock.uptimeMillis() / (float)30000) % 1.0f;
+        float phase = (SystemClock.uptimeMillis() / (float)10000) % 1.0f;
         float modelSpin = (float)(2 * Math.PI * phase);
         //modelSpin = 0;
 
@@ -112,23 +112,34 @@ public class DrawingBoard
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        Vec3 a = new Vec3(1, 0, 0).normalize().scale(2);
-        Vec3 b = new Vec3((float)Math.sin(-modelSpin), (float)Math.cos(modelSpin), (float)Math.cos(-modelSpin));
+        Vec3 a = new Vec3(-2, -5, 1).normalize().scale(2);
+        Vec3 b = new Vec3();//0, 3, -2);//new Vec3((float)Math.sin(-modelSpin), (float)Math.cos(modelSpin), (float)Math.cos(-modelSpin));
         Vec3 c = new Vec3((float)Math.sin(modelSpin), (float)Math.cos(modelSpin), 0).normalize().scale(2);
+
+        /*
+        Vec3 move = new Vec3(1, 1, 1);
+        a.add(move);
+        b.add(move);
+        c.add(move);
+        */
 
         AxisAngleRotator rotator;
         rotator = new AxisAngleRotator(new Vec3(1, 1.3f, 0.5f).normalize(), modelSpin);
-        rotator.rotate(a);
-        rotator.rotate(c);
+        //rotator.rotate(a);
+        //rotator.rotate(c);
         rotator = new AxisAngleRotator(new Vec3(0.1f, 0.3f, -0.7f).normalize(), 2 * modelSpin);
-        rotator.rotate(a);
-        rotator.rotate(c);
-
-        final float maxRadius = 0.3f;
-
-        List<Vec3> path = Path.generateCurve(a, b, c, maxRadius);
+        //rotator.rotate(a);
+        //rotator.rotate(c);
 
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
+        linesBrush.begin(mViewTransform.getViewMatrix(), 1);
+        linesBrush.setColor(Color.RED);
+        linesBrush.setAlpha(1);
+
+        List<Vec3> path = Path.generateCurve(a, b, c, 0.7f);
+
+        linesBrush.end();
+
 
         linesBrush.begin(mViewTransform.getViewMatrix(), 3);
         linesBrush.setColor(Color.WHITE);
@@ -137,9 +148,18 @@ public class DrawingBoard
         linesBrush.end();
 
         linesBrush.begin(mViewTransform.getViewMatrix(), 5);
-        linesBrush.setAlpha(1.0f);
+        linesBrush.setAlpha(1f);
         linesBrush.setColor(Color.WHITE);
         linesBrush.addPath(path);
         linesBrush.end();
+
+        /*
+        linesBrush.begin(mViewTransform.getViewMatrix(), 2);
+        linesBrush.setAlpha(0.5f);
+        linesBrush.setColor(Color.YELLOW);
+        linesBrush.addLine(a, b);
+        linesBrush.addLine(b, c);
+        linesBrush.end();
+        */
     }
 }

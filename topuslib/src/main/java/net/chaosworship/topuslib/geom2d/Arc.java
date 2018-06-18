@@ -36,4 +36,13 @@ public class Arc {
         }
         return points;
     }
+
+    public ArrayList<Vec2> getPointsAlongOpen(int n) {
+        ArrayList<Vec2> points = new ArrayList<>();
+        for(int i = 0; i < n; i++) {
+            double a = mMinRadians + (double)(i + 1) * (mMaxRadians - mMinRadians) / (n + 1);
+            points.add(mCircle.getPointOnBound(a));
+        }
+        return points;
+    }
 }

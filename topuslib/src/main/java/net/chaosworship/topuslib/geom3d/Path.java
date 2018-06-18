@@ -14,51 +14,63 @@ public class Path {
     // curve about b, pass through a and c
     public static ArrayList<Vec3> generateCurve(Vec3 a, Vec3 b, Vec3 c, float maxRadius) {
 
-        OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(a.difference(b), c.difference(b));
+        // translate everything to b = (0,0)
+        a = a.difference(b);
+        c = c.difference(b);
+
+        OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(a, c);
 
         Vec3 aTrans = basis.transformedToStandardBasis(a);
-        Vec3 bTrans = basis.transformedToStandardBasis(b);
         Vec3 cTrans = basis.transformedToStandardBasis(c);
 
-        aTrans.subtract(bTrans);
-        cTrans.subtract(bTrans);
-        bTrans.setZero();
-
-        Vec3 abTrans = bTrans.difference(aTrans);
-        Vec3 baTrans = aTrans.difference(bTrans);
-        Vec3 bcTrans = cTrans.difference(bTrans);
-        Vec3 startTangent = abTrans.normalized();
-        Vec3 endTangent = bcTrans.normalized();
-        Vec3 binarySplitter = startTangent.negated().sum(endTangent).normalize();
+        Vec3 startTangent = aTrans.normalized().negate();
+        Vec3 endTangent = cTrans.normalized();
 
         LazyInternalAngle angle = new LazyInternalAngle(startTangent.negated(), endTangent);
+        float sinHalfAngle = (float)Math.sqrt((1 - angle.cosine()) / 2);
+        float cosHalfAngle = (float)Math.sqrt((1 + angle.cosine()) / 2);
+        float tanHalfAngle = (1 - angle.cosine()) / angle.sine();
 
-        float cornerTrim = 2 * maxRadius * (float)Math.sqrt((1 + angle.cosine()) / 2);
-        float radius = (float)Math.sqrt(4 * maxRadius * maxRadius - cornerTrim * cornerTrim);
+        maxRadius = Math.min(maxRadius, Vec3.distance(a, c) / 2);
 
-        Vec3 inPoint = baTrans.normalize().scale(cornerTrim);
-        Vec3 outPoint = bcTrans.normalize().scale(cornerTrim);
-        Circle circle = new Circle(new Vec2(0, 0), radius);
+        float radius;
+        float trim;
+        if(angle.cosine() > 0) {
+            // sharper than 90 deg., reduce radius
+            trim = sinHalfAngle * maxRadius / 0.7071f;
+            radius = trim * tanHalfAngle;
+
+        } else {
+            // 90 deg. or wider
+            radius = maxRadius;
+            trim = radius / tanHalfAngle;
+        }
+
+        float h = trim / cosHalfAngle;
+
+        Vec3 inPoint = aTrans.normalized().scale(trim);
+        Vec3 outPoint = cTrans.normalized().scale(trim);
         double startAngle = Math.PI + inPoint.getXY().rotated90().negated().atan2();
         double endAngle = Math.PI + outPoint.getXY().rotated90().atan2();
 
         basis.transformFromStandardBasis(inPoint);
         basis.transformFromStandardBasis(outPoint);
-        inPoint.add(b);
-        outPoint.add(b);
 
-        Arc arc = new Arc(circle, startAngle, endAngle);
+        Arc arc = new Arc(new Circle(), startAngle, endAngle);
         int n = Math.max((int)(Math.abs(endAngle - startAngle) / 0.1), 3);
 
+        Vec3 circleCenter = startTangent.negated().sum(endTangent).normalize().scale(h);
+
         ArrayList<Vec3> path = new ArrayList<>();
-        path.add(a);
-        path.add(inPoint);
-        for(Vec2 p2 : arc.getPointsAlong(n)) {
-            Vec3 p = basis.transformedFromStandardBasis(new Vec3(p2.x, p2.y, 0));
-            path.add(p.sum(basis.transformedFromStandardBasis(binarySplitter).scaled(2 * maxRadius).add(b)));
+        path.add(a.sum(b));
+        path.add(inPoint.sum(b));
+        for(Vec2 p2 : arc.getPointsAlongOpen(n)) {
+            Vec3 p = basis.transformedFromStandardBasis(new Vec3(p2.x, p2.y, 0).scaled(radius).sum(circleCenter));
+            path.add(p.add(b));
         }
-        path.add(outPoint);
-        path.add(c);
+        path.add(outPoint.sum(b));
+        path.add(c.sum(b));
+
         return path;
     }
 }
