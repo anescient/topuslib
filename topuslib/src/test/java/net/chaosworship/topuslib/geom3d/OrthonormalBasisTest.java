@@ -65,24 +65,23 @@ public class OrthonormalBasisTest {
 
             uvw.setRightHandedU(p, q);
             assertTrue(uvw.isRightHanded());
-            assertOrthogonal(uvw.u, uvw.v);
-            assertOrthogonal(uvw.v, uvw.w);
-            assertOrthogonal(uvw.w, uvw.u);
+            assertOrthogonal(uvw);
             assertRoundTrip(uvw);
 
             uvw.setRightHandedV(p, q);
             assertTrue(uvw.isRightHanded());
-            assertOrthogonal(uvw.u, uvw.v);
-            assertOrthogonal(uvw.v, uvw.w);
-            assertOrthogonal(uvw.w, uvw.u);
+            assertOrthogonal(uvw);
             assertRoundTrip(uvw);
+
 
             uvw.setRightHandedW(p, q);
             assertTrue(uvw.isRightHanded());
-            assertOrthogonal(uvw.u, uvw.v);
-            assertOrthogonal(uvw.v, uvw.w);
-            assertOrthogonal(uvw.w, uvw.u);
+            assertOrthogonal(uvw);
             assertRoundTrip(uvw);
+
+            // Path.generateCurve() depends on this
+            uvw.setRightHandedW(q, p);
+            assertTrue(vectorsEqual(uvw.transformedToStandardBasis(p).normalize(), new Vec3(0, 1, 0)));
         }
     }
 
@@ -149,10 +148,10 @@ public class OrthonormalBasisTest {
         }
     }
 
-    private static void assertOrthogonal(OrthonormalBasis basis) {
-        assertOrthogonal(basis.u, basis.v);
-        assertOrthogonal(basis.v, basis.w);
-        assertOrthogonal(basis.w, basis.u);
+    private static void assertOrthogonal(OrthonormalBasis uvw) {
+        assertOrthogonal(uvw.u, uvw.v);
+        assertOrthogonal(uvw.v, uvw.w);
+        assertOrthogonal(uvw.w, uvw.u);
     }
 
     private static void assertOrthogonal(Vec3 a, Vec3 b) {

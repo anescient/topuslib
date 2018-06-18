@@ -31,10 +31,10 @@ public class Path {
         Vec3 aTrans = a.difference(b);
         Vec3 cTrans = c.difference(b);
 
-        OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(aTrans, cTrans);
+        OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(cTrans, aTrans);
 
-        Vec3 inTangent = basis.transformedToStandardBasis(aTrans).normalized();
-        Vec3 outTangent = basis.transformedToStandardBasis(cTrans).normalized();
+        Vec3 inTangent = new Vec3(0, 1, 0);
+        Vec3 outTangent = basis.transformedToStandardBasis(cTrans).normalize();
 
         LazyInternalAngle angle = new LazyInternalAngle(inTangent, outTangent);
 
@@ -51,7 +51,6 @@ public class Path {
             // sharper than 90 deg., reduce radius
             trim = maxRadius;
             radius = trim * tanHalfAngle;
-
         } else {
             // 90 deg. or wider
             radius = maxRadius;
@@ -60,16 +59,15 @@ public class Path {
 
         Vec3 inPoint = inTangent.scaled(trim);
         Vec3 outPoint = outTangent.scaled(trim);
-        double startAngle = Math.PI + inPoint.getXY().rotated90().negated().atan2();
-        double endAngle = Math.PI + outPoint.getXY().rotated90().atan2();
 
         basis.transformFromStandardBasis(inPoint);
         basis.transformFromStandardBasis(outPoint);
         inPoint.add(b);
         outPoint.add(b);
 
-        Arc arc = new Arc(new Circle(), startAngle, endAngle);
-        int n = Math.max((int)(Math.abs(endAngle - startAngle) / 0.1), 3);
+        double outAngle = Math.atan2(outTangent.x, -outTangent.y);
+        Arc arc = new Arc(new Circle(), 0, outAngle);
+        int n = Math.max((int)(Math.abs(outAngle) / 0.1), 3);
 
         Vec3 circleCenter = inTangent.sum(outTangent).normalize().scale(trim / cosHalfAngle);
 
@@ -77,7 +75,7 @@ public class Path {
         path.add(a);
         path.add(inPoint);
         for(Vec2 p2 : arc.getPointsAlongOpen(n)) {
-            Vec3 p = new Vec3(p2.x, p2.y, 0).scale(radius).add(circleCenter);
+            Vec3 p = new Vec3(p2.x, p2.y, 0).scale(-radius).add(circleCenter);
             basis.transformFromStandardBasis(p);
             path.add(p.add(b));
         }
