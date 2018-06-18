@@ -12,6 +12,13 @@ import static junit.framework.Assert.*;
 public class CircleTest {
 
     @Test
+    public void unitDefault() {
+        Circle c = new Circle();
+        assertTrue(c.radius == 1);
+        assertTrue(c.center.equals(new Vec2(0, 0)));
+    }
+
+    @Test
     public void minimumBoundDegenerate() {
         ArrayList<Vec2> points = new ArrayList<>();
         try {

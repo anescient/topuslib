@@ -13,7 +13,7 @@ public class Circle implements SolidShape {
 
     public Circle() {
         center = new Vec2(0, 0);
-        radius = 0;
+        radius = 1;
     }
 
     public Circle(Vec2 center, float radius) {
