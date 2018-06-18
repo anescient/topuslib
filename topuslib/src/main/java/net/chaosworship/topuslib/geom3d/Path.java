@@ -3,6 +3,7 @@ package net.chaosworship.topuslib.geom3d;
 import net.chaosworship.topuslib.geom2d.Arc;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Vec2;
+import net.chaosworship.topuslib.gl.FloatVertexPreBuffer;
 
 import java.util.ArrayList;
 
@@ -10,6 +11,14 @@ import java.util.ArrayList;
 public class Path {
 
     private Path() {}
+
+    private static ArrayList<Vec3> directPath(Vec3 a, Vec3 b, Vec3 c) {
+        ArrayList<Vec3> path = new ArrayList<>();
+        path.add(a);
+        path.add(b);
+        path.add(c);
+        return path;
+    }
 
     // curve about b, pass through a and c
     public static ArrayList<Vec3> generateCurve(Vec3 a, Vec3 b, Vec3 c, float maxRadius) {
@@ -19,6 +28,9 @@ public class Path {
         c = c.difference(b);
 
         maxRadius = Math.min(maxRadius, Vec3.distance(a, c) / 2);
+        if(maxRadius <= 0) {
+            return directPath(a.sum(b), b, c.sum(b));
+        }
 
         OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(a, c);
 
@@ -29,8 +41,13 @@ public class Path {
         Vec3 endTangent = cTrans.normalized();
 
         LazyInternalAngle angle = new LazyInternalAngle(startTangent.negated(), endTangent);
+
         float cosHalfAngle = (float)Math.sqrt((1 + angle.cosine()) / 2);
         float tanHalfAngle = (1 - angle.cosine()) / angle.sine();
+
+        if(cosHalfAngle <= 0 || Float.isNaN(cosHalfAngle) || Float.isNaN(tanHalfAngle)) {
+            return directPath(a.sum(b), b, c.sum(b));
+        }
 
         float radius;
         float trim;
