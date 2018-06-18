@@ -68,18 +68,21 @@ public class OrthonormalBasisTest {
             assertOrthogonal(uvw.u, uvw.v);
             assertOrthogonal(uvw.v, uvw.w);
             assertOrthogonal(uvw.w, uvw.u);
+            assertRoundTrip(uvw);
 
             uvw.setRightHandedV(p, q);
             assertTrue(uvw.isRightHanded());
             assertOrthogonal(uvw.u, uvw.v);
             assertOrthogonal(uvw.v, uvw.w);
             assertOrthogonal(uvw.w, uvw.u);
+            assertRoundTrip(uvw);
 
             uvw.setRightHandedW(p, q);
             assertTrue(uvw.isRightHanded());
             assertOrthogonal(uvw.u, uvw.v);
             assertOrthogonal(uvw.v, uvw.w);
             assertOrthogonal(uvw.w, uvw.u);
+            assertRoundTrip(uvw);
         }
     }
 
@@ -134,11 +137,15 @@ public class OrthonormalBasisTest {
         OrthonormalBasis uvw = new OrthonormalBasis();
         for(Vec3 w : Vec3Test.someRandomVectors(30)) {
             uvw.setArbitraryAboutW(w);
-            for(Vec3 p : Vec3Test.someRandomVectors(50)) {
-                Vec3 q = uvw.transformedFromStandardBasis(p);
-                assertFalse(vectorsEqual(p, q));
-                assertTrue(vectorsEqual(p, uvw.transformedToStandardBasis(q)));
-            }
+            assertRoundTrip(uvw);
+        }
+    }
+
+    private static void assertRoundTrip(OrthonormalBasis uvw) {
+        for(Vec3 p : Vec3Test.someRandomVectors(50)) {
+            Vec3 q = uvw.transformedFromStandardBasis(p);
+            assertFalse(vectorsEqual(p, q));
+            assertTrue(vectorsEqual(p, uvw.transformedToStandardBasis(q)));
         }
     }
 
