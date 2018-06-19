@@ -97,7 +97,7 @@ public class DrawingBoard
             mEyeHeight = 10 * topBottom;
         }
 
-        float phase = (SystemClock.uptimeMillis() / (float)40000) % 1.0f;
+        float phase = (SystemClock.uptimeMillis() / (float)20000) % 1.0f;
         float modelSpin = (float)(2 * Math.PI * phase);
         //modelSpin = 0;
 
@@ -112,31 +112,16 @@ public class DrawingBoard
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        Vec3 a = new Vec3(-2, -5, 1).normalize().scale(2);
-        Vec3 b = new Vec3((float)Math.sin(-modelSpin), (float)Math.cos(modelSpin), (float)Math.cos(-modelSpin));
-        Vec3 c = new Vec3((float)Math.sin(modelSpin), (float)Math.cos(modelSpin), 0).normalize().scale(2);
-
-        /*
-        Vec3 move = new Vec3(1, 1, 1);
-        a.add(move);
-        b.add(move);
-        c.add(move);
-        */
-
-        AxisAngleRotator rotator;
-        rotator = new AxisAngleRotator(new Vec3(1, 1.3f, 0.5f).normalize(), modelSpin);
-        rotator.rotate(a);
-        rotator.rotate(c);
-        rotator = new AxisAngleRotator(new Vec3(0.1f, 0.3f, -0.7f).normalize(), 2 * modelSpin);
-        rotator.rotate(a);
-        rotator.rotate(c);
+        Vec3 a = new Vec3(0, 0, 0);
+        Vec3 b = new Vec3(1, 0, 0);
+        Vec3 c = new Vec3((float)Math.cos(modelSpin), (float)Math.sin(modelSpin), 0);
 
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
         linesBrush.begin(mViewTransform.getViewMatrix(), 1);
         linesBrush.setColor(Color.RED);
         linesBrush.setAlpha(1);
 
-        List<Vec3> path = Path.generateCurve(a, b, c, 0.7f, 0.2f);
+        List<Vec3> path = Path.generateCurve(a, b, c, 0.5f, 0.2f);
 
         linesBrush.end();
 

@@ -22,21 +22,17 @@ public class Path {
     // curve about b, pass through a and c
     public static ArrayList<Vec3> generateCurve(Vec3 a, Vec3 b, Vec3 c, float maxRadius, float radiansPerSegment) {
 
-        maxRadius = Math.min(maxRadius, Vec3.distance(a, c) / 2);
-        if(maxRadius <= 0) {
-            return directPath(a, b, c);
-        }
-
         // translate everything to b = (0,0)
         Vec3 aTrans = a.difference(b);
         Vec3 cTrans = c.difference(b);
 
-        OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(cTrans, aTrans);
+        LazyInternalAngle angle = new LazyInternalAngle(aTrans, cTrans);
 
-        Vec3 inTangent = new Vec3(0, 1, 0);
-        Vec3 outTangent = basis.transformedToStandardBasis(cTrans).normalize();
-
-        LazyInternalAngle angle = new LazyInternalAngle(inTangent, outTangent);
+        float minArm = (float)Math.sqrt(Math.min(aTrans.magnitudeSq(), cTrans.magnitudeSq()));
+        maxRadius = Math.min(maxRadius, minArm * angle.sine());
+        if(maxRadius <= 0 || angle.cosine() > 0.99999f) {
+            return directPath(a, b, c);
+        }
 
         float cosHalfAngle = (float)Math.sqrt((1 + angle.cosine()) / 2);
         float tanHalfAngle = (1 - angle.cosine()) / angle.sine();
@@ -57,9 +53,12 @@ public class Path {
             trim = radius / tanHalfAngle;
         }
 
+        OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(cTrans, aTrans);
+
+        Vec3 inTangent = new Vec3(0, 1, 0);
+        Vec3 outTangent = basis.transformedToStandardBasis(cTrans).normalize();
         Vec3 inPoint = inTangent.scaled(trim);
         Vec3 outPoint = outTangent.scaled(trim);
-
         basis.transformFromStandardBasis(inPoint);
         basis.transformFromStandardBasis(outPoint);
         inPoint.add(b);
