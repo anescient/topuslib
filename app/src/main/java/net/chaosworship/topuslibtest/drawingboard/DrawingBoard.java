@@ -136,7 +136,7 @@ public class DrawingBoard
         linesBrush.setColor(Color.RED);
         linesBrush.setAlpha(1);
 
-        List<Vec3> path = Path.generateCurve(a, b, c, 0.7f);
+        List<Vec3> path = Path.generateCurve(a, b, c, 0.7f, 0.2f);
 
         linesBrush.end();
 

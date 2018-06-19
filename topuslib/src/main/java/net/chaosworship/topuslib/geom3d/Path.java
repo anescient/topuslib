@@ -20,7 +20,7 @@ public class Path {
     }
 
     // curve about b, pass through a and c
-    public static ArrayList<Vec3> generateCurve(Vec3 a, Vec3 b, Vec3 c, float maxRadius) {
+    public static ArrayList<Vec3> generateCurve(Vec3 a, Vec3 b, Vec3 c, float maxRadius, float radiansPerSegment) {
 
         maxRadius = Math.min(maxRadius, Vec3.distance(a, c) / 2);
         if(maxRadius <= 0) {
@@ -67,7 +67,7 @@ public class Path {
 
         double outAngle = Math.atan2(outTangent.x, -outTangent.y);
         Arc arc = new Arc(new Circle(), 0, outAngle);
-        int n = Math.max((int)(Math.abs(outAngle) / 0.1), 3);
+        int n = Math.max((int)(Math.abs(outAngle) / radiansPerSegment), 1);
 
         Vec3 circleCenter = inTangent.sum(outTangent).normalize().scale(trim / cosHalfAngle);
 
