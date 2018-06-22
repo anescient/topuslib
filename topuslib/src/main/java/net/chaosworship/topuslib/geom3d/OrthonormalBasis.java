@@ -36,7 +36,7 @@ public class OrthonormalBasis {
     }
 
     public OrthonormalBasis rotateToW(Vec3 w) {
-        AxisAngleRotator rotator = AxisAngleRotator.capture(this.w, w);
+        AxisAngleRotator rotator = AxisAngleRotator.capture(this.w, w.normalized());
         rotator.rotate(this.u);
         rotator.rotate(this.v);
         rotator.rotate(this.w);

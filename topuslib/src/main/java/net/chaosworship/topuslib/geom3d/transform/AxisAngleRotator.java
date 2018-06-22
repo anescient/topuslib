@@ -45,10 +45,10 @@ public class AxisAngleRotator {
     // create a rotator which transforms a into b
     public static AxisAngleRotator capture(Vec3 a, Vec3 b) {
         Vec3 axis = a.cross(b);
-        if(axis.isZero()) {
+        float axisNorm = axis.magnitude();
+        if(axisNorm == 0) {
             return new AxisAngleRotator(new Vec3(0, 0, 1), 1, 0);
         }
-        float axisNorm = axis.magnitude();
 
         // with trig
         // double angle = Math.atan2(axisNorm, a.dot(b));

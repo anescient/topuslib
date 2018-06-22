@@ -160,7 +160,7 @@ public class OrthonormalBasisTest {
 
     private static void assertOrthogonal(Vec3 a, Vec3 b) {
         assertTrue(!a.isZero() && !b.isZero());
-        assertTrue(Math.abs(a.dot(b)) < 0.00001f);
+        assertTrue(Math.abs(a.normalized().dot(b.normalized())) < 0.00001f);
     }
 
     private static boolean vectorsEqual(Vec3 a, Vec3 b) {
