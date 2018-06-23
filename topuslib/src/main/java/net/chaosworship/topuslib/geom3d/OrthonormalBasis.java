@@ -11,17 +11,21 @@ public class OrthonormalBasis {
     public final Vec3 v;
     public final Vec3 w;
 
+    private AxisAngleRotator mRotator;
+
     @SuppressWarnings("WeakerAccess")
     public OrthonormalBasis() {
         u = new Vec3(1, 0, 0);
         v = new Vec3(0, 1, 0);
         w = new Vec3(0, 0, 1);
+        mRotator = null;
     }
 
     public OrthonormalBasis set(OrthonormalBasis src) {
         this.u.set(src.u);
         this.v.set(src.v);
         this.w.set(src.w);
+        mRotator = null;
         return this;
     }
 
@@ -36,10 +40,13 @@ public class OrthonormalBasis {
     }
 
     public OrthonormalBasis rotateToW(Vec3 w) {
-        AxisAngleRotator rotator = AxisAngleRotator.capture(this.w, w.normalized());
-        rotator.rotate(this.u);
-        rotator.rotate(this.v);
-        rotator.rotate(this.w);
+        if(mRotator == null) {
+            mRotator = new AxisAngleRotator();
+        }
+        mRotator.capture(this.w, w.normalized());
+        mRotator.rotate(this.u);
+        mRotator.rotate(this.v);
+        mRotator.rotate(this.w);
         return this;
     }
 

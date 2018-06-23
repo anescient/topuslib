@@ -6,11 +6,15 @@ import net.chaosworship.topuslib.geom3d.Vec3;
 public class AxisAngleRotator {
 
     private final Vec3 mAxis;
-    private final float mCos;
-    private final float mSin;
+    private float mCos;
+    private float mSin;
 
     private final Vec3 tempCross;
     private final Vec3 tempV;
+
+    public AxisAngleRotator() {
+        this(new Vec3(0, 0, 1), 1, 0);
+    }
 
     public AxisAngleRotator(Vec3 unitAxis, double angle) {
         this(unitAxis, (float)Math.cos(angle), (float)Math.sin(angle));
@@ -22,6 +26,29 @@ public class AxisAngleRotator {
         mSin = sin;
         tempCross = new Vec3();
         tempV = new Vec3();
+    }
+
+    // set the rotation which transforms a into b
+    public void capture(Vec3 a, Vec3 b) {
+        mAxis.setCross(a, b);
+        float axisNorm = mAxis.magnitude();
+        if(axisNorm == 0) {
+            mAxis.set(0, 0, 1);
+            mCos = 1;
+            mSin = 0;
+            return;
+        }
+
+        // with trig
+        // double angle = Math.atan2(axisNorm, a.dot(b));
+        // return new AxisAngleRotator(axis.scaleInverse(axisNorm), angle);
+
+        // without trig
+        float dot = a.dot(b);
+        float divide = (float)(1 / Math.sqrt(axisNorm * axisNorm + dot * dot));
+        mCos = dot * divide;
+        mSin = axisNorm * divide;
+        mAxis.scaleInverse(axisNorm);
     }
 
     // Rodrigues' rotation formula
@@ -40,26 +67,5 @@ public class AxisAngleRotator {
             .addScaled(tempV, mCos)
             .addScaled(tempCross, mSin)
             .addScaled(mAxis, mAxis.dot(tempV) * (1 - mCos));
-    }
-
-    // create a rotator which transforms a into b
-    public static AxisAngleRotator capture(Vec3 a, Vec3 b) {
-        Vec3 axis = a.cross(b);
-        float axisNorm = axis.magnitude();
-        if(axisNorm == 0) {
-            return new AxisAngleRotator(new Vec3(0, 0, 1), 1, 0);
-        }
-
-        // with trig
-        // double angle = Math.atan2(axisNorm, a.dot(b));
-        // return new AxisAngleRotator(axis.scaleInverse(axisNorm), angle);
-
-        // without trig
-        float dot = a.dot(b);
-        float divide = (float)(1 / Math.sqrt(axisNorm * axisNorm + dot * dot));
-        float cos = dot * divide;
-        float sin = axisNorm * divide;
-        axis.scaleInverse(axisNorm);
-        return new AxisAngleRotator(axis, cos, sin);
     }
 }
