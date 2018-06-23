@@ -24,6 +24,7 @@ import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glTexParameteri;
+import static android.opengl.GLES20.glUniform1f;
 import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
@@ -40,9 +41,10 @@ public class FrameBrush extends Brush {
     private static final String SHADER_F =
             "precision mediump float;\n" +
             "uniform sampler2D uFrameTexture;\n" +
+            "uniform float uLightness;\n" +
             "varying vec2 vPos;\n" +
             "void main() {\n" +
-            "    gl_FragColor = texture2D(uFrameTexture, vPos);\n" +
+            "    gl_FragColor = vec4(texture2D(uFrameTexture, vPos).rgb * uLightness, 1.0);\n" +
             "}\n";
     private static final Loader.LiteralProgram mProgram = new Loader.LiteralProgram(SHADER_V, SHADER_F);
 
@@ -50,6 +52,7 @@ public class FrameBrush extends Brush {
     private final int mVertexBuffer;
 
     private final int mFrameTextureHandle;
+    private final int mLightnessHandle;
     private final int mPosHandle;
 
     FrameBrush(Loader loader) {
@@ -71,16 +74,22 @@ public class FrameBrush extends Brush {
 
         int program = mLoader.useProgram(mProgram);
         mFrameTextureHandle = glGetUniformLocation(program, "uFrameTexture");
+        mLightnessHandle = glGetUniformLocation(program, "uLightness");
         mPosHandle = glGetAttribLocation(program, "aPos");
     }
 
     public void putTexture(int texture, boolean filter) {
+        putTexture(texture, 1, filter);
+    }
+
+    public void putTexture(int texture, float lightness, boolean filter) {
         mLoader.useProgram(mProgram);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter ? GL_LINEAR : GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter ? GL_LINEAR : GL_NEAREST);
         glUniform1i(mFrameTextureHandle, 0);
+        glUniform1f(mLightnessHandle, lightness);
 
         glDisable(GL_DEPTH_TEST);
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
