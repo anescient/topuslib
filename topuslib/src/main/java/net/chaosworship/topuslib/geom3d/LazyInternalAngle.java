@@ -23,6 +23,18 @@ public class LazyInternalAngle {
         mRadians = Double.NaN;
     }
 
+    public float dot() {
+        return mDot;
+    }
+
+    public Vec3 cross() {
+        return mCross;
+    }
+
+    public float crossMagnitude() {
+        return mCrossMag;
+    }
+
     public float sine() {
         requireDivisor();
         return mCrossMag * mSineDivisor;
