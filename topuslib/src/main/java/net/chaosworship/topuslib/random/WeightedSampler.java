@@ -6,20 +6,20 @@ import java.util.Random;
 
 public class WeightedSampler<V> {
 
-    private class WeightedItem<V> {
+    private static class WeightedItem<V> {
         private final float mWeight;
         private final V mItem;
 
-        public WeightedItem(float weight, V item) {
+        WeightedItem(float weight, V item) {
             mWeight = weight;
             mItem = item;
         }
 
-        public float getWeight() {
+        float getWeight() {
             return mWeight;
         }
 
-        public V getItem() {
+        V getItem() {
             return mItem;
         }
     }
@@ -34,10 +34,28 @@ public class WeightedSampler<V> {
         mItems.add(new WeightedItem<V>(weight, item));
     }
 
-    public V sigmaScaledSample(Random random)
-            throws Exception {
-        if(mItems.isEmpty())
-            throw new Exception();
+    public V sample(Random random) {
+        if(mItems.isEmpty()) {
+            throw new IllegalStateException();
+        }
+
+        float weightSum = 0;
+        for(WeightedItem<V> wi : mItems) {
+            weightSum += wi.getWeight();
+        }
+
+        float x = random.nextFloat() * weightSum;
+        int i = 0;
+        while(i < mItems.size() - 1 && x > 0) {
+            x -= mItems.get(i++).getWeight();
+        }
+        return mItems.get(i).getItem();
+    }
+
+    public V sigmaScaledSample(Random random) {
+        if(mItems.isEmpty()) {
+            throw new IllegalStateException();
+        }
 
         // w = max(w - w_mean + 2 * w_stddev, 0)
         float weightMean = 0;
@@ -64,8 +82,9 @@ public class WeightedSampler<V> {
 
         float x = random.nextFloat() * scaledWeightsSum;
         int i = 0;
-        while(i < mItems.size() - 1 && x > scaledWeights[i])
+        while(i < mItems.size() - 1 && x > scaledWeights[i]) {
             x -= scaledWeights[i++];
+        }
         return mItems.get(i).getItem();
     }
 }
