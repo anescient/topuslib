@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startDrawingBoard(null);
+        startParticles(null);
     }
 
     public void startDrawingBoard(View view) {

@@ -42,8 +42,8 @@ class ParticlesView
         final Vec2 acc;
         float radius;
         float mass;
-
         float phase;
+        float involvement;
 
         private Particle() {
             id = nextId++;
@@ -83,7 +83,7 @@ class ParticlesView
         mPointMasses = new ArrayList<>();
         mNeighborSearch = new KDTree<>();
 
-        mBound = new Rectangle(-2.7f, -2.7f, 2.7f, 2.7f);
+        mBound = new Rectangle(-2.7f, -3.9f, 2.7f, 3.9f);
 
         mBarnesHut = new BarnesHutTree(mBound);
 
@@ -125,7 +125,7 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 400; i++) {
+        for(int i = 0; i < 800; i++) {
             Particle p = new Particle();
             p.pos.set(sRandom.uniformInRect(mBound));
             p.vel.setZero();
@@ -133,6 +133,7 @@ class ParticlesView
             p.radius = 0.03f + (float)Math.pow(r, 3) * 0.07f;
             p.mass = 1.0f * p.radius * p.radius;
             p.phase = sRandom.nextFloat();
+            p.involvement = 0;
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
             ppvps.add(new PointValuePair<>(p.pos, p));
@@ -158,7 +159,7 @@ class ParticlesView
                 p.phase += TIMERATE * 0.1f;
                 if(p.phase > 1)
                     p.phase -= 1;
-                p.radius = 0.02f + 0.03f * ((float)Math.sin(Math.PI * 2 * p.phase) + 1);
+                p.radius = 0.02f + 0.08f * (p.involvement) * (float)Math.pow(((float)Math.sin(8 * Math.PI * 2 * p.phase) + 1) / 2, 2);
                 p.mass = p.radius * p.radius;
             }
 
@@ -175,7 +176,7 @@ class ParticlesView
             for(Particle p : mParticles) {
                 force.setZero();
                 mBarnesHut.getForce(p.pos, force, p.radius);
-                p.acc.addScaled(force, -0.01f);
+                p.acc.addScaled(force, -0.025f);
             }
 
             mNeighborSearch.reload();
@@ -197,6 +198,8 @@ class ParticlesView
                     pdiff.setDifference(p.pos, q.pos);
                     float distSq = pdiff.magnitudeSq();
                     if(distSq < d * d) {
+                        p.involvement += 0.01;
+                        q.involvement += 0.01;
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
                         vdiff.setDifference(p.vel, q.vel);
@@ -219,6 +222,10 @@ class ParticlesView
                 //p.vel.scale(0.99f);
                 p.pos.addScaled(p.vel, TIMERATE);
                 p.acc.setZero();
+                p.involvement *= 0.98f;
+                if(p.involvement > 1) {
+                    p.involvement = 1;
+                }
             }
 
             Vec2 centroid = new Vec2();
@@ -242,9 +249,9 @@ class ParticlesView
 
                 for(Particle p : mParticles) {
                     if(mBound.contains(p.pos)) {
-                        p.pos.addScaled(centroid, -0.01f);
-                        p.vel.subtract(meanVelocity);
-                        p.vel.addScaled(p.pos.normalized().rotate90(), angularVelocity * -0.3f / inBoundCount);
+                        //p.pos.addScaled(centroid, -0.01f);
+                        //p.vel.subtract(meanVelocity);
+                        //p.vel.addScaled(p.pos.normalized().rotate90(), angularVelocity * -0.3f / inBoundCount);
                     }
                 }
 
@@ -280,7 +287,7 @@ class ParticlesView
         dotsBrush.begin(mViewTransform.getViewMatrix());
         synchronized(mParticles) {
             for(Particle p : mParticles) {
-                dotsBrush.add(p.pos, p.radius, 0.7f);
+                dotsBrush.add(p.pos, p.radius, p.involvement);
             }
         }
         dotsBrush.end();
