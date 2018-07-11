@@ -11,16 +11,11 @@ import android.view.MotionEvent;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 import net.chaosworship.topuslib.geom3d.Cuboid;
-import net.chaosworship.topuslib.geom3d.Path;
-import net.chaosworship.topuslib.geom3d.Vec3;
-import net.chaosworship.topuslib.geom3d.transform.AxisAngleRotator;
 import net.chaosworship.topuslib.gl.GLLinesBrush;
 import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslibtest.gl.TestLoader;
-
-import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -112,39 +107,12 @@ public class DrawingBoard
         glClearColor(0, 0.2f, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        Vec3 a = new Vec3(0, 0, 0);
-        Vec3 b = new Vec3(1, 0, 0);
-        Vec3 c = new Vec3((float)Math.cos(modelSpin), (float)Math.sin(modelSpin), 0);
-
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
-        linesBrush.begin(mViewTransform.getViewMatrix(), 1);
-        linesBrush.setColor(Color.RED);
-        linesBrush.setAlpha(1);
-
-        List<Vec3> path = Path.generateCurve(a, b, c, 0.5f, 0.2f);
-
-        linesBrush.end();
-
 
         linesBrush.begin(mViewTransform.getViewMatrix(), 3);
         linesBrush.setColor(Color.WHITE);
         linesBrush.setAlpha(0.15f);
         linesBrush.addCuboid(new Cuboid(-1, 1, -1, 1, -1, 1));
         linesBrush.end();
-
-        linesBrush.begin(mViewTransform.getViewMatrix(), 5);
-        linesBrush.setAlpha(1f);
-        linesBrush.setColor(Color.WHITE);
-        linesBrush.addPath(path);
-        linesBrush.end();
-
-        /*
-        linesBrush.begin(mViewTransform.getViewMatrix(), 2);
-        linesBrush.setAlpha(0.5f);
-        linesBrush.setColor(Color.YELLOW);
-        linesBrush.addLine(a, b);
-        linesBrush.addLine(b, c);
-        linesBrush.end();
-        */
     }
 }
