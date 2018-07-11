@@ -206,10 +206,10 @@ class BarnesHutNode {
             mTempDiff.setDifference(position, mSumPointMass.position);
             float distance = mTempDiff.magnitude();
             if(distance > 0) {
+                mTempDiff.scaleInverse(distance);
                 if(distance < minDistance) {
                     distance = minDistance;
                 }
-                mTempDiff.scaleInverse(distance);
                 forceAccum.addScaled(mTempDiff, mSumPointMass.mass / (distance * distance));
             }
         }
