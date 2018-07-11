@@ -132,7 +132,8 @@ class BarnesHutNode {
                 putToChild(mSumPointMass);
             }
             mSumPointMass.mass += pointMass.mass;
-            mSumPointMass.position.addScaled(pointMass.position.difference(mSumPointMass.position), pointMass.mass / mSumPointMass.mass);
+            mSumPointMass.position.addScaledDifference(
+                    pointMass.position, mSumPointMass.position, pointMass.mass / mSumPointMass.mass);
             putToChild(pointMass);
         }
 

@@ -176,6 +176,12 @@ public class Vec2 implements Cloneable {
         return this;
     }
 
+    public Vec2 addScaledDifference(Vec2 lhs, Vec2 rhs, float scale) {
+        x += (lhs.x - rhs.x) * scale;
+        y += (lhs.y - rhs.y) * scale;
+        return this;
+    }
+
     // q is expected to be in [0, 1]
     // produce point along the line from a to b
     // q=0 gives a, q=1 gives b, q=0.5 gives midpoint of ab
