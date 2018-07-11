@@ -43,6 +43,25 @@ public class SuperRandom extends Random {
                 uniformInRange(rect.miny, rect.maxy));
     }
 
+    public Vec2 uniformOnRect(Rectangle rect) {
+        float h = rect.height();
+        float w = rect.width();
+        float u = nextFloat() * (h * 2 + w * 2);
+        if(u < h) {
+            return new Vec2(rect.minx, rect.miny + u);
+        }
+        u -= h;
+        if(u < h) {
+            return new Vec2(rect.maxx, rect.miny + u);
+        }
+        u -= h;
+        if(u < w) {
+            return new Vec2(rect.minx + u, rect.miny);
+        }
+        u -= w;
+        return new Vec2(rect.minx + u, rect.maxy);
+    }
+
     public Vec2 uniformInCircle(Circle circle) {
         return uniformUnit().scale(((float)Math.sqrt(nextFloat())) * circle.radius).add(circle.center);
     }
