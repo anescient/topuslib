@@ -40,6 +40,7 @@ import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glTexParameteri;
 import static android.opengl.GLES20.glUniform1i;
+import static android.opengl.GLES20.glUniform4fv;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
@@ -68,6 +69,7 @@ public class DotsBrush extends Brush {
 
     private final int mMVPHandle;
     private final int mTextureHandle;
+    private final int mColorHandle;
 
     private final int mPosHandle;
     private final int mTexCoordHandle;
@@ -122,6 +124,7 @@ public class DotsBrush extends Brush {
 
         mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
         mTextureHandle = glGetUniformLocation(program, "uTexture");
+        mColorHandle = glGetUniformLocation(program, "uColor");
 
         mPosHandle = glGetAttribLocation(program, "aPos");
         mTexCoordHandle = glGetAttribLocation(program, "aTexCoord");
@@ -129,6 +132,10 @@ public class DotsBrush extends Brush {
     }
 
     public void begin(float[] matPV) {
+        begin(matPV, new float[]{1, 1, 1, 1});
+    }
+
+    public void begin(float[] matPV, float[] color) {
         mLoader.useProgram(PROGRAMNAME);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
@@ -143,6 +150,8 @@ public class DotsBrush extends Brush {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glUniform1i(mTextureHandle, 0);
+
+        glUniform4fv(mColorHandle, 1, color, 0);
 
         glVertexAttribPointer(mPosHandle, 2, GL_FLOAT, false, VERTEXSIZE * FLOATSIZE, 0);
         glEnableVertexAttribArray(mPosHandle);
