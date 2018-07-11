@@ -22,9 +22,15 @@ public class BarnesHutTree {
     }
 
     public void load(Collection<PointMass> pointMasses) {
+        load(pointMasses, 0);
+    }
+
+    public void load(Collection<PointMass> pointMasses, float minimumMass) {
         mRoot.clear();
         for(PointMass pointMass : pointMasses) {
-            mRoot.insert(pointMass);
+            if(pointMass.mass >= minimumMass) {
+                mRoot.insert(pointMass);
+            }
         }
         //Log.d("bht size", String.valueOf(mRoot.treeSize()));
     }
