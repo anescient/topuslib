@@ -13,8 +13,12 @@ public class BarnesHutTree {
 
     private BarnesHutNode mRoot;
 
-    public BarnesHutTree(Rectangle area) {
-        mRoot = new BarnesHutNode(area.enlargedToSquare());
+    // openingRatio
+    // 0.5 is pretty good accuracy
+    // 0.2 is probably fine
+    // less is fast, more is accurate
+    public BarnesHutTree(Rectangle area, float openingRatio) {
+        mRoot = new BarnesHutNode(area.enlargedToSquare(), openingRatio);
     }
 
     public void clear() {

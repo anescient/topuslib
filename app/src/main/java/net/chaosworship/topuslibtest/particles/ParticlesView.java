@@ -21,6 +21,8 @@ import net.chaosworship.topuslibtest.gl.DotsBrush;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -85,12 +87,21 @@ class ParticlesView
 
         mBound = new Rectangle(-2.7f, -3.9f, 2.7f, 3.9f);
 
-        mBarnesHut = new BarnesHutTree(mBound);
+        mBarnesHut = new BarnesHutTree(mBound, 0.1f);
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
         setRenderer(this);
-        setRenderMode(RENDERMODE_CONTINUOUSLY);
+
+        //setRenderMode(RENDERMODE_CONTINUOUSLY);
+
+        setRenderMode(RENDERMODE_WHEN_DIRTY);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                requestRender();
+            }
+        }, 30, 30);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -125,7 +136,7 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 800; i++) {
+        for(int i = 0; i < 600; i++) {
             Particle p = new Particle();
             p.pos.set(sRandom.uniformInRect(mBound));
             p.vel.setZero();
@@ -165,13 +176,21 @@ class ParticlesView
 
 
             for(Particle p : mParticles) {
-                //p.acc.addScaled(p.pos.normalized(), -0.005f);
-                //p.acc.addScaled(p.pos.normalized().rotate90(), 0.001f);
+                if(p.involvement < 0.3)
+                    p.acc.addScaled(p.pos.normalized(), -0.005f);
+                //if(p.involvement > 0.95)
+                //    p.acc.addScaled(p.pos.normalized().rotate90(), 0.001f);
             }
 
 
+            float meanMass = 0;
+            for(Particle p : mParticles) {
+                meanMass += p.mass;
+            }
+            meanMass /= mParticles.size();
+
             mBarnesHut.clear();
-            mBarnesHut.load(mPointMasses);
+            mBarnesHut.load(mPointMasses, meanMass);
             Vec2 force = new Vec2();
             for(Particle p : mParticles) {
                 force.setZero();
@@ -198,8 +217,8 @@ class ParticlesView
                     pdiff.setDifference(p.pos, q.pos);
                     float distSq = pdiff.magnitudeSq();
                     if(distSq < d * d) {
-                        p.involvement += 0.01;
-                        q.involvement += 0.01;
+                        p.involvement += 0.005;
+                        q.involvement += 0.005;
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
                         vdiff.setDifference(p.vel, q.vel);
@@ -222,7 +241,7 @@ class ParticlesView
                 //p.vel.scale(0.99f);
                 p.pos.addScaled(p.vel, TIMERATE);
                 p.acc.setZero();
-                p.involvement *= 0.98f;
+                p.involvement *= 0.99f;
                 if(p.involvement > 1) {
                     p.involvement = 1;
                 }
@@ -249,8 +268,8 @@ class ParticlesView
 
                 for(Particle p : mParticles) {
                     if(mBound.contains(p.pos)) {
-                        //p.pos.addScaled(centroid, -0.01f);
-                        //p.vel.subtract(meanVelocity);
+                        p.pos.addScaled(centroid, -0.01f);
+                        p.vel.subtract(meanVelocity);
                         //p.vel.addScaled(p.pos.normalized().rotate90(), angularVelocity * -0.3f / inBoundCount);
                     }
                 }
@@ -287,7 +306,7 @@ class ParticlesView
         dotsBrush.begin(mViewTransform.getViewMatrix());
         synchronized(mParticles) {
             for(Particle p : mParticles) {
-                dotsBrush.add(p.pos, p.radius, p.involvement);
+                dotsBrush.add(p.pos, p.radius, 0.2f + p.involvement);
             }
         }
         dotsBrush.end();
