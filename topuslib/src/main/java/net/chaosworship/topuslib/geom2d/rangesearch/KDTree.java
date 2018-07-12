@@ -1,5 +1,6 @@
 package net.chaosworship.topuslib.geom2d.rangesearch;
 
+import net.chaosworship.topuslib.tuple.PointObjectPair;
 import net.chaosworship.topuslib.tuple.PointValuePair;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 
@@ -13,15 +14,15 @@ public class KDTree<T> {
     //////////////////////////////////////////////////////////
 
     private static class EvenNode<T> {
-        DoublySortedPointValues<T> mPointValues;
-        PointValuePair<T> mLeafPointValue;
+        DoublySortedPointObjects mPointValues;
+        PointObjectPair mLeafPointValue;
         float mMedianX;
         OddNode<T> mLesserXChild;
         OddNode<T> mGreaterXChild;
         boolean mIsDegenerate;
 
         EvenNode() {
-            mPointValues = new DoublySortedPointValues<>();
+            mPointValues = new DoublySortedPointObjects();
             mLeafPointValue = null;
             mMedianX = 0;
             mLesserXChild = null;
@@ -29,7 +30,7 @@ public class KDTree<T> {
             mIsDegenerate = true;
         }
 
-        void set(Collection<PointValuePair<T>> pointValues) {
+        void set(Collection<PointObjectPair> pointValues) {
             mPointValues.set(pointValues);
             update();
         }
@@ -60,12 +61,14 @@ public class KDTree<T> {
         void search(Rectangle area, Collection<T> searchResults) {
             if(mLeafPointValue != null) {
                 if(area.containsClosed(mLeafPointValue.point)) {
-                    searchResults.add(mLeafPointValue.value);
+                    searchResults.add((T)mLeafPointValue.value);
                 }
             } else if(mIsDegenerate) {
-                for(PointValuePair<T> pvp : mPointValues.getAll()) {
+                ArrayList<PointObjectPair> pops = new ArrayList<>();
+                mPointValues.getAll(pops);
+                for(PointObjectPair pvp : pops) {
                     if(area.containsClosed(pvp.point)) {
-                        searchResults.add(pvp.value);
+                        searchResults.add((T)pvp.value);
                     }
                 }
             } else {
@@ -82,15 +85,15 @@ public class KDTree<T> {
     //////////////////////////////////////////////////////////
 
     private static class OddNode<T> {
-        DoublySortedPointValues<T> mPointValues;
-        PointValuePair<T> mLeafPointValue;
+        DoublySortedPointObjects mPointValues;
+        PointObjectPair mLeafPointValue;
         float mMedianY;
         EvenNode<T> mLesserYChild;
         EvenNode<T> mGreaterYChild;
         boolean mIsDegenerate;
 
         OddNode() {
-            mPointValues = new DoublySortedPointValues<>();
+            mPointValues = new DoublySortedPointObjects();
             mLeafPointValue = null;
             mMedianY = 0;
             mLesserYChild = null;
@@ -124,12 +127,14 @@ public class KDTree<T> {
         void search(Rectangle area, Collection<T> searchResults) {
             if(mLeafPointValue != null) {
                 if(area.containsClosed(mLeafPointValue.point)) {
-                    searchResults.add(mLeafPointValue.value);
+                    searchResults.add((T)mLeafPointValue.value);
                 }
             } else if(mIsDegenerate) {
-                for(PointValuePair<T> pvp : mPointValues.getAll()) {
+                ArrayList<PointObjectPair> pops = new ArrayList<>();
+                mPointValues.getAll(pops);
+                for(PointObjectPair pvp : pops) {
                     if(area.containsClosed(pvp.point)) {
-                        searchResults.add(pvp.value);
+                        searchResults.add((T)pvp.value);
                     }
                 }
 
@@ -146,7 +151,7 @@ public class KDTree<T> {
 
     //////////////////////////////////////////////////////////
 
-    private EvenNode<T> mRoot;
+    private EvenNode mRoot;
     private final ArrayList<T> mSearchResults;
 
     public KDTree() {
@@ -155,8 +160,12 @@ public class KDTree<T> {
     }
 
     // clear and load
-    public void load(Collection<PointValuePair<T>> pointValues) {
-        mRoot.set(pointValues);
+    public void load(List<PointValuePair<T>> pointValues) {
+        ArrayList<PointObjectPair> pops = new ArrayList<>(pointValues.size());
+        for(PointValuePair<T> pvp : pointValues) {
+            pops.add(new PointObjectPair(pvp.point, pvp.value));
+        }
+        mRoot.set(pops);
     }
 
     // if the collection of points/values objects hasn't changed but the points themselves have been altered
