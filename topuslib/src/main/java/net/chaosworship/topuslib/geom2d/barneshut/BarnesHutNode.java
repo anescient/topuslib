@@ -29,10 +29,10 @@ class BarnesHutNode {
     private final Vec2 mTempDiff;
 
     BarnesHutNode(Rectangle area, float openingRatio) {
-        this(area, 0, openingRatio);
+        this(area, openingRatio, 0);
     }
 
-    private BarnesHutNode(Rectangle area, int depth, float openingRatio) {
+    private BarnesHutNode(Rectangle area, float openingRatio, int depth) {
         nodecount++;
         if(nodecount % 1000 == 0)
             Log.d("bht nodes", String.valueOf(nodecount));
@@ -172,16 +172,16 @@ class BarnesHutNode {
         Rectangle childRect;
 
         childRect = new Rectangle(mArea.minx, mArea.miny, mSplitX, mSplitY);
-        mChildLessXLessY = new BarnesHutNode(childRect, mDepth + 1, mOpeningRatio);
+        mChildLessXLessY = new BarnesHutNode(childRect, mOpeningRatio, mDepth + 1);
 
         childRect = new Rectangle(mArea.minx, mSplitY, mSplitX, mArea.maxy);
-        mChildLessXMoreY = new BarnesHutNode(childRect, mDepth + 1, mOpeningRatio);
+        mChildLessXMoreY = new BarnesHutNode(childRect, mOpeningRatio, mDepth + 1);
 
         childRect = new Rectangle(mSplitX, mArea.miny, mArea.maxx, mSplitY);
-        mChildMoreXLessY = new BarnesHutNode(childRect, mDepth + 1, mOpeningRatio);
+        mChildMoreXLessY = new BarnesHutNode(childRect, mOpeningRatio, mDepth + 1);
 
         childRect = new Rectangle(mSplitX, mSplitY, mArea.maxx, mArea.maxy);
-        mChildMoreXMoreY = new BarnesHutNode(childRect, mDepth + 1, mOpeningRatio);
+        mChildMoreXMoreY = new BarnesHutNode(childRect, mOpeningRatio, mDepth + 1);
     }
 
     void getForce(Vec2 position, Vec2 forceAccum, float minDistance) {
