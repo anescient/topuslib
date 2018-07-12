@@ -16,6 +16,7 @@ class BarnesHutNode {
     private final int mDepth;
     private final Rectangle mArea;
     private final float mOpeningRatio;
+    private final float mOpeningDistanceSq;
     private final float mSplitX;
     private final float mSplitY;
     private PointMass mSumPointMass;
@@ -44,6 +45,8 @@ class BarnesHutNode {
 
         mArea = area;
         mOpeningRatio = openingRatio;
+        float diameter = mArea.width() * 1.4142f; // diagonal of a square
+        mOpeningDistanceSq = mOpeningRatio * diameter * mOpeningRatio * diameter;
         mSplitX = mArea.centerX();
         mSplitY = mArea.centerY();
         mSumPointMass = new PointMass();
@@ -186,13 +189,12 @@ class BarnesHutNode {
             return;
         }
 
+        mTempDiff.setDifference(position, mSumPointMass.position);
+        float distanceSq = mTempDiff.magnitudeSq();
+
         boolean open = mArea.contains(position);
-        if(!open) {
-            float diameter = mArea.width() * 1.4142f; // diagonal of a square
-            float distance = Vec2.distance(position, mSumPointMass.position);
-            if(distance < mOpeningRatio * diameter) {
-                open = true;
-            }
+        if(!open && distanceSq < mOpeningDistanceSq) {
+            open = true;
         }
 
         open &= mPointCount > 1;
@@ -203,8 +205,7 @@ class BarnesHutNode {
             mChildMoreXLessY.getForce(position, forceAccum, minDistance);
             mChildMoreXMoreY.getForce(position, forceAccum, minDistance);
         } else {
-            mTempDiff.setDifference(position, mSumPointMass.position);
-            float distance = mTempDiff.magnitude();
+            float distance = (float)Math.sqrt(distanceSq);
             if(distance > 0) {
                 mTempDiff.scaleInverse(distance);
                 if(distance < minDistance) {
