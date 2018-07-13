@@ -66,11 +66,11 @@ class DoublySortedPointObjects {
         Arrays.sort(mPointObjectsByY, 0, mCount, PointObjectPair.compareYX);
     }
 
-    void getValuesInRect(Rectangle rect, Collection<Object> searchResults) {
+    <T> void getValuesInRect(Rectangle rect, Collection<T> searchResults) {
         for(int i = 0; i < mCount; i++) {
             PointObjectPair pop = mPointObjectsByY[i];
             if(rect.containsClosed(pop.point)) {
-                searchResults.add(pop.value);
+                searchResults.add((T)pop.value);
             }
         }
     }

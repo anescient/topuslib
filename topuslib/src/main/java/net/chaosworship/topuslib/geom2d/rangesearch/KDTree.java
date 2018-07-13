@@ -57,27 +57,16 @@ public class KDTree<T> {
             }
         }
 
-        private boolean isDegenerate() {
-            return mPointObjects.size() < 2 || mGreaterXChild.mPointObjects.isEmpty();
-        }
-
         void search(Rectangle area, Collection<T> searchResults) {
             if(mPointObjects.isEmpty()) {
                 return;
             }
-
             if(mLeafPointObject != null) {
                 if(area.containsClosed(mLeafPointObject.point)) {
                     searchResults.add((T) mLeafPointObject.value);
                 }
-            } else if(isDegenerate()) {
-                ArrayList<PointObjectPair> pops = new ArrayList<>();
-                mPointObjects.getAll(pops);
-                for(PointObjectPair pop : pops) {
-                    if(area.containsClosed(pop.point)) {
-                        searchResults.add((T)pop.value);
-                    }
-                }
+            } else if(mGreaterXChild.mPointObjects.isEmpty()) {
+                mPointObjects.getValuesInRect(area, searchResults);
             } else {
                 if(area.minx <= mMedianX) {
                     mLesserXChild.search(area, searchResults);
@@ -130,27 +119,16 @@ public class KDTree<T> {
             }
         }
 
-        private boolean isDegenerate() {
-            return mPointObjects.size() < 2 || mGreaterYChild.mPointObjects.isEmpty();
-        }
-
         void search(Rectangle area, Collection<T> searchResults) {
             if(mPointObjects.isEmpty()) {
                 return;
             }
-
             if(mLeafPointObject != null) {
                 if(area.containsClosed(mLeafPointObject.point)) {
                     searchResults.add((T) mLeafPointObject.value);
                 }
-            } else if(isDegenerate()) {
-                ArrayList<PointObjectPair> pops = new ArrayList<>();
-                mPointObjects.getAll(pops);
-                for(PointObjectPair pop : pops) {
-                    if(area.containsClosed(pop.point)) {
-                        searchResults.add((T)pop.value);
-                    }
-                }
+            } else if(mGreaterYChild.mPointObjects.isEmpty()) {
+                mPointObjects.getValuesInRect(area, searchResults);
             } else {
                 if(area.miny <= mMedianY) {
                     mLesserYChild.search(area, searchResults);
