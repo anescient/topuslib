@@ -1,6 +1,7 @@
 package net.chaosworship.topuslib.geom2d.rangesearch;
 
 import net.chaosworship.topuslib.BuildConfig;
+import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.tuple.PointObjectPair;
 
 import java.util.Arrays;
@@ -23,6 +24,10 @@ class DoublySortedPointObjects {
 
     int size() {
         return mCount;
+    }
+
+    boolean isEmpty() {
+        return mCount == 0;
     }
 
     void getAll(Collection<PointObjectPair> sink) {
@@ -59,6 +64,15 @@ class DoublySortedPointObjects {
     void sort() {
         Arrays.sort(mPointObjectsByX, 0, mCount, PointObjectPair.compareXY);
         Arrays.sort(mPointObjectsByY, 0, mCount, PointObjectPair.compareYX);
+    }
+
+    void getValuesInRect(Rectangle rect, Collection<Object> searchResults) {
+        for(int i = 0; i < mCount; i++) {
+            PointObjectPair pop = mPointObjectsByY[i];
+            if(rect.containsClosed(pop.point)) {
+                searchResults.add(pop.value);
+            }
+        }
     }
 
     private void splitOnX(DoublySortedPointObjects lesser, DoublySortedPointObjects greater, float splitX) {

@@ -62,8 +62,9 @@ public class KDTreeTest {
         for(int i = 0; i < 100; i++) {
             Rectangle area = new Rectangle();
             area.setWithCenter(new Vec2(random.nextFloat(), random.nextFloat()), random.nextFloat(), random.nextFloat());
-            ArrayList<String> expected = bruteSearch(area, pointValues);
-            assertTrue(CollectionTester.unorderedReferencesEqual(mStringTree.search(area), expected));
+            List<String> expected = bruteSearch(area, pointValues);
+            List<String> calculated = mStringTree.search(area);
+            assertTrue(CollectionTester.unorderedReferencesEqual(calculated, expected));
             resultSizes.add(expected.size());
         }
         assertTrue(resultSizes.size() == 41);

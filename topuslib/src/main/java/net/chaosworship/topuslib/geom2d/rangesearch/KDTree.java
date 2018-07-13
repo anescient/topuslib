@@ -19,7 +19,6 @@ public class KDTree<T> {
         float mMedianX;
         OddNode<T> mLesserXChild;
         OddNode<T> mGreaterXChild;
-        boolean mIsDegenerate;
 
         EvenNode() {
             mPointObjects = new DoublySortedPointObjects();
@@ -27,7 +26,6 @@ public class KDTree<T> {
             mMedianX = 0;
             mLesserXChild = null;
             mGreaterXChild = null;
-            mIsDegenerate = true;
         }
 
         void set(Collection<PointObjectPair> pointObjects) {
@@ -37,33 +35,42 @@ public class KDTree<T> {
 
         void update() {
             mLeafPointObject = null;
-            mIsDegenerate = false;
-            if(mPointObjects.size() == 0) {
-                mIsDegenerate = true;
-            } else if(mPointObjects.size() == 1) {
+            if(mPointObjects.isEmpty()) {
+                return;
+            }
+            if(mPointObjects.size() == 1) {
                 mLeafPointObject = mPointObjects.getSingle();
-            } else {
-                if(mLesserXChild == null) {
-                    if(mGreaterXChild != null) throw new AssertionError();
-                    mLesserXChild = new OddNode<>();
-                    mGreaterXChild = new OddNode<>();
-                }
-                mMedianX = mPointObjects.splitOnX(mLesserXChild.pointObjects, mGreaterXChild.pointObjects);
-                if(mGreaterXChild.pointObjects.size() == 0) {
-                    mIsDegenerate = true;
-                } else {
-                    mLesserXChild.update();
-                    mGreaterXChild.update();
-                }
+                return;
+            }
+            if(mLesserXChild == null) {
+                if(mGreaterXChild != null) throw new AssertionError();
+                mLesserXChild = new OddNode<>();
+                mGreaterXChild = new OddNode<>();
+            }
+            mMedianX = mPointObjects.splitOnX(mLesserXChild.mPointObjects, mGreaterXChild.mPointObjects);
+            if(mLesserXChild.mPointObjects.isEmpty() && mGreaterXChild.mPointObjects.isEmpty()) {
+                throw new AssertionError();
+            }
+            if(!mGreaterXChild.mPointObjects.isEmpty()) {
+                mLesserXChild.update();
+                mGreaterXChild.update();
             }
         }
 
+        private boolean isDegenerate() {
+            return mPointObjects.size() < 2 || mGreaterXChild.mPointObjects.isEmpty();
+        }
+
         void search(Rectangle area, Collection<T> searchResults) {
+            if(mPointObjects.isEmpty()) {
+                return;
+            }
+
             if(mLeafPointObject != null) {
                 if(area.containsClosed(mLeafPointObject.point)) {
                     searchResults.add((T) mLeafPointObject.value);
                 }
-            } else if(mIsDegenerate) {
+            } else if(isDegenerate()) {
                 ArrayList<PointObjectPair> pops = new ArrayList<>();
                 mPointObjects.getAll(pops);
                 for(PointObjectPair pop : pops) {
@@ -85,53 +92,60 @@ public class KDTree<T> {
     //////////////////////////////////////////////////////////
 
     private static class OddNode<T> {
-        DoublySortedPointObjects pointObjects;
-        PointObjectPair mLeafPointPointObject;
+        DoublySortedPointObjects mPointObjects;
+        PointObjectPair mLeafPointObject;
         float mMedianY;
         EvenNode<T> mLesserYChild;
         EvenNode<T> mGreaterYChild;
-        boolean mIsDegenerate;
 
         OddNode() {
-            pointObjects = new DoublySortedPointObjects();
-            mLeafPointPointObject = null;
+            mPointObjects = new DoublySortedPointObjects();
+            mLeafPointObject = null;
             mMedianY = 0;
             mLesserYChild = null;
             mGreaterYChild = null;
-            mIsDegenerate = true;
         }
 
         void update() {
-            mLeafPointPointObject = null;
-            mIsDegenerate = false;
-            if(pointObjects.size() == 0) {
-                mIsDegenerate = true;
-            } else if(pointObjects.size() == 1) {
-                mLeafPointPointObject = pointObjects.getSingle();
-            } else {
-                if(mLesserYChild == null) {
-                    if(mGreaterYChild != null) throw new AssertionError();
-                    mLesserYChild = new EvenNode<>();
-                    mGreaterYChild = new EvenNode<>();
-                }
-                mMedianY = pointObjects.splitOnY(mLesserYChild.mPointObjects, mGreaterYChild.mPointObjects);
-                if(mGreaterYChild.mPointObjects.size() == 0) {
-                    mIsDegenerate = true;
-                } else {
-                    mLesserYChild.update();
-                    mGreaterYChild.update();
-                }
+            mLeafPointObject = null;
+            if(mPointObjects.isEmpty()) {
+                return;
+            }
+            if(mPointObjects.size() == 1) {
+                mLeafPointObject = mPointObjects.getSingle();
+                return;
+            }
+            if(mLesserYChild == null) {
+                if(mGreaterYChild != null) throw new AssertionError();
+                mLesserYChild = new EvenNode<>();
+                mGreaterYChild = new EvenNode<>();
+            }
+            mMedianY = mPointObjects.splitOnY(mLesserYChild.mPointObjects, mGreaterYChild.mPointObjects);
+            if(mLesserYChild.mPointObjects.isEmpty() && mGreaterYChild.mPointObjects.isEmpty()) {
+                throw new AssertionError();
+            }
+            if(!mGreaterYChild.mPointObjects.isEmpty()) {
+                mLesserYChild.update();
+                mGreaterYChild.update();
             }
         }
 
+        private boolean isDegenerate() {
+            return mPointObjects.size() < 2 || mGreaterYChild.mPointObjects.isEmpty();
+        }
+
         void search(Rectangle area, Collection<T> searchResults) {
-            if(mLeafPointPointObject != null) {
-                if(area.containsClosed(mLeafPointPointObject.point)) {
-                    searchResults.add((T) mLeafPointPointObject.value);
+            if(mPointObjects.isEmpty()) {
+                return;
+            }
+
+            if(mLeafPointObject != null) {
+                if(area.containsClosed(mLeafPointObject.point)) {
+                    searchResults.add((T) mLeafPointObject.value);
                 }
-            } else if(mIsDegenerate) {
+            } else if(isDegenerate()) {
                 ArrayList<PointObjectPair> pops = new ArrayList<>();
-                pointObjects.getAll(pops);
+                mPointObjects.getAll(pops);
                 for(PointObjectPair pop : pops) {
                     if(area.containsClosed(pop.point)) {
                         searchResults.add((T)pop.value);
