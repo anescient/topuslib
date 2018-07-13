@@ -46,6 +46,7 @@ class ParticlesView
         float mass;
         float phase;
         float involvement;
+        int fluctuatement;
 
         private Particle() {
             id = nextId++;
@@ -145,6 +146,7 @@ class ParticlesView
             p.mass = 1.0f * p.radius * p.radius;
             p.phase = sRandom.nextFloat();
             p.involvement = 0;
+            p.fluctuatement = 6 + sRandom.nextInt(4);
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
             ppvps.add(new PointValuePair<>(p.pos, p));
@@ -167,10 +169,9 @@ class ParticlesView
                     p.acc.addScaled(p.pos.normalized(), -0.05f);
                 }
 
-                p.phase += TIMERATE * 0.1f;
-                if(p.phase > 1)
-                    p.phase -= 1;
-                p.radius = 0.02f + 0.08f * (p.involvement) * (float)Math.pow(((float)Math.sin(8 * Math.PI * 2 * p.phase) + 1) / 2, 2);
+                p.phase = (p.phase + TIMERATE * 0.1f) % 1f;
+                float rroot = ((float)Math.sin(p.fluctuatement * Math.PI * 2 * p.phase) + 1) / 2;
+                p.radius = 0.02f + 0.08f * p.involvement * rroot * rroot;
                 p.mass = p.radius * p.radius;
             }
 
@@ -178,8 +179,6 @@ class ParticlesView
             for(Particle p : mParticles) {
                 if(p.involvement < 0.3)
                     p.acc.addScaled(p.pos.normalized(), -0.005f);
-                //if(p.involvement > 0.95)
-                //    p.acc.addScaled(p.pos.normalized().rotate90(), 0.001f);
             }
 
 
@@ -265,7 +264,6 @@ class ParticlesView
                 centroid.scaleInverse(inBoundCount);
                 meanVelocity.scaleInverse(inBoundCount);
 
-
                 for(Particle p : mParticles) {
                     if(mBound.contains(p.pos)) {
                         p.pos.addScaled(centroid, -0.01f);
@@ -273,22 +271,6 @@ class ParticlesView
                         //p.vel.addScaled(p.pos.normalized().rotate90(), angularVelocity * -0.3f / inBoundCount);
                     }
                 }
-
-                /*
-                float meanSpeed = 0;
-                for(Particle p : mParticles) {
-                    if(mBound.contains(p.pos)) {
-                        meanSpeed += p.vel.magnitude();
-                    }
-                }
-                meanSpeed /= inBoundCount;
-                float speedAdjust = 0.4f / meanSpeed;
-                for(Particle p : mParticles) {
-                    if(mBound.contains(p.pos)) {
-                        p.vel.scale(speedAdjust);
-                    }
-                }
-                */
             }
         }
     }
@@ -306,7 +288,7 @@ class ParticlesView
         dotsBrush.begin(mViewTransform.getViewMatrix());
         synchronized(mParticles) {
             for(Particle p : mParticles) {
-                dotsBrush.add(p.pos, p.radius, 0.2f + p.involvement);
+                dotsBrush.add(p.pos, p.radius, 0.2f + ((1 - p.involvement) * (1 - p.involvement)));
             }
         }
         dotsBrush.end();
