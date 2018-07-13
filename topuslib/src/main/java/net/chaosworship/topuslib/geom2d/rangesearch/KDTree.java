@@ -63,7 +63,8 @@ public class KDTree<T> {
             }
             if(mLeafPointObject != null) {
                 if(area.containsClosed(mLeafPointObject.point)) {
-                    searchResults.add((T) mLeafPointObject.value);
+                    //noinspection unchecked
+                    searchResults.add((T)mLeafPointObject.value);
                 }
             } else if(mGreaterXChild.mPointObjects.isEmpty()) {
                 mPointObjects.getValuesInRect(area, searchResults);
@@ -125,7 +126,8 @@ public class KDTree<T> {
             }
             if(mLeafPointObject != null) {
                 if(area.containsClosed(mLeafPointObject.point)) {
-                    searchResults.add((T) mLeafPointObject.value);
+                    //noinspection unchecked
+                    searchResults.add((T)mLeafPointObject.value);
                 }
             } else if(mGreaterYChild.mPointObjects.isEmpty()) {
                 mPointObjects.getValuesInRect(area, searchResults);
@@ -168,6 +170,7 @@ public class KDTree<T> {
     public List<T> search(Rectangle area) {
         mSearchResults.clear();
         if(mRoot != null) {
+            //noinspection unchecked
             mRoot.search(area, mSearchResults);
         }
         return mSearchResults;

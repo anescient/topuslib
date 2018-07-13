@@ -30,13 +30,6 @@ class DoublySortedPointObjects {
         return mCount == 0;
     }
 
-    void getAll(Collection<PointObjectPair> sink) {
-        //noinspection ManualArrayToCollectionCopy
-        for(int i = 0; i < mCount; i++) {
-            sink.add(mPointObjectsByX[i]);
-        }
-    }
-
     private void ensureCapacity(int capacity) {
         if(mPointObjectsByX.length < capacity) {
             mPointObjectsByX = Arrays.copyOf(mPointObjectsByX, capacity);
@@ -70,6 +63,7 @@ class DoublySortedPointObjects {
         for(int i = 0; i < mCount; i++) {
             PointObjectPair pop = mPointObjectsByY[i];
             if(rect.containsClosed(pop.point)) {
+                //noinspection unchecked
                 searchResults.add((T)pop.value);
             }
         }
