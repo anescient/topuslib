@@ -145,6 +145,10 @@ public class Rectangle implements SolidShape {
                 circle.center.y + circle.radius <= maxy;
     }
 
+    public boolean overlapsOpen(Rectangle other) {
+        return minx < other.maxx && maxx > other.minx && maxy > other.miny && miny < other.maxy;
+    }
+
     @Override
     public Rectangle getBoundingRectangle() {
         return new Rectangle(this);

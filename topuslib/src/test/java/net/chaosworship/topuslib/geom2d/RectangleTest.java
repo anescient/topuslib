@@ -1,7 +1,5 @@
 package net.chaosworship.topuslib.geom2d;
 
-import android.graphics.Rect;
-
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -70,6 +68,30 @@ public class RectangleTest {
         c.center.setZero();
         c.radius = 99;
         assertFalse(r.contains(c));
+    }
+
+    @Test
+    public void overlaps() {
+        Rectangle a = new Rectangle(-1, -1, 1, 1);
+        Rectangle b = new Rectangle(-2, -2, 2, 2);
+        assertTrue(a.overlapsOpen(b));
+        assertTrue(b.overlapsOpen(a));
+        b = new Rectangle(-3, -0.1f, 3, 0.1f);
+        assertTrue(a.overlapsOpen(b));
+        assertTrue(b.overlapsOpen(a));
+        b = new Rectangle(-0.1f, -3, 0.1f, 3);
+        assertTrue(a.overlapsOpen(b));
+        assertTrue(b.overlapsOpen(a));
+        b = new Rectangle(0, 0, 0, 0);
+        assertTrue(a.overlapsOpen(b));
+        assertTrue(b.overlapsOpen(a));
+        b = new Rectangle(2, 3, 2, 3);
+        assertFalse(a.overlapsOpen(b));
+        assertFalse(b.overlapsOpen(a));
+        a = new Rectangle(0, 0, 1, 1);
+        b = new Rectangle(-1, -1, 0, 0);
+        assertFalse(a.overlapsOpen(b));
+        assertFalse(b.overlapsOpen(a));
     }
 
     @Test
