@@ -88,6 +88,30 @@ public class KDTreeTest {
     }
 
     @Test
+    public void edgeTrap() {
+        PointValuePair<String> A = new PointValuePair<>(new Vec2(0, 1), "a");
+        PointValuePair<String> B = new PointValuePair<>(new Vec2(0, 0), "b");
+        PointValuePair<String> C = new PointValuePair<>(new Vec2(0, -1), "c");
+        PointValuePair<String> D = new PointValuePair<>(new Vec2(1, 0), "d");
+        PointValuePair<String> E = new PointValuePair<>(new Vec2(-1, 0), "e");
+
+        ArrayList<PointValuePair<String>> pointValues = new ArrayList<>();
+        pointValues.add(A);
+        pointValues.add(B);
+        pointValues.add(C);
+        pointValues.add(D);
+        pointValues.add(E);
+
+        mStringTree.load(pointValues);
+        ArrayList<String> expected = new ArrayList<>();
+
+        ArrayList<String> left = new ArrayList<>(mStringTree.search(new Rectangle(-1, -1, 0, 1)));
+        ArrayList<String> right = new ArrayList<>(mStringTree.search(new Rectangle(0, -1, 1, 1)));
+        assertTrue(pointValues.size() == left.size() + right.size());
+        assertTrue(CollectionTester.referenceDisjoint(left, right));
+    }
+
+    @Test
     public void duplicatePoints() {
         PointValuePair<String> A = new PointValuePair<>(new Vec2(-1, -1), "a");
         PointValuePair<String> B = new PointValuePair<>(new Vec2(-1, -1), "b");

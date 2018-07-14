@@ -37,11 +37,10 @@ public class KDTree<T> {
         }
 
         void rootUpdate() {
-            mRegion.setUnbounded();
-            update(mRegion, false);
+            update(null, 0, false);
         }
 
-        void update(ClippedRectangle parentRegion, boolean greaterChild) {
+        void update(ClippedRectangle parentRegion, float parentSplit, boolean greaterChild) {
             mLeafPointObject = null;
             if(mPointObjects.isEmpty()) {
                 return;
@@ -60,16 +59,20 @@ public class KDTree<T> {
                 throw new AssertionError();
             }
 
-            mRegion.set(parentRegion);
-            if(greaterChild) {
-                mRegion.clipMinX(mMedianX);
+            if(parentRegion == null) {
+                mRegion.setUnbounded();
             } else {
-                mRegion.clipMaxX(mMedianX);
+                mRegion.set(parentRegion);
+                if(greaterChild) {
+                    mRegion.clipMinY(parentSplit);
+                } else {
+                    mRegion.clipMaxY(parentSplit);
+                }
             }
 
             if(!mGreaterXChild.mPointObjects.isEmpty()) {
-                mLesserXChild.update(mRegion, false);
-                mGreaterXChild.update(mRegion, true);
+                mLesserXChild.update(mRegion, mMedianX, false);
+                mGreaterXChild.update(mRegion, mMedianX, true);
             }
         }
 
@@ -86,8 +89,7 @@ public class KDTree<T> {
                 mPointObjects.getValuesInRect(area, searchResults);
             } else {
                 if(mRegion.isContainedBy(area)) {
-                    //mPointObjects.getAllValues(searchResults);
-                    mPointObjects.getValuesInRect(area, searchResults);
+                    mPointObjects.getAllValues(searchResults);
                 } else {
                     if(area.minx <= mMedianX) {
                         mLesserXChild.search(area, searchResults);
@@ -119,8 +121,10 @@ public class KDTree<T> {
             mGreaterYChild = null;
         }
 
-        void update(ClippedRectangle parentRegion, boolean greaterChild) {
-            mRegion.set(parentRegion);
+        void update(ClippedRectangle parentRegion, float parentSplit, boolean greaterChild) {
+            if(parentRegion == null) {
+                throw new IllegalArgumentException();
+            }
             mLeafPointObject = null;
             if(mPointObjects.isEmpty()) {
                 return;
@@ -141,14 +145,14 @@ public class KDTree<T> {
 
             mRegion.set(parentRegion);
             if(greaterChild) {
-                mRegion.clipMinY(mMedianY);
+                mRegion.clipMinX(parentSplit);
             } else {
-                mRegion.clipMaxY(mMedianY);
+                mRegion.clipMaxX(parentSplit);
             }
 
             if(!mGreaterYChild.mPointObjects.isEmpty()) {
-                mLesserYChild.update(mRegion, false);
-                mGreaterYChild.update(mRegion, true);
+                mLesserYChild.update(mRegion, mMedianY, false);
+                mGreaterYChild.update(mRegion, mMedianY, true);
             }
         }
 
@@ -165,8 +169,7 @@ public class KDTree<T> {
                 mPointObjects.getValuesInRect(area, searchResults);
             } else {
                 if(mRegion.isContainedBy(area)) {
-                    //mPointObjects.getAllValues(searchResults);
-                    mPointObjects.getValuesInRect(area, searchResults);
+                    mPointObjects.getAllValues(searchResults);
                 } else {
                     if(area.miny <= mMedianY) {
                         mLesserYChild.search(area, searchResults);

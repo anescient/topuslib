@@ -17,56 +17,56 @@ public class ClippedRectangleTest {
         for(int i = 0; i < 1000; i++) {
             float x = sRandom.uniformInRange(-1000, 1000);
             float y = sRandom.uniformInRange(-2000, 999);
-            assertTrue(cr.containsOpen(x, y));
+            assertTrue(cr.contains(x, y));
         }
 
-        assertTrue(cr.containsOpen(0, 0));
-        assertTrue(cr.containsOpen(999999999f, 999999999f));
-        assertTrue(cr.containsOpen(-999999999f, 999999999f));
-        assertTrue(cr.containsOpen(-999999999f, -999999999f));
-        assertTrue(cr.containsOpen(999999999f, -999999999f));
+        assertTrue(cr.contains(0, 0));
+        assertTrue(cr.contains(999999999f, 999999999f));
+        assertTrue(cr.contains(-999999999f, 999999999f));
+        assertTrue(cr.contains(-999999999f, -999999999f));
+        assertTrue(cr.contains(999999999f, -999999999f));
     }
 
     @Test
     public void halfPlane() {
         ClippedRectangle cr = new ClippedRectangle();
 
-        assertTrue(cr.containsOpen(11, 0));
+        assertTrue(cr.contains(11, 0));
         cr.clipMaxX(10);
-        assertFalse(cr.containsOpen(11, 0));
-        assertTrue(cr.containsOpen(-1, 0));
+        assertFalse(cr.contains(11, 0));
+        assertTrue(cr.contains(-1, 0));
         cr.clipMaxX(0);
-        assertTrue(cr.containsOpen(-1, 999));
-        assertTrue(cr.containsOpen(-999999999, 999));
+        assertTrue(cr.contains(-1, 999));
+        assertTrue(cr.contains(-999999999, 999));
 
         cr.clipMinX(10);
         cr.clipMaxX(-10);
-        assertFalse(cr.containsOpen(0, 0));
+        assertFalse(cr.contains(0, 0));
 
         cr.clipMinX(-10);
         cr.clipMaxX(10);
-        assertFalse(cr.containsOpen(0, 0));
+        assertFalse(cr.contains(0, 0));
         cr.setUnbounded();
-        assertTrue(cr.containsOpen(0, 0));
+        assertTrue(cr.contains(0, 0));
 
-        assertTrue(cr.containsOpen(11, 0));
+        assertTrue(cr.contains(11, 0));
         cr.clipMaxX(12);
-        assertTrue(cr.containsOpen(11, 0));
+        assertTrue(cr.contains(11, 0));
         cr.clipMinX(13);
         for(float x = -10; x < 10; x += 0.33f) {
-            assertFalse(cr.containsOpen(x, 123));
+            assertFalse(cr.contains(x, 123));
         }
 
         cr.setUnbounded();
-        assertTrue(cr.containsOpen(0, 2));
-        assertTrue(cr.containsOpen(9999999, -9999999));
+        assertTrue(cr.contains(0, 2));
+        assertTrue(cr.contains(9999999, -9999999));
         cr.clipMinY(3);
-        assertFalse(cr.containsOpen(0, 2));
-        assertTrue(cr.containsOpen(9999999, 9999999));
+        assertFalse(cr.contains(0, 2));
+        assertTrue(cr.contains(9999999, 9999999));
         cr.clipMinX(4);
-        assertTrue(cr.containsOpen(9999999, 9999999));
+        assertTrue(cr.contains(9999999, 9999999));
         cr.clipMaxY(99);
-        assertFalse(cr.containsOpen(9999999, 9999999));
+        assertFalse(cr.contains(9999999, 9999999));
     }
 
     @Test
@@ -74,28 +74,28 @@ public class ClippedRectangleTest {
         ClippedRectangle cr = new ClippedRectangle();
         cr.clipMaxY(10);
         cr.clipMinX(-10);
-        assertTrue(cr.containsOpen(-4, 4));
-        assertFalse(cr.containsOpen(-9999, 9));
+        assertTrue(cr.contains(-4, 4));
+        assertFalse(cr.contains(-9999, 9));
         ClippedRectangle cr2 = new ClippedRectangle(cr);
-        assertTrue(cr2.containsOpen(-4, 4));
-        assertFalse(cr2.containsOpen(-9999, 9));
+        assertTrue(cr2.contains(-4, 4));
+        assertFalse(cr2.contains(-9999, 9));
     }
 
     @Test
     public void containsRect() {
         ClippedRectangle cr = new ClippedRectangle();
         Rectangle r = new Rectangle(-1, -1, 1, 1);
-        assertTrue(cr.containsOpen(r));
+        assertTrue(cr.contains(r));
         cr.clipMinX(-0.9f);
-        assertFalse(cr.containsOpen(r));
+        assertFalse(cr.contains(r));
         cr.setUnbounded();
         cr.clipMaxX(2);
         cr.clipMaxY(2);
         cr.clipMinX(-2);
         cr.clipMinY(-2);
-        assertTrue(cr.containsOpen(r));
+        assertTrue(cr.contains(r));
         r.minx = -2.1f;
-        assertFalse(cr.containsOpen(r));
+        assertFalse(cr.contains(r));
     }
 
     @Test

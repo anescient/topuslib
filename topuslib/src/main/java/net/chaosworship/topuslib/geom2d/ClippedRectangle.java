@@ -1,7 +1,7 @@
 package net.chaosworship.topuslib.geom2d;
 
-
 import net.chaosworship.topuslib.BuildConfig;
+
 
 // this rectangular bound can be infinite, infinite half-plane, etc.
 // but it can only be reduced in size, never expanded
@@ -81,29 +81,24 @@ public class ClippedRectangle {
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    public boolean containsOpen(float x, float y) {
+    public boolean contains(float x, float y) {
         return
-            (mMinX == null || mMinX < x) &&
-            (mMaxX == null || mMaxX > x) &&
-            (mMaxY == null || mMaxY > y) &&
-            (mMinY == null || mMinY < y);
-    }
-
-    public boolean containsOpen(Vec2 v) {
-        return containsOpen(v.x, v.y);
+            (mMinX == null || x >= mMinX) &&
+            (mMaxX == null || x < mMaxX) &&
+            (mMaxY == null || y < mMaxY) &&
+            (mMinY == null || y >= mMinY);
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    public boolean containsOpen(Rectangle rect) {
+    public boolean contains(Rectangle rect) {
         return
-            (mMinX == null || rect.minx > mMinX) &&
-            (mMaxX == null || rect.maxx < mMaxX) &&
-            (mMinY == null || rect.miny > mMinY) &&
-            (mMaxY == null || rect.maxy < mMaxY);
+            (mMinX == null || rect.minx >= mMinX) &&
+            (mMaxX == null || rect.maxx <= mMaxX) &&
+            (mMinY == null || rect.miny >= mMinY) &&
+            (mMaxY == null || rect.maxy <= mMaxY);
     }
 
     public boolean isContainedBy(Rectangle rect) {
-        //noinspection SimplifiableIfStatement
         if(mMinX == null || mMaxX == null || mMinY == null || mMaxY == null) {
             return false;
         }

@@ -62,7 +62,7 @@ class DoublySortedPointObjects {
     <T> void getValuesInRect(Rectangle rect, Collection<T> searchResults) {
         for(int i = 0; i < mCount; i++) {
             PointObjectPair pop = mPointObjectsByY[i];
-            if(rect.containsClosed(pop.point)) {
+            if(rect.contains(pop.point)) {
                 //noinspection unchecked
                 searchResults.add((T)pop.value);
             }
@@ -73,6 +73,12 @@ class DoublySortedPointObjects {
         for(int i = 0; i < mCount; i++) {
             //noinspection unchecked
             searchResults.add((T)mPointObjectsByY[i].value);
+        }
+    }
+
+    void getAll(Collection searchResults) {
+        for(int i = 0; i < mCount; i++) {
+            searchResults.add(mPointObjectsByX[i]);
         }
     }
 

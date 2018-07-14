@@ -98,4 +98,15 @@ public class CollectionTester {
         }
         return aSet.equals(bSet);
     }
+
+    public static <T> boolean referenceDisjoint(Iterable<T> a, Iterable<T> b) {
+        for(T ai : a) {
+            for(T bi : b) {
+                if(ai == bi) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
