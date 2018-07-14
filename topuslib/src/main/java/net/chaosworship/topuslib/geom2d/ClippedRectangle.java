@@ -5,7 +5,7 @@ package net.chaosworship.topuslib.geom2d;
 // but it can only be reduced in size, never expanded
 public class ClippedRectangle {
 
-    private Float mMinX;
+    private Float mMinX; // null is infinity for these values
     private Float mMaxX;
     private Float mMinY;
     private Float mMaxY;
@@ -15,6 +15,13 @@ public class ClippedRectangle {
     }
 
     public ClippedRectangle(ClippedRectangle source) {
+        mMinX = source.mMinX;
+        mMaxX = source.mMaxX;
+        mMinY = source.mMinY;
+        mMaxY = source.mMaxY;
+    }
+
+    public void set(ClippedRectangle source) {
         mMinX = source.mMinX;
         mMaxX = source.mMaxX;
         mMinY = source.mMinY;
@@ -79,6 +86,14 @@ public class ClippedRectangle {
             (mMaxX == null || rect.maxx < mMaxX) &&
             (mMinY == null || rect.miny > mMinY) &&
             (mMaxY == null || rect.maxy < mMaxY);
+    }
+
+    public boolean isContainedBy(Rectangle rect) {
+        //noinspection SimplifiableIfStatement
+        if(mMinX == null || mMaxX == null || mMinY == null || mMaxY == null) {
+            return false;
+        }
+        return mMinX >= rect.minx && mMaxX <= rect.maxx && mMinY >= rect.miny && mMaxY <= rect.maxy;
     }
 
     public boolean overlapsRect(Rectangle rect) {

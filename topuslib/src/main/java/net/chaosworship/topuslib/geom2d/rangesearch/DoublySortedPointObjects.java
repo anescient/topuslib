@@ -69,6 +69,13 @@ class DoublySortedPointObjects {
         }
     }
 
+    <T> void getAllValues(Collection<T> searchResults) {
+        for(int i = 0; i < mCount; i++) {
+            //noinspection unchecked
+            searchResults.add((T)mPointObjectsByY[i].value);
+        }
+    }
+
     private void splitOnX(DoublySortedPointObjects lesser, DoublySortedPointObjects greater, float splitX) {
         lesser.mCount = 0;
         greater.mCount = 0;
