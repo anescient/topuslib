@@ -52,6 +52,7 @@ class DoublySortedPointObjects {
             mPointObjectsByY[mCount] = pop;
             mCount++;
         }
+        sort();
     }
 
     void sort() {
@@ -82,34 +83,49 @@ class DoublySortedPointObjects {
         }
     }
 
-    private void splitOnX(DoublySortedPointObjects lesser, DoublySortedPointObjects greater, float splitX) {
-        lesser.mCount = 0;
-        greater.mCount = 0;
-        lesser.ensureCapacity(mCount); // yes, this allocates too much, eat me
-        greater.ensureCapacity(mCount);
-
-        for(int i = 0; i < mCount; i++) {
-            PointObjectPair pop = mPointObjectsByX[i];
-            if(pop.point.x <= splitX) {
-                lesser.mPointObjectsByX[lesser.mCount++] = pop;
+    private static int findXSplitIndex(PointObjectPair[] objectPairs, int count, float splitX) {
+        int start = 0;
+        int end = count;
+        while(end > start) {
+            int middle = (start + end) / 2;
+            float x = objectPairs[middle].point.x;
+            if(x < splitX) {
+                start = middle + 1;
             } else {
-                greater.mPointObjectsByX[greater.mCount++] = pop;
+                end = middle - 1;
             }
         }
+        while(start < count && objectPairs[start].point.x <= splitX) {
+            start++;
+        }
+        return start;
+    }
 
-        int lesserCount = 0;
-        int greaterCount = 0;
+    private void splitOnX(DoublySortedPointObjects lesser, DoublySortedPointObjects greater, float splitX) {
+        int lesserCount = findXSplitIndex(mPointObjectsByX, mCount, splitX);
+        int greaterCount = mCount - lesserCount;
 
+        lesser.ensureCapacity(lesserCount);
+        greater.ensureCapacity(greaterCount);
+
+        System.arraycopy(mPointObjectsByX, 0, lesser.mPointObjectsByX, 0, lesserCount);
+        lesser.mCount = lesserCount;
+
+        System.arraycopy(mPointObjectsByX, lesserCount, greater.mPointObjectsByX, 0, greaterCount);
+        greater.mCount = greaterCount;
+
+        int lesseri = 0;
+        int greateri = 0;
         for(int i = 0; i < mCount; i++) {
             PointObjectPair pop = mPointObjectsByY[i];
             if(pop.point.x <= splitX) {
-                lesser.mPointObjectsByY[lesserCount++] = pop;
+                lesser.mPointObjectsByY[lesseri++] = pop;
             } else {
-                greater.mPointObjectsByY[greaterCount++] = pop;
+                greater.mPointObjectsByY[greateri++] = pop;
             }
         }
 
-        if(lesserCount != lesser.mCount || greaterCount != greater.mCount) {
+        if(lesserCount != lesseri || greaterCount != greateri) {
             throw new AssertionError();
         }
     }
@@ -136,33 +152,49 @@ class DoublySortedPointObjects {
         return medianX;
     }
 
-    private void splitOnY(DoublySortedPointObjects lesser, DoublySortedPointObjects greater, float splitY) {
-        lesser.mCount = 0;
-        greater.mCount = 0;
-        lesser.ensureCapacity(mCount);
-        greater.ensureCapacity(mCount);
+    private static int findYSplitIndex(PointObjectPair[] objectPairs, int count, float splitY) {
+        int start = 0;
+        int end = count;
+        while(end > start) {
+            int middle = (start + end) / 2;
+            float y = objectPairs[middle].point.y;
+            if(y < splitY) {
+                start = middle + 1;
+            } else {
+                end = middle - 1;
+            }
+        }
+        while(start < count && objectPairs[start].point.y <= splitY) {
+            start++;
+        }
+        return start;
+    }
 
+    private void splitOnY(DoublySortedPointObjects lesser, DoublySortedPointObjects greater, float splitY) {
+        int lesserCount = findYSplitIndex(mPointObjectsByY, mCount, splitY);
+        int greaterCount = mCount - lesserCount;
+
+        lesser.ensureCapacity(lesserCount);
+        greater.ensureCapacity(greaterCount);
+
+        System.arraycopy(mPointObjectsByY, 0, lesser.mPointObjectsByY, 0, lesserCount);
+        lesser.mCount = lesserCount;
+
+        System.arraycopy(mPointObjectsByY, lesserCount, greater.mPointObjectsByY, 0, greaterCount);
+        greater.mCount = greaterCount;
+
+        int lesseri = 0;
+        int greateri = 0;
         for(int i = 0; i < mCount; i++) {
             PointObjectPair pop = mPointObjectsByX[i];
             if(pop.point.y <= splitY) {
-                lesser.mPointObjectsByX[lesser.mCount++] = pop;
+                lesser.mPointObjectsByX[lesseri++] = pop;
             } else {
-                greater.mPointObjectsByX[greater.mCount++] = pop;
+                greater.mPointObjectsByX[greateri++] = pop;
             }
         }
 
-        int lesserCount = 0;
-        int greaterCount = 0;
-        for(int i = 0; i < mCount; i++) {
-            PointObjectPair pop = mPointObjectsByY[i];
-            if(pop.point.y <= splitY) {
-                lesser.mPointObjectsByY[lesserCount++] = pop;
-            } else {
-                greater.mPointObjectsByY[greaterCount++] = pop;
-            }
-        }
-
-        if(lesserCount != lesser.mCount || greaterCount != greater.mCount) {
+        if(lesserCount != lesseri || greaterCount != greateri) {
             throw new AssertionError();
         }
     }
@@ -177,7 +209,6 @@ class DoublySortedPointObjects {
             lesser.mPointObjectsByY[0] = mPointObjectsByY[0];
             return mPointObjectsByY[0].point.y;
         }
-
 
         float medianY = mPointObjectsByY[mCount / 2 - 1].point.y;
         splitOnY(lesser, greater, medianY);
