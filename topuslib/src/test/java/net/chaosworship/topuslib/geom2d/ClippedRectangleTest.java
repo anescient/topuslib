@@ -127,4 +127,48 @@ public class ClippedRectangleTest {
         cr.clipMinY(1000);
         assertFalse(cr.overlapsRect(r));
     }
+
+    @Test
+    public void isContained() {
+        ClippedRectangle cr = new ClippedRectangle();
+        Rectangle r = new Rectangle(-100, -100, 100, 100);
+        assertFalse(cr.isContainedBy(r));
+        cr.clipMinX(-100);
+        cr.clipMinY(-100);
+        cr.clipMaxX(100);
+        assertFalse(cr.isContainedBy(r));
+        cr.clipMaxY(100);
+        assertTrue(cr.isContainedBy(r));
+        cr.setUnbounded();
+        assertFalse(cr.isContainedBy(r));
+        cr.clipMinY(-101);
+        cr.clipMinX(-101);
+        cr.clipMaxX(101);
+        cr.clipMaxY(101);
+        assertFalse(cr.isContainedBy(r));
+        cr.clipMinY(0);
+        cr.clipMaxY(0);
+        assertFalse(cr.isContainedBy(r));
+        r.minx = 0;
+        r.maxx = 0;
+        assertFalse(cr.isContainedBy(r));
+        cr.clipMaxX(0);
+        cr.clipMinX(0);
+        assertTrue(cr.isContainedBy(r));
+        r.miny = 0;
+        r.maxy = 0;
+        assertTrue(cr.isContainedBy(r));
+    }
+
+    @Test
+    public void unflipable() {
+        ClippedRectangle cr = new ClippedRectangle();
+        cr.clipMinX(1);
+        cr.clipMaxX(-1);
+        cr.clipMinY(1);
+        cr.clipMaxY(-1);
+        Rectangle r = cr.asRectangle();
+        assertTrue(r.height() == 0);
+        assertTrue(r.width() == 0);
+    }
 }

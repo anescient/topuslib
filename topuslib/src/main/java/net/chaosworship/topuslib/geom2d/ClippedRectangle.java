@@ -1,6 +1,8 @@
 package net.chaosworship.topuslib.geom2d;
 
 
+import net.chaosworship.topuslib.BuildConfig;
+
 // this rectangular bound can be infinite, infinite half-plane, etc.
 // but it can only be reduced in size, never expanded
 public class ClippedRectangle {
@@ -44,24 +46,36 @@ public class ClippedRectangle {
 
     public void clipMinX(float x) {
         if(mMinX == null || x > mMinX) {
+            if(mMaxX != null && x > mMaxX) {
+                x = mMaxX;
+            }
             mMinX = x;
         }
     }
 
     public void clipMaxX(float x) {
         if(mMaxX == null || x < mMaxX) {
+            if(mMinX != null && x < mMinX) {
+                x = mMinX;
+            }
             mMaxX = x;
         }
     }
 
     public void clipMinY(float y) {
         if(mMinY == null || y > mMinY) {
+            if(mMaxY != null && y > mMaxY) {
+                y = mMaxY;
+            }
             mMinY = y;
         }
     }
 
     public void clipMaxY(float y) {
         if(mMaxY == null || y < mMaxY) {
+            if(mMinY != null && y < mMinY) {
+                y = mMinY;
+            }
             mMaxY = y;
         }
     }
@@ -92,6 +106,12 @@ public class ClippedRectangle {
         //noinspection SimplifiableIfStatement
         if(mMinX == null || mMaxX == null || mMinY == null || mMaxY == null) {
             return false;
+        }
+        if(BuildConfig.DEBUG) {
+            if(rect.minx > rect.maxx || rect.miny > rect.maxy)
+                throw new AssertionError();
+            if(mMinX > mMaxX || mMinY > mMaxY)
+                throw new AssertionError();
         }
         return mMinX >= rect.minx && mMaxX <= rect.maxx && mMinY >= rect.miny && mMaxY <= rect.maxy;
     }
