@@ -27,8 +27,8 @@ public class BenchmarkActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
 
-            //TimedRunner testRunner = new KDTreeBench();
-            TimedRunner testRunner = new DelaunayBench();
+            TimedRunner testRunner = new KDTreeBench();
+            //TimedRunner testRunner = new DelaunayBench();
 
             long ms = testRunner.timedRun();
             return String.format("%dms", ms);

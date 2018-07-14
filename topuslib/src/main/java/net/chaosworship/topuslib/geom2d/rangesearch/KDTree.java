@@ -18,7 +18,6 @@ public class KDTree<T> {
         DoublySortedPointObjects mPointObjects;
         PointObjectPair mLeafPointObject;
         float mMedianX;
-        ClippedRectangle mRegion;
         OddNode<T> mLesserXChild;
         OddNode<T> mGreaterXChild;
 
@@ -26,21 +25,16 @@ public class KDTree<T> {
             mPointObjects = new DoublySortedPointObjects();
             mLeafPointObject = null;
             mMedianX = 0;
-            mRegion = new ClippedRectangle();
             mLesserXChild = null;
             mGreaterXChild = null;
         }
 
         void set(Collection<PointObjectPair> pointObjects) {
             mPointObjects.set(pointObjects);
-            rootUpdate();
+            update();
         }
 
-        void rootUpdate() {
-            update(null, 0, false);
-        }
-
-        void update(ClippedRectangle parentRegion, float parentSplit, boolean greaterChild) {
+        void update() {
             mLeafPointObject = null;
             if(mPointObjects.isEmpty()) {
                 return;
@@ -59,20 +53,10 @@ public class KDTree<T> {
                 throw new AssertionError();
             }
 
-            if(parentRegion == null) {
-                mRegion.setUnbounded();
-            } else {
-                mRegion.set(parentRegion);
-                if(greaterChild) {
-                    mRegion.clipMinY(parentSplit);
-                } else {
-                    mRegion.clipMaxY(parentSplit);
-                }
-            }
 
             if(!mLesserXChild.mPointObjects.isEmpty() && !mGreaterXChild.mPointObjects.isEmpty()) {
-                mLesserXChild.update(mRegion, mMedianX, false);
-                mGreaterXChild.update(mRegion, mMedianX, true);
+                mLesserXChild.update();
+                mGreaterXChild.update();
             }
         }
 
@@ -88,15 +72,11 @@ public class KDTree<T> {
             } else if(mGreaterXChild.mPointObjects.isEmpty() || mLesserXChild.mPointObjects.isEmpty()) {
                 mPointObjects.getValuesInRect(area, searchResults);
             } else {
-                if(mRegion.isContainedBy(area)) {
-                    mPointObjects.getAllValues(searchResults);
-                } else {
-                    if(area.minx <= mMedianX) {
-                        mLesserXChild.search(area, searchResults);
-                    }
-                    if(area.maxx > mMedianX) {
-                        mGreaterXChild.search(area, searchResults);
-                    }
+                if(area.minx <= mMedianX) {
+                    mLesserXChild.search(area, searchResults);
+                }
+                if(area.maxx > mMedianX) {
+                    mGreaterXChild.search(area, searchResults);
                 }
             }
         }
@@ -108,7 +88,6 @@ public class KDTree<T> {
         DoublySortedPointObjects mPointObjects;
         PointObjectPair mLeafPointObject;
         float mMedianY;
-        ClippedRectangle mRegion;
         EvenNode<T> mLesserYChild;
         EvenNode<T> mGreaterYChild;
 
@@ -116,15 +95,11 @@ public class KDTree<T> {
             mPointObjects = new DoublySortedPointObjects();
             mLeafPointObject = null;
             mMedianY = 0;
-            mRegion = new ClippedRectangle();
             mLesserYChild = null;
             mGreaterYChild = null;
         }
 
-        void update(ClippedRectangle parentRegion, float parentSplit, boolean greaterChild) {
-            if(parentRegion == null) {
-                throw new IllegalArgumentException();
-            }
+        void update() {
             mLeafPointObject = null;
             if(mPointObjects.isEmpty()) {
                 return;
@@ -143,16 +118,9 @@ public class KDTree<T> {
                 throw new AssertionError();
             }
 
-            mRegion.set(parentRegion);
-            if(greaterChild) {
-                mRegion.clipMinX(parentSplit);
-            } else {
-                mRegion.clipMaxX(parentSplit);
-            }
-
             if(!mLesserYChild.mPointObjects.isEmpty() && !mGreaterYChild.mPointObjects.isEmpty()) {
-                mLesserYChild.update(mRegion, mMedianY, false);
-                mGreaterYChild.update(mRegion, mMedianY, true);
+                mLesserYChild.update();
+                mGreaterYChild.update();
             }
         }
 
@@ -168,15 +136,11 @@ public class KDTree<T> {
             } else if(mGreaterYChild.mPointObjects.isEmpty() || mLesserYChild.mPointObjects.isEmpty()) {
                 mPointObjects.getValuesInRect(area, searchResults);
             } else {
-                if(mRegion.isContainedBy(area)) {
-                    mPointObjects.getAllValues(searchResults);
-                } else {
-                    if(area.miny <= mMedianY) {
-                        mLesserYChild.search(area, searchResults);
-                    }
-                    if(area.maxy > mMedianY) {
-                        mGreaterYChild.search(area, searchResults);
-                    }
+                if(area.miny <= mMedianY) {
+                    mLesserYChild.search(area, searchResults);
+                }
+                if(area.maxy > mMedianY) {
+                    mGreaterYChild.search(area, searchResults);
                 }
             }
         }
@@ -204,7 +168,7 @@ public class KDTree<T> {
     // if the collection of points/values objects hasn't changed but the points themselves have been altered
     public void reload() {
         mRoot.mPointObjects.sort();
-        mRoot.rootUpdate();
+        mRoot.update();
     }
 
     public List<T> search(Rectangle area) {
