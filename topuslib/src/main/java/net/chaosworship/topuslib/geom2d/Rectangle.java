@@ -133,6 +133,10 @@ public class Rectangle implements SolidShape {
         return point.x > minx && point.x < maxx && point.y > miny && point.y < maxy;
     }
 
+    public boolean containsTiled(Vec2 point) {
+        return point.x >= minx && point.x < maxx && point.y >= miny && point.y < maxy;
+    }
+
     @Override
     public boolean contains(Vec2 point) {
         return containsClosed(point);

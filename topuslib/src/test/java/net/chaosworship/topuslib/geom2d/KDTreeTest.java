@@ -105,10 +105,18 @@ public class KDTreeTest {
         mStringTree.load(pointValues);
         ArrayList<String> expected = new ArrayList<>();
 
+        expected.clear();
+        expected.add(A.value);
+        expected.add(B.value);
+        expected.add(C.value);
+        expected.add(E.value);
         ArrayList<String> left = new ArrayList<>(mStringTree.search(new Rectangle(-1, -1, 0, 1)));
+        assertTrue(CollectionTester.unorderedReferencesEqual(expected, left));
+
+        expected.remove(E.value);
+        expected.add(D.value);
         ArrayList<String> right = new ArrayList<>(mStringTree.search(new Rectangle(0, -1, 1, 1)));
-        assertTrue(pointValues.size() == left.size() + right.size());
-        assertTrue(CollectionTester.referenceDisjoint(left, right));
+        assertTrue(CollectionTester.unorderedReferencesEqual(expected, right));
     }
 
     @Test

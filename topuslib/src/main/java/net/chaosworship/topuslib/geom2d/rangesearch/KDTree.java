@@ -70,7 +70,7 @@ public class KDTree<T> {
                 }
             }
 
-            if(!mGreaterXChild.mPointObjects.isEmpty()) {
+            if(!mLesserXChild.mPointObjects.isEmpty() && !mGreaterXChild.mPointObjects.isEmpty()) {
                 mLesserXChild.update(mRegion, mMedianX, false);
                 mGreaterXChild.update(mRegion, mMedianX, true);
             }
@@ -85,7 +85,7 @@ public class KDTree<T> {
                     //noinspection unchecked
                     searchResults.add((T)mLeafPointObject.value);
                 }
-            } else if(mGreaterXChild.mPointObjects.isEmpty()) {
+            } else if(mGreaterXChild.mPointObjects.isEmpty() || mLesserXChild.mPointObjects.isEmpty()) {
                 mPointObjects.getValuesInRect(area, searchResults);
             } else {
                 if(mRegion.isContainedBy(area)) {
@@ -150,7 +150,7 @@ public class KDTree<T> {
                 mRegion.clipMaxX(parentSplit);
             }
 
-            if(!mGreaterYChild.mPointObjects.isEmpty()) {
+            if(!mLesserYChild.mPointObjects.isEmpty() && !mGreaterYChild.mPointObjects.isEmpty()) {
                 mLesserYChild.update(mRegion, mMedianY, false);
                 mGreaterYChild.update(mRegion, mMedianY, true);
             }
@@ -165,7 +165,7 @@ public class KDTree<T> {
                     //noinspection unchecked
                     searchResults.add((T)mLeafPointObject.value);
                 }
-            } else if(mGreaterYChild.mPointObjects.isEmpty()) {
+            } else if(mGreaterYChild.mPointObjects.isEmpty() || mLesserYChild.mPointObjects.isEmpty()) {
                 mPointObjects.getValuesInRect(area, searchResults);
             } else {
                 if(mRegion.isContainedBy(area)) {
