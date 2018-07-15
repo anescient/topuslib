@@ -10,9 +10,9 @@ import java.util.Random;
 
 
 public class KDTreeBench extends TimedRunner {
-    private static final int POINTCOUNT = 2000;
-    private static final int SEARCHCOUNT = 300;
-    private static final int ROUNDCOUNT = 2000;
+    private static final int POINTCOUNT = 7000;
+    private static final int SEARCHCOUNT = 10000;
+    private static final int ROUNDCOUNT = 30;
 
     private static final Random sRandom = new Random(1234);
 
@@ -32,8 +32,8 @@ public class KDTreeBench extends TimedRunner {
         for(int i = 0; i < SEARCHCOUNT; i++) {
             float minx = sRandom.nextFloat();
             float miny = sRandom.nextFloat();
-            float maxx = minx + sRandom.nextFloat() * 0.02f;
-            float maxy = miny + sRandom.nextFloat() * 0.02f;
+            float maxx = minx + sRandom.nextFloat() * 0.1f;
+            float maxy = miny + sRandom.nextFloat() * 0.1f;
             mSearchAreas.add(new Rectangle(minx, miny, maxx, maxy));
         }
 
