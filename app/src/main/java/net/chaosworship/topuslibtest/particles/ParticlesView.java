@@ -137,7 +137,7 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 600; i++) {
+        for(int i = 0; i < 500; i++) {
             Particle p = new Particle();
             p.pos.set(sRandom.uniformInRect(mBound));
             p.vel.setZero();
