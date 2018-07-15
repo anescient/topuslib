@@ -1,6 +1,5 @@
 package net.chaosworship.topuslib.geom2d.rangesearch;
 
-import net.chaosworship.topuslib.geom2d.ClippedRectangle;
 import net.chaosworship.topuslib.tuple.PointObjectPair;
 import net.chaosworship.topuslib.tuple.PointValuePair;
 import net.chaosworship.topuslib.geom2d.Rectangle;
@@ -52,7 +51,6 @@ public class KDTree<T> {
             if(mLesserXChild.mPointObjects.isEmpty() && mGreaterXChild.mPointObjects.isEmpty()) {
                 throw new AssertionError();
             }
-
 
             if(!mLesserXChild.mPointObjects.isEmpty() && !mGreaterXChild.mPointObjects.isEmpty()) {
                 mLesserXChild.update();

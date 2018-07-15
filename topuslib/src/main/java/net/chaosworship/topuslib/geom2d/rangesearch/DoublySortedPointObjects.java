@@ -77,10 +77,9 @@ class DoublySortedPointObjects {
         }
     }
 
+    @SuppressWarnings("unchecked")
     void getAll(Collection searchResults) {
-        for(int i = 0; i < mCount; i++) {
-            searchResults.add(mPointObjectsByX[i]);
-        }
+        searchResults.addAll(Arrays.asList(mPointObjectsByX).subList(0, mCount));
     }
 
     private void splitOnX(DoublySortedPointObjects lesser, DoublySortedPointObjects greater, float splitX) {

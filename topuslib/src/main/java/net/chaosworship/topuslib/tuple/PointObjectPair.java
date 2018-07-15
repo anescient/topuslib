@@ -30,5 +30,4 @@ public class PointObjectPair {
         this.point = point;
         this.value = value;
     }
-
 }
