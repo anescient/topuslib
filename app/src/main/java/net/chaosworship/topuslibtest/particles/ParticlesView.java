@@ -11,6 +11,7 @@ import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.barneshut.BarnesHutTree;
 import net.chaosworship.topuslib.geom2d.rangesearch.KDTree;
+import net.chaosworship.topuslib.geom2d.transform.Vec2Transformer;
 import net.chaosworship.topuslib.gl.view.FlatViewTransform;
 import net.chaosworship.topuslib.gl.FlatShapesBrush;
 import net.chaosworship.topuslib.input.MotionEventConverter;
@@ -46,7 +47,7 @@ class ParticlesView
         float mass;
         float phase;
         float involvement;
-        int fluctuatement;
+        float lightness;
 
         private Particle() {
             id = nextId++;
@@ -88,16 +89,15 @@ class ParticlesView
         mPointMasses = new ArrayList<>();
         mNeighborSearch = new KDTree<>();
 
-        mBound = new Rectangle(-2.7f, -3.9f, 2.7f, 3.9f);
+        mBound = new Rectangle(-2.6f, -3.9f, 2.6f, 3.9f);
 
-        mBarnesHut = new BarnesHutTree(mBound, 0.1f);
+        mBarnesHut = new BarnesHutTree(mBound, 0.2f);
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
         setRenderer(this);
 
         //setRenderMode(RENDERMODE_CONTINUOUSLY);
-
         setRenderMode(RENDERMODE_WHEN_DIRTY);
     }
 
@@ -169,11 +169,11 @@ class ParticlesView
             p.pos.set(sRandom.uniformInRect(mBound));
             p.vel.setZero();
             float r = sRandom.nextFloat();
-            p.radius = 0.03f + (float)Math.pow(r, 3) * 0.07f;
+            p.radius = 0.03f + (float)Math.pow(r, 3) * 0.03f;
             p.mass = 1.0f * p.radius * p.radius;
             p.phase = sRandom.nextFloat();
             p.involvement = 0;
-            p.fluctuatement = 6 + sRandom.nextInt(4);
+            p.lightness = 0.5f;
             mParticles.add(p);
             mPointMasses.add(new PointMass(p.pos, p.mass));
             ppvps.add(new PointValuePair<>(p.pos, p));
@@ -189,23 +189,18 @@ class ParticlesView
             }
 
             for(Particle p : mParticles) {
-                if(!mBound.contains(p.pos)) {
-                    if(p.vel.dot(p.pos) > 0) {
-                        p.vel.setZero();
-                    }
-                    p.acc.addScaled(p.pos.normalized(), -0.05f);
+                if(p.pos.x < mBound.minx && p.vel.x < 0 || p.pos.x > mBound.maxx && p.vel.x > 0) {
+                    p.vel.x *= -1;
                 }
 
                 p.phase = (p.phase + TIMERATE * 0.1f) % 1f;
-                float rroot = ((float)Math.sin(p.fluctuatement * Math.PI * 2 * p.phase) + 1) / 2;
-                p.radius = 0.02f + 0.08f * p.involvement * rroot * rroot;
+                p.radius = 0.04f + 0.1f * p.involvement * p.involvement;
                 p.mass = p.radius * p.radius;
             }
 
 
             for(Particle p : mParticles) {
-                if(p.involvement < 0.3)
-                    p.acc.addScaled(p.pos.normalized(), -0.005f);
+                p.acc.addScaled(new Vec2(0, -1), 0.005f);
             }
 
 
@@ -215,13 +210,25 @@ class ParticlesView
             }
             meanMass /= mParticles.size();
 
+            Vec2Transformer inputTransform = mViewTransform.getViewToWorldTransformer();
+            for(MotionEventConverter.Pointer ptr : mInputConverter.getActivePointers()) {
+                if(ptr.isActive()) {
+                    Vec2 touch = inputTransform.transform(ptr.getLastPosition());
+                    for(Particle p : mParticles) {
+                        float distanceSq = Vec2.distanceSq(touch, p.pos);
+                        Vec2 pullNormal = Vec2.difference(touch, p.pos).normalize();
+                        p.acc.addScaled(pullNormal, 0.3f / (1 + distanceSq));
+                    }
+                }
+            }
+
             mBarnesHut.clear();
             mBarnesHut.load(mPointMasses, meanMass);
             Vec2 force = new Vec2();
             for(Particle p : mParticles) {
                 force.setZero();
                 mBarnesHut.getForce(p.pos, force, p.radius);
-                p.acc.addScaled(force, -0.025f);
+                p.acc.addScaled(force, -0.08f);
             }
 
             mNeighborSearch.reload();
@@ -243,8 +250,8 @@ class ParticlesView
                     pdiff.setDifference(p.pos, q.pos);
                     float distSq = pdiff.magnitudeSq();
                     if(distSq < d * d) {
-                        p.involvement += 0.005;
-                        q.involvement += 0.005;
+                        p.involvement += 0.01;
+                        q.involvement += 0.01;
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
                         vdiff.setDifference(p.vel, q.vel);
@@ -254,7 +261,7 @@ class ParticlesView
                         p.acc.addScaled(pdiff, 0.2f * moveApart * q.radius / TIMERATE);
                         q.acc.addScaled(pdiff, 0.2f * -moveApart * p.radius / TIMERATE);
                         if(vdiff.dot(pdiff) < 0) {
-                            float f = 0.5f * 2 * vdiff.dot(pdiff) / (p.mass + q.mass);
+                            float f = 0.2f * 2 * vdiff.dot(pdiff) / (p.mass + q.mass);
                             p.acc.addScaled(pdiff, q.mass * -f);
                             q.acc.addScaled(pdiff, p.mass * f);
                         }
@@ -264,39 +271,39 @@ class ParticlesView
 
             for(Particle p : mParticles) {
                 p.vel.add(p.acc);
+                if(p.vel.magnitudeSq() > 10) {
+                    p.vel.scale(0.9f);
+                }
                 //p.vel.scale(0.99f);
                 p.pos.addScaled(p.vel, TIMERATE);
+                float lightness = p.acc.magnitude();
+                if(lightness < p.lightness)
+                    p.lightness = 0.9f * p.lightness + 0.1f * lightness;
+                else
+                    p.lightness = 0.5f * p.lightness + 0.5f * lightness;
                 p.acc.setZero();
-                p.involvement *= 0.99f;
+                p.involvement *= 0.95f;
                 if(p.involvement > 1) {
                     p.involvement = 1;
                 }
             }
 
-            Vec2 centroid = new Vec2();
             Vec2 meanVelocity = new Vec2();
-            float angularVelocity = 0;
-            int inBoundCount = 0;
             for(Particle p : mParticles) {
-                if(mBound.contains(p.pos)) {
-                    centroid.add(p.pos);
-                    meanVelocity.add(p.vel);
-                    inBoundCount++;
-                }
-
-                angularVelocity += p.vel.dot(p.pos.normalized().rotate90());
-            }
-
-            if(inBoundCount > 0) {
-                centroid.scaleInverse(inBoundCount);
-                meanVelocity.scaleInverse(inBoundCount);
-
-                for(Particle p : mParticles) {
-                    if(mBound.contains(p.pos)) {
-                        p.pos.addScaled(centroid, -0.01f);
-                        p.vel.subtract(meanVelocity);
-                        //p.vel.addScaled(p.pos.normalized().rotate90(), angularVelocity * -0.3f / inBoundCount);
+                if(p.pos.y < -3 && p.vel.y < 0) {
+                    if(sRandom.nextInt(100) < 95) {
+                        p.vel.y *= -1.5;
+                    } else {
+                        p.pos.set(sRandom.uniformInRect(mBound));
+                        p.pos.y = 3;
+                        p.vel.y *= 0.5f;
                     }
+                }
+                if(p.pos.x > mBound.maxx && p.vel.x > 0) {
+                    p.vel.x *= -0.75;
+                }
+                if(p.pos.x < mBound.minx && p.vel.x < 0) {
+                    p.vel.x *= -0.75;
                 }
             }
         }
@@ -315,7 +322,7 @@ class ParticlesView
         dotsBrush.begin(mViewTransform.getViewMatrix());
         synchronized(mParticles) {
             for(Particle p : mParticles) {
-                dotsBrush.add(p.pos, p.radius, 0.2f + ((1 - p.involvement) * (1 - p.involvement)));
+                dotsBrush.add(p.pos, p.radius, 0.3f + 0.7f * p.lightness);
             }
         }
         dotsBrush.end();
