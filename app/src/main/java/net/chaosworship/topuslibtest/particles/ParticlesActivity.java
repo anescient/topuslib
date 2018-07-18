@@ -26,4 +26,16 @@ public class ParticlesActivity extends AppCompatActivity {
         mZoomed = !mZoomed;
         mParticlesView.setZoom(mZoomed ? 3 : 1);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mParticlesView.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mParticlesView.onResume();
+    }
 }

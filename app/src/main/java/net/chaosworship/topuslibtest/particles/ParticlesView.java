@@ -71,6 +71,8 @@ class ParticlesView
     private Rectangle mBound;
     private final BarnesHutTree mBarnesHut;
 
+    private Timer mTicker;
+
     public ParticlesView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -97,12 +99,37 @@ class ParticlesView
         //setRenderMode(RENDERMODE_CONTINUOUSLY);
 
         setRenderMode(RENDERMODE_WHEN_DIRTY);
-        new Timer().schedule(new TimerTask() {
+    }
+
+    private void start() {
+        stop();
+        mTicker = new Timer();
+        mTicker.schedule(new TimerTask() {
             @Override
             public void run() {
                 requestRender();
             }
         }, 30, 30);
+
+    }
+
+    private void stop() {
+        if(mTicker != null) {
+            mTicker.cancel();
+            mTicker = null;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stop();
     }
 
     @SuppressLint("ClickableViewAccessibility")
