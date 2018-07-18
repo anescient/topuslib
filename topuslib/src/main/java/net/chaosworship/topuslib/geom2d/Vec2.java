@@ -322,6 +322,17 @@ public class Vec2 implements Cloneable {
         return this;
     }
 
+    // reflect "about" normal
+    // like reflecting off of surface with given normal
+    public Vec2 reflect(Vec2 normal) {
+        this.addScaled(normal, -2 * this.dot(normal));
+        return this;
+    }
+
+    public Vec2 reflected(Vec2 normal) {
+        return new Vec2(this).reflect(normal);
+    }
+
     public double atan2() {
         if(x == 0 && y == 0) {
             return 0;
