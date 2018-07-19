@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Rectangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom2d.barneshut.BarnesHutTree;
@@ -45,7 +46,6 @@ class ParticlesView
         final Vec2 acc;
         float radius;
         float mass;
-        float phase;
         float involvement;
         float lightness;
 
@@ -66,10 +66,10 @@ class ParticlesView
     private final FlatViewTransform mViewTransform;
     private final MotionEventConverter mInputConverter;
 
+    private final float mBoundRadius;
     private final ArrayList<Particle> mParticles;
     private final ArrayList<PointMass> mPointMasses;
     private final KDTree<Particle> mNeighborSearch;
-    private Rectangle mBound;
     private final BarnesHutTree mBarnesHut;
 
     private Timer mTicker;
@@ -89,9 +89,10 @@ class ParticlesView
         mPointMasses = new ArrayList<>();
         mNeighborSearch = new KDTree<>();
 
-        mBound = new Rectangle(-2.6f, -3.9f, 2.6f, 3.9f);
-
-        mBarnesHut = new BarnesHutTree(mBound, 0.2f);
+        mBoundRadius = 2.5f;
+        mBarnesHut = new BarnesHutTree(
+                new Rectangle(-mBoundRadius, -mBoundRadius, mBoundRadius, mBoundRadius),
+                0.3f);
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
@@ -164,14 +165,14 @@ class ParticlesView
         mParticles.clear();
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
-        for(int i = 0; i < 500; i++) {
+        Circle insertArea = new Circle(new Vec2(0, 0), mBoundRadius * 0.75f);
+        for(int i = 0; i < 700; i++) {
             Particle p = new Particle();
-            p.pos.set(sRandom.uniformInRect(mBound));
+            p.pos.set(sRandom.uniformInCircle(insertArea));
             p.vel.setZero();
             float r = sRandom.nextFloat();
             p.radius = 0.03f + (float)Math.pow(r, 3) * 0.03f;
             p.mass = 1.0f * p.radius * p.radius;
-            p.phase = sRandom.nextFloat();
             p.involvement = 0;
             p.lightness = 0.5f;
             mParticles.add(p);
@@ -189,26 +190,18 @@ class ParticlesView
             }
 
             for(Particle p : mParticles) {
-                if(p.pos.x < mBound.minx && p.vel.x < 0 || p.pos.x > mBound.maxx && p.vel.x > 0) {
-                    p.vel.x *= -1;
+                if(p.pos.magnitude() > mBoundRadius && p.pos.dot(p.vel) > 0) {
+                    p.vel.reflect(p.pos.normalized().negate());
+                    //p.vel.scale(0.99f);
                 }
 
-                p.phase = (p.phase + TIMERATE * 0.1f) % 1f;
-                p.radius = 0.04f + 0.1f * p.involvement * p.involvement;
+                float radius = 0.03f + 0.07f * p.involvement * p.involvement;
+                if(radius > p.radius)
+                    p.radius = 0.97f * p.radius + 0.03f * radius;
+                else
+                    p.radius = 0.6f * p.radius + 0.4f * radius;
                 p.mass = p.radius * p.radius;
             }
-
-
-            for(Particle p : mParticles) {
-                p.acc.addScaled(new Vec2(0, -1), 0.005f);
-            }
-
-
-            float meanMass = 0;
-            for(Particle p : mParticles) {
-                meanMass += p.mass;
-            }
-            meanMass /= mParticles.size();
 
             Vec2Transformer inputTransform = mViewTransform.getViewToWorldTransformer();
             for(MotionEventConverter.Pointer ptr : mInputConverter.getActivePointers()) {
@@ -223,12 +216,12 @@ class ParticlesView
             }
 
             mBarnesHut.clear();
-            mBarnesHut.load(mPointMasses, meanMass);
+            mBarnesHut.load(mPointMasses);
             Vec2 force = new Vec2();
             for(Particle p : mParticles) {
                 force.setZero();
                 mBarnesHut.getForce(p.pos, force, p.radius);
-                p.acc.addScaled(force, -0.08f);
+                p.acc.addScaled(force, -0.05f);
             }
 
             mNeighborSearch.reload();
@@ -246,20 +239,22 @@ class ParticlesView
                 for(Particle q : mNeighborSearch.search(searchRect)) {
                     if(q.id <= p.id)
                         continue;
-                    float d = q.radius + p.radius;
+                    float minDist = q.radius + p.radius;
                     pdiff.setDifference(p.pos, q.pos);
                     float distSq = pdiff.magnitudeSq();
-                    if(distSq < d * d) {
+                    if(distSq < minDist * minDist) {
                         p.involvement += 0.01;
                         q.involvement += 0.01;
                         float distance = (float)Math.sqrt(distSq);
                         pdiff.scaleInverse(distance);
+
                         vdiff.setDifference(p.vel, q.vel);
-                        float moveApart = (d - distance) / d;
+                        float moveApart = (minDist - distance) / minDist;
                         p.pos.addScaled(pdiff, 0.8f * moveApart * q.radius);
                         q.pos.addScaled(pdiff, 0.8f * -moveApart * p.radius);
                         p.acc.addScaled(pdiff, 0.2f * moveApart * q.radius / TIMERATE);
                         q.acc.addScaled(pdiff, 0.2f * -moveApart * p.radius / TIMERATE);
+
                         if(vdiff.dot(pdiff) < 0) {
                             float f = 0.2f * 2 * vdiff.dot(pdiff) / (p.mass + q.mass);
                             p.acc.addScaled(pdiff, q.mass * -f);
@@ -272,9 +267,8 @@ class ParticlesView
             for(Particle p : mParticles) {
                 p.vel.add(p.acc);
                 if(p.vel.magnitudeSq() > 10) {
-                    p.vel.scale(0.9f);
+                    p.vel.scale(0.995f);
                 }
-                //p.vel.scale(0.99f);
                 p.pos.addScaled(p.vel, TIMERATE);
                 float lightness = p.acc.magnitude();
                 if(lightness < p.lightness)
@@ -285,25 +279,6 @@ class ParticlesView
                 p.involvement *= 0.95f;
                 if(p.involvement > 1) {
                     p.involvement = 1;
-                }
-            }
-
-            Vec2 meanVelocity = new Vec2();
-            for(Particle p : mParticles) {
-                if(p.pos.y < -3 && p.vel.y < 0) {
-                    if(sRandom.nextInt(100) < 95) {
-                        p.vel.y *= -1.5;
-                    } else {
-                        p.pos.set(sRandom.uniformInRect(mBound));
-                        p.pos.y = 3;
-                        p.vel.y *= 0.5f;
-                    }
-                }
-                if(p.pos.x > mBound.maxx && p.vel.x > 0) {
-                    p.vel.x *= -0.75;
-                }
-                if(p.pos.x < mBound.minx && p.vel.x < 0) {
-                    p.vel.x *= -0.75;
                 }
             }
         }
@@ -331,7 +306,7 @@ class ParticlesView
         brush.begin(mViewTransform.getViewMatrix());
         brush.setColor(Color.WHITE);
         brush.setAlpha(0.2f);
-        brush.drawRectangle(mBound, 0.01f);
+        brush.drawCircle(new Circle(new Vec2(0, 0), mBoundRadius), 0.02f);
         brush.end();
     }
 }
