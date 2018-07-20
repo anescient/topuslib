@@ -9,11 +9,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 
 @SuppressWarnings("WeakerAccess")
 public class SuperRandom extends Random {
+
+    private static SuperRandom sGlobalInstance = null;
 
     public SuperRandom() {
         super();
@@ -21,6 +22,13 @@ public class SuperRandom extends Random {
 
     public SuperRandom(long seed) {
         super(seed);
+    }
+
+    public static SuperRandom getInstance() {
+        if(sGlobalInstance == null) {
+            sGlobalInstance = new SuperRandom();
+        }
+        return sGlobalInstance;
     }
 
     public float approximateGaussianFloat(float mean, float stddev, int samples) {

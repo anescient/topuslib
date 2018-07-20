@@ -7,13 +7,10 @@ import android.view.View;
 import android.widget.ImageView;
 
 import net.chaosworship.topuslib.imagegen.HueMap;
-import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslibtest.R;
 
 
 public class BitmapGenActivity extends AppCompatActivity {
-
-    private static final SuperRandom sRandom = new SuperRandom();
 
     private ImageView mOutputImageView;
 

@@ -14,7 +14,6 @@ import net.chaosworship.topuslib.geom3d.Cuboid;
 import net.chaosworship.topuslib.gl.GLLinesBrush;
 import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
-import net.chaosworship.topuslib.random.SuperRandom;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -32,8 +31,6 @@ import static android.opengl.GLES20.glClearColor;
 public class DrawingBoard
         extends GLSurfaceView
         implements GLSurfaceView.Renderer {
-
-    private static final SuperRandom sRandom = new SuperRandom();
 
     private final TestLoader mLoader;
     private final TurnTableViewTransform mViewTransform;

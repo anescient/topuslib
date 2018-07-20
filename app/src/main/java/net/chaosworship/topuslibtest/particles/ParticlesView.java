@@ -61,7 +61,6 @@ class ParticlesView
 
     private static final float TIMERATE = 0.01f;
 
-    private static final SuperRandom sRandom = new SuperRandom();
     private final TestLoader mLoader;
     private final FlatViewTransform mViewTransform;
     private final MotionEventConverter mInputConverter;
@@ -89,7 +88,7 @@ class ParticlesView
         mPointMasses = new ArrayList<>();
         mNeighborSearch = new KDTree<>();
 
-        mBoundRadius = 2.5f;
+        mBoundRadius = 2.7f;
         mBarnesHut = new BarnesHutTree(
                 new Rectangle(-mBoundRadius, -mBoundRadius, mBoundRadius, mBoundRadius),
                 0.3f);
@@ -166,11 +165,12 @@ class ParticlesView
         mPointMasses.clear();
         ArrayList<PointValuePair<Particle>> ppvps = new ArrayList<>();
         Circle insertArea = new Circle(new Vec2(0, 0), mBoundRadius * 0.75f);
-        for(int i = 0; i < 700; i++) {
+        SuperRandom random = SuperRandom.getInstance();
+        for(int i = 0; i < 500; i++) {
             Particle p = new Particle();
-            p.pos.set(sRandom.uniformInCircle(insertArea));
+            p.pos.set(random.uniformInCircle(insertArea));
             p.vel.setZero();
-            float r = sRandom.nextFloat();
+            float r = random.nextFloat();
             p.radius = 0.03f + (float)Math.pow(r, 3) * 0.03f;
             p.mass = 1.0f * p.radius * p.radius;
             p.involvement = 0;
@@ -183,6 +183,7 @@ class ParticlesView
     }
 
     private void step() {
+        SuperRandom random = SuperRandom.getInstance();
         synchronized(mParticles) {
 
             if(mParticles.isEmpty()) {
@@ -190,8 +191,9 @@ class ParticlesView
             }
 
             for(Particle p : mParticles) {
-                if(p.pos.magnitude() > mBoundRadius && p.pos.dot(p.vel) > 0) {
-                    p.vel.reflect(p.pos.normalized().negate());
+                if(p.pos.magnitudeSq() > mBoundRadius * mBoundRadius && p.pos.dot(p.vel) > 0) {
+                    p.pos.set(random.uniformInCircle(new Circle(new Vec2(0, 0), mBoundRadius)));
+                    p.vel.setZero();
                     //p.vel.scale(0.99f);
                 }
 
@@ -265,6 +267,7 @@ class ParticlesView
             }
 
             for(Particle p : mParticles) {
+                p.acc.addScaled(p.pos, -0.001f);
                 p.vel.add(p.acc);
                 if(p.vel.magnitudeSq() > 10) {
                     p.vel.scale(0.995f);
