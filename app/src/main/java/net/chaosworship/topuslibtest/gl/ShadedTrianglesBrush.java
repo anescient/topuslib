@@ -119,6 +119,7 @@ public class ShadedTrianglesBrush extends Brush implements TriangleConsumer {
         mTrianglesBuffered++;
     }
 
+    @Override
     public void addTriangle(Vec3 a, Vec3 b, Vec3 c) {
         Vec3 ab = b.difference(a);
         Vec3 bc = c.difference(b);

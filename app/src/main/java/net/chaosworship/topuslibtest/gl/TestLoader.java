@@ -9,6 +9,7 @@ public class TestLoader extends Loader {
 
     private DotsBrush mDotsBrush;
     private ShadedTrianglesBrush mShadedTrianglesBrush;
+    private TexturedSphereBrush mTexturedSphereBrush;
 
     public TestLoader(Context context) {
         super(context);
@@ -19,6 +20,7 @@ public class TestLoader extends Loader {
         super.invalidateAll();
         mDotsBrush = null;
         mShadedTrianglesBrush = null;
+        mTexturedSphereBrush = null;
     }
 
     public DotsBrush getDotsBrush() {
@@ -33,5 +35,12 @@ public class TestLoader extends Loader {
             mShadedTrianglesBrush = new ShadedTrianglesBrush(this);
         }
         return mShadedTrianglesBrush;
+    }
+
+    public TexturedSphereBrush getTexturedSphereBrush() {
+        if(mTexturedSphereBrush == null) {
+            mTexturedSphereBrush = new TexturedSphereBrush(this);
+        }
+        return mTexturedSphereBrush;
     }
 }

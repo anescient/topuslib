@@ -15,6 +15,7 @@ import net.chaosworship.topuslib.gl.GLLinesBrush;
 import net.chaosworship.topuslib.gl.view.TurnTableViewTransform;
 import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslibtest.gl.TestLoader;
+import net.chaosworship.topuslibtest.gl.TexturedSphereBrush;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -90,8 +91,6 @@ public class DrawingBoard
         }
 
         float phase = (SystemClock.uptimeMillis() / (float)20000) % 1.0f;
-        float modelSpin = (float)(2 * Math.PI * phase);
-        //modelSpin = 0;
 
         mViewTransform.setRotation(mSpin);
         mViewTransform.setFOV(60);
@@ -105,11 +104,15 @@ public class DrawingBoard
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         GLLinesBrush linesBrush = mLoader.getGLLinesBrush();
-
         linesBrush.begin(mViewTransform.getViewMatrix(), 3);
         linesBrush.setColor(Color.WHITE);
         linesBrush.setAlpha(0.15f);
         linesBrush.addCuboid(new Cuboid(-1, 1, -1, 1, -1, 1));
         linesBrush.end();
+
+        TexturedSphereBrush sphereBrush = mLoader.getTexturedSphereBrush();
+        sphereBrush.begin(mViewTransform.getViewMatrix());
+        sphereBrush.drawSphere();
+        sphereBrush.end();
     }
 }
