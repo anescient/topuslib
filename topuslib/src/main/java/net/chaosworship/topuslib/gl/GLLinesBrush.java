@@ -17,30 +17,22 @@ import java.util.Map;
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_BLEND;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
-import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_LINES;
 import static android.opengl.GLES20.GL_ONE_MINUS_SRC_ALPHA;
 import static android.opengl.GLES20.GL_SRC_ALPHA;
 import static android.opengl.GLES20.glBindBuffer;
 import static android.opengl.GLES20.glBlendFunc;
 import static android.opengl.GLES20.glDisable;
-import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnable;
-import static android.opengl.GLES20.glEnableVertexAttribArray;
-import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glLineWidth;
 import static android.opengl.GLES20.glUniformMatrix4fv;
-import static android.opengl.GLES20.glVertexAttribPointer;
 
 
 @SuppressWarnings("unused")
 public class GLLinesBrush extends Brush {
 
-    // floats per vertex
-    // x, y, z, r, g, b, a
-    private static final int VERTEXSIZE = 7;
     private static final int VERTICESPER = 2;
 
     private static final int BATCHSIZE = 500;
@@ -65,9 +57,7 @@ public class GLLinesBrush extends Brush {
     private final Loader mLoader;
 
     private final int mMVPHandle;
-    private final int mPosHandle;
-    private final int mColorHandle;
-
+    private final FloatAttributeList mVertexAttributes;
     private final int mVertexBufferHandle;
     private final FloatVertexPreBuffer mVertexPreBuffer;
     private int mLinesBuffered;
@@ -78,27 +68,34 @@ public class GLLinesBrush extends Brush {
         mLoader = loader;
 
         int program = mLoader.useProgram(mProgram);
+
         mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
-        mPosHandle = glGetAttribLocation(program, "aPos");
-        mColorHandle = glGetAttribLocation(program, "aColor");
+
+        mVertexAttributes = new FloatAttributeList();
+        try {
+            mVertexAttributes.addVec3("aPos"); // x, y, z
+            mVertexAttributes.addFloatArray("aColor", 4); // r, g, b, a
+        } catch (FloatAttributeList.AttributeException e) {
+            e.printStackTrace();
+        }
 
         mVertexBufferHandle = generateBuffer();
 
-        mVertexPreBuffer = new FloatVertexPreBuffer(BATCHSIZE * VERTEXSIZE * VERTICESPER, true);
+        mVertexPreBuffer = new FloatVertexPreBuffer(BATCHSIZE * mVertexAttributes.floatCount() * VERTICESPER, true);
         mLinesBuffered = 0;
 
         mColor = new float[]{1, 1, 1, 1};
     }
 
     public void begin(float[] matPV, float lineWidth) {
-        mLoader.useProgram(mProgram);
+        int program = mLoader.useProgram(mProgram);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
-        final int stride = VERTEXSIZE * FLOATSIZE;
-        glVertexAttribPointer(mPosHandle, 3, GL_FLOAT, false, stride, 0);
-        glVertexAttribPointer(mColorHandle, 4, GL_FLOAT, false, stride, 3 * FLOATSIZE);
-        glEnableVertexAttribArray(mPosHandle);
-        glEnableVertexAttribArray(mColorHandle);
+        try {
+            mVertexAttributes.enable(program);
+        } catch (FloatAttributeList.AttributeException e) {
+            e.printStackTrace();
+        }
 
         glUniformMatrix4fv(mMVPHandle, 1, false, matPV, 0);
 
@@ -284,8 +281,7 @@ public class GLLinesBrush extends Brush {
 
     public void end() {
         flush();
-        glDisableVertexAttribArray(mPosHandle);
-        glDisableVertexAttribArray(mColorHandle);
+        mVertexAttributes.disable();
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
