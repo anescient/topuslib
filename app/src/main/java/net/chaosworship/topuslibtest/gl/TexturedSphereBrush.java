@@ -7,6 +7,7 @@ import net.chaosworship.topuslib.geom3d.TriangleMesh;
 import net.chaosworship.topuslib.geom3d.TriangulatedSphere;
 import net.chaosworship.topuslib.geom3d.Vec3;
 import net.chaosworship.topuslib.gl.Brush;
+import net.chaosworship.topuslib.gl.FloatAttributeList;
 import net.chaosworship.topuslib.gl.FloatVertexPreBuffer;
 import net.chaosworship.topuslib.gl.ShortElementPreBuffer;
 import net.chaosworship.topuslib.tuple.IntTriple;
@@ -17,7 +18,6 @@ import static android.opengl.GLES20.GL_BLEND;
 import static android.opengl.GLES20.GL_CULL_FACE;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
 import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;
-import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_LINEAR;
 import static android.opengl.GLES20.GL_ONE_MINUS_SRC_ALPHA;
 import static android.opengl.GLES20.GL_REPEAT;
@@ -34,32 +34,18 @@ import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glBindBuffer;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glBlendFunc;
-import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawElements;
 import static android.opengl.GLES20.glEnable;
-import static android.opengl.GLES20.glEnableVertexAttribArray;
-import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glTexParameteri;
-import static android.opengl.GLES20.glUniform1f;
 import static android.opengl.GLES20.glUniform1i;
-import static android.opengl.GLES20.glUniform3f;
 import static android.opengl.GLES20.glUniformMatrix4fv;
-import static android.opengl.GLES20.glVertexAttribPointer;
 
 
 public class TexturedSphereBrush extends Brush {
 
-    private static final int VERTEXSIZE = 5;
     private static final int ELEMENTSPER = 3;
     private static final String PROGRAMNAME = "texturedtriangles";
-
-    // a vertex is:
-    // position x
-    // position y
-    // position z
-    // texture s
-    // texture t
 
     private final TestLoader mLoader;
 
@@ -72,16 +58,30 @@ public class TexturedSphereBrush extends Brush {
     private final int mMMatrixHandle;
     private final int mTextureHandle;
 
-    private final int mPosHandle;
-    private final int mTexCoordHandle;
+    private final FloatAttributeList mVertexAttributes;
 
     TexturedSphereBrush(TestLoader loader) {
         mLoader = loader;
 
+        int program = mLoader.useProgram(PROGRAMNAME);
+
+        mVPMatrixHandle = glGetUniformLocation(program, "uVPMatrix");
+        mMMatrixHandle = glGetUniformLocation(program, "uMMatrix");
+        mTextureHandle = glGetUniformLocation(program, "uTexture");
+
+        mVertexAttributes = new FloatAttributeList();
+        try {
+            mVertexAttributes.addVec3("aPos"); // position x,y,z
+            mVertexAttributes.addVec2("aTexCoord"); // texcoord s,t
+        } catch (FloatAttributeList.AttributeException e) {
+            e.printStackTrace();
+        }
+
         TriangleMesh sphereMesh = TriangulatedSphere.generateIcosphere(4);
         mFaceCount = sphereMesh.getFaces().size();
 
-        FloatVertexPreBuffer vertexPreBuffer = new FloatVertexPreBuffer(sphereMesh.getVertices().size() * VERTEXSIZE, false);
+        FloatVertexPreBuffer vertexPreBuffer = new FloatVertexPreBuffer(
+                sphereMesh.getVertices().size() * mVertexAttributes.floatCount(), false);
         for(Vec3 pos : sphereMesh.getVertices()) {
             vertexPreBuffer.put(pos);
             float s = (float)(new Vec2(pos.x, pos.y).atan2() / (2 * Math.PI)) + 0.5f;
@@ -104,19 +104,10 @@ public class TexturedSphereBrush extends Brush {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElementBufferHandle);
         elementPreBuffer.glBufferDataElementArray();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        int program = mLoader.useProgram(PROGRAMNAME);
-
-        mVPMatrixHandle = glGetUniformLocation(program, "uVPMatrix");
-        mMMatrixHandle = glGetUniformLocation(program, "uMMatrix");
-        mTextureHandle = glGetUniformLocation(program, "uTexture");
-
-        mPosHandle = glGetAttribLocation(program, "aPos");
-        mTexCoordHandle = glGetAttribLocation(program, "aTexCoord");
     }
 
     public void begin(float[] matPV) {
-        mLoader.useProgram(PROGRAMNAME);
+        int program = mLoader.useProgram(PROGRAMNAME);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElementBufferHandle);
@@ -131,11 +122,11 @@ public class TexturedSphereBrush extends Brush {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glUniform1i(mTextureHandle, 0);
 
-        glVertexAttribPointer(mPosHandle, 3, GL_FLOAT, false, VERTEXSIZE * FLOATSIZE, 0);
-        glEnableVertexAttribArray(mPosHandle);
-
-        glVertexAttribPointer(mTexCoordHandle, 2, GL_FLOAT, false, VERTEXSIZE * FLOATSIZE, 3 * FLOATSIZE);
-        glEnableVertexAttribArray(mTexCoordHandle);
+        try {
+            mVertexAttributes.enable(program);
+        } catch (FloatAttributeList.AttributeException e) {
+            e.printStackTrace();
+        }
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -155,8 +146,7 @@ public class TexturedSphereBrush extends Brush {
     }
 
     public void end() {
-        glDisableVertexAttribArray(mPosHandle);
-        glDisableVertexAttribArray(mTexCoordHandle);
+        mVertexAttributes.disable();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }

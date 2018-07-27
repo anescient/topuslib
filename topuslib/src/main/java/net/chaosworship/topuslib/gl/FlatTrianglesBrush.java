@@ -10,7 +10,6 @@ import static android.opengl.GLES20.GL_BLEND;
 import static android.opengl.GLES20.GL_CULL_FACE;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
 import static android.opengl.GLES20.GL_DYNAMIC_DRAW;
-import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_ONE_MINUS_SRC_ALPHA;
 import static android.opengl.GLES20.GL_SRC_ALPHA;
 import static android.opengl.GLES20.GL_TRIANGLES;
@@ -19,21 +18,14 @@ import static android.opengl.GLES20.glBlendFunc;
 import static android.opengl.GLES20.glBufferData;
 import static android.opengl.GLES20.glBufferSubData;
 import static android.opengl.GLES20.glDisable;
-import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnable;
-import static android.opengl.GLES20.glEnableVertexAttribArray;
-import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glUniformMatrix4fv;
-import static android.opengl.GLES20.glVertexAttribPointer;
 
 
 public class FlatTrianglesBrush extends Brush {
 
-    // floats per vertex
-    // x, y, r, g, b, a
-    private static final int VERTEXSIZE = 6;
     private static final int VERTICESPER = 3;
 
     private static final int BATCHSIZE = 500;
@@ -57,9 +49,9 @@ public class FlatTrianglesBrush extends Brush {
 
     private final Loader mLoader;
 
+    private final FloatAttributeList mVertexAttributes;
+
     private final int mMVPHandle;
-    private final int mPosHandle;
-    private final int mColorHandle;
 
     private final FloatBuffer mVertexBuffer;
     private final int mVertexBufferHandle;
@@ -69,19 +61,25 @@ public class FlatTrianglesBrush extends Brush {
     FlatTrianglesBrush(Loader loader) {
         mLoader = loader;
 
+        mVertexAttributes = new FloatAttributeList();
+        try {
+            mVertexAttributes.addVec2("aPos"); // x, y
+            mVertexAttributes.addFloatArray("aColor", 4); // r, g, b, a
+        } catch (FloatAttributeList.AttributeException e) {
+            e.printStackTrace();
+        }
+
         int program = mLoader.useProgram(mProgram);
         mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
-        mPosHandle = glGetAttribLocation(program, "aPos");
-        mColorHandle = glGetAttribLocation(program, "aColor");
 
-        mVertexBuffer = makeFloatBuffer(BATCHSIZE * VERTEXSIZE * VERTICESPER);
+        mVertexBuffer = makeFloatBuffer(BATCHSIZE * mVertexAttributes.floatCount() * VERTICESPER);
         mVertexBufferHandle = generateBuffer();
 
-        mVertexPreBuffer = new float[BATCHSIZE * VERTEXSIZE * VERTICESPER];
+        mVertexPreBuffer = new float[BATCHSIZE * mVertexAttributes.floatCount() * VERTICESPER];
         mTrianglesBuffered = 0;
 
         mVertexBuffer.position(0);
-        mVertexBuffer.put(mVertexPreBuffer, 0, BATCHSIZE * VERTEXSIZE * VERTICESPER);
+        mVertexBuffer.put(mVertexPreBuffer, 0, BATCHSIZE * mVertexAttributes.floatCount() * VERTICESPER);
         mVertexBuffer.position(0);
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
         glBufferData(GL_ARRAY_BUFFER, mVertexBuffer.capacity() * FLOATSIZE, mVertexBuffer, GL_DYNAMIC_DRAW);
@@ -89,14 +87,14 @@ public class FlatTrianglesBrush extends Brush {
     }
 
     public void begin(float[] matPV) {
-        mLoader.useProgram(mProgram);
+        int program = mLoader.useProgram(mProgram);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
-        final int stride = VERTEXSIZE * FLOATSIZE;
-        glVertexAttribPointer(mPosHandle, 2, GL_FLOAT, false, stride, 0);
-        glVertexAttribPointer(mColorHandle, 4, GL_FLOAT, false, stride, 2 * FLOATSIZE);
-        glEnableVertexAttribArray(mPosHandle);
-        glEnableVertexAttribArray(mColorHandle);
+        try {
+            mVertexAttributes.enable(program);
+        } catch (FloatAttributeList.AttributeException e) {
+            e.printStackTrace();
+        }
 
         glUniformMatrix4fv(mMVPHandle, 1, false, matPV, 0);
 
@@ -110,7 +108,7 @@ public class FlatTrianglesBrush extends Brush {
         if(mTrianglesBuffered >= BATCHSIZE) {
             flush();
         }
-        int i = mTrianglesBuffered * VERTICESPER * VERTEXSIZE;
+        int i = mTrianglesBuffered * VERTICESPER * mVertexAttributes.floatCount();
 
         mVertexPreBuffer[i++] = a.x;
         mVertexPreBuffer[i++] = a.y;
@@ -143,17 +141,16 @@ public class FlatTrianglesBrush extends Brush {
 
     private void flush() {
         mVertexBuffer.position(0);
-        mVertexBuffer.put(mVertexPreBuffer, 0, mTrianglesBuffered * VERTEXSIZE * VERTICESPER);
+        mVertexBuffer.put(mVertexPreBuffer, 0, mTrianglesBuffered * mVertexAttributes.floatCount() * VERTICESPER);
         mVertexBuffer.position(0);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, mTrianglesBuffered * VERTEXSIZE * VERTICESPER * FLOATSIZE, mVertexBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, mTrianglesBuffered * mVertexAttributes.floatCount() * VERTICESPER * FLOATSIZE, mVertexBuffer);
         glDrawArrays(GL_TRIANGLES, 0, mTrianglesBuffered * VERTICESPER);
         mTrianglesBuffered = 0;
     }
 
     public void end() {
         flush();
-        glDisableVertexAttribArray(mPosHandle);
-        glDisableVertexAttribArray(mColorHandle);
+        mVertexAttributes.disable();
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
