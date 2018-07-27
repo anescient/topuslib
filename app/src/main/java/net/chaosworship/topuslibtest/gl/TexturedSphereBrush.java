@@ -1,5 +1,7 @@
 package net.chaosworship.topuslibtest.gl;
 
+import android.opengl.Matrix;
+
 import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.geom3d.TriangleMesh;
 import net.chaosworship.topuslib.geom3d.TriangulatedSphere;
@@ -39,7 +41,9 @@ import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glTexParameteri;
+import static android.opengl.GLES20.glUniform1f;
 import static android.opengl.GLES20.glUniform1i;
+import static android.opengl.GLES20.glUniform3f;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glVertexAttribPointer;
 
@@ -65,6 +69,7 @@ public class TexturedSphereBrush extends Brush {
     private final int mElementBufferHandle;
 
     private final int mVPMatrixHandle;
+    private final int mMMatrixHandle;
     private final int mTextureHandle;
 
     private final int mPosHandle;
@@ -103,6 +108,7 @@ public class TexturedSphereBrush extends Brush {
         int program = mLoader.useProgram(PROGRAMNAME);
 
         mVPMatrixHandle = glGetUniformLocation(program, "uVPMatrix");
+        mMMatrixHandle = glGetUniformLocation(program, "uMMatrix");
         mTextureHandle = glGetUniformLocation(program, "uTexture");
 
         mPosHandle = glGetAttribLocation(program, "aPos");
@@ -118,7 +124,7 @@ public class TexturedSphereBrush extends Brush {
         glUniformMatrix4fv(mVPMatrixHandle, 1, false, matPV, 0);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, mLoader.getTexture(R.drawable.earthgrid));
+        glBindTexture(GL_TEXTURE_2D, mLoader.getTexture(R.drawable.earth));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -138,7 +144,13 @@ public class TexturedSphereBrush extends Brush {
         glEnable(GL_DEPTH_TEST);
     }
 
-    public void drawSphere() {
+    public void drawSphere(Vec3 center, float radius, float rotation) {
+        float[] m = new float[16];
+        Matrix.setIdentityM(m, 0);
+        Matrix.translateM(m, 0, center.x, center.y, center.z);
+        Matrix.scaleM(m, 0, radius, radius, radius);
+        Matrix.rotateM(m, 0, rotation, 0, 0, 1);
+        glUniformMatrix4fv(mMMatrixHandle, 1, false, m, 0);
         glDrawElements(GL_TRIANGLES, mFaceCount * ELEMENTSPER, GL_UNSIGNED_SHORT, 0);
     }
 
