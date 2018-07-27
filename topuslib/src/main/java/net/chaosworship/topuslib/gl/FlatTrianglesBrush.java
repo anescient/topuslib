@@ -3,20 +3,15 @@ package net.chaosworship.topuslib.gl;
 import net.chaosworship.topuslib.geom2d.Triangle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 
-import java.nio.FloatBuffer;
-
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_BLEND;
 import static android.opengl.GLES20.GL_CULL_FACE;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
-import static android.opengl.GLES20.GL_DYNAMIC_DRAW;
 import static android.opengl.GLES20.GL_ONE_MINUS_SRC_ALPHA;
 import static android.opengl.GLES20.GL_SRC_ALPHA;
 import static android.opengl.GLES20.GL_TRIANGLES;
 import static android.opengl.GLES20.glBindBuffer;
 import static android.opengl.GLES20.glBlendFunc;
-import static android.opengl.GLES20.glBufferData;
-import static android.opengl.GLES20.glBufferSubData;
 import static android.opengl.GLES20.glDisable;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnable;
@@ -53,9 +48,8 @@ public class FlatTrianglesBrush extends Brush {
 
     private final int mMVPHandle;
 
-    private final FloatBuffer mVertexBuffer;
+    private final FloatVertexPreBuffer mVertexPreBuffer;
     private final int mVertexBufferHandle;
-    private final float[] mVertexPreBuffer;
     private int mTrianglesBuffered;
 
     FlatTrianglesBrush(Loader loader) {
@@ -72,18 +66,9 @@ public class FlatTrianglesBrush extends Brush {
         int program = mLoader.useProgram(mProgram);
         mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
 
-        mVertexBuffer = makeFloatBuffer(BATCHSIZE * mVertexAttributes.floatCount() * VERTICESPER);
         mVertexBufferHandle = generateBuffer();
-
-        mVertexPreBuffer = new float[BATCHSIZE * mVertexAttributes.floatCount() * VERTICESPER];
+        mVertexPreBuffer = new FloatVertexPreBuffer(mVertexAttributes.floatCount() * BATCHSIZE, true);
         mTrianglesBuffered = 0;
-
-        mVertexBuffer.position(0);
-        mVertexBuffer.put(mVertexPreBuffer, 0, BATCHSIZE * mVertexAttributes.floatCount() * VERTICESPER);
-        mVertexBuffer.position(0);
-        glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
-        glBufferData(GL_ARRAY_BUFFER, mVertexBuffer.capacity() * FLOATSIZE, mVertexBuffer, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
     public void begin(float[] matPV) {
@@ -108,28 +93,15 @@ public class FlatTrianglesBrush extends Brush {
         if(mTrianglesBuffered >= BATCHSIZE) {
             flush();
         }
-        int i = mTrianglesBuffered * VERTICESPER * mVertexAttributes.floatCount();
 
-        mVertexPreBuffer[i++] = a.x;
-        mVertexPreBuffer[i++] = a.y;
-        mVertexPreBuffer[i++] = color[0];
-        mVertexPreBuffer[i++] = color[1];
-        mVertexPreBuffer[i++] = color[2];
-        mVertexPreBuffer[i++] = color[3];
+        mVertexPreBuffer.put(a);
+        mVertexPreBuffer.putRGBA(color);
 
-        mVertexPreBuffer[i++] = b.x;
-        mVertexPreBuffer[i++] = b.y;
-        mVertexPreBuffer[i++] = color[0];
-        mVertexPreBuffer[i++] = color[1];
-        mVertexPreBuffer[i++] = color[2];
-        mVertexPreBuffer[i++] = color[3];
+        mVertexPreBuffer.put(b);
+        mVertexPreBuffer.putRGBA(color);
 
-        mVertexPreBuffer[i++] = c.x;
-        mVertexPreBuffer[i++] = c.y;
-        mVertexPreBuffer[i++] = color[0];
-        mVertexPreBuffer[i++] = color[1];
-        mVertexPreBuffer[i++] = color[2];
-        mVertexPreBuffer[i] = color[3];
+        mVertexPreBuffer.put(c);
+        mVertexPreBuffer.putRGBA(color);
 
         mTrianglesBuffered++;
     }
@@ -140,10 +112,8 @@ public class FlatTrianglesBrush extends Brush {
     }
 
     private void flush() {
-        mVertexBuffer.position(0);
-        mVertexBuffer.put(mVertexPreBuffer, 0, mTrianglesBuffered * mVertexAttributes.floatCount() * VERTICESPER);
-        mVertexBuffer.position(0);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, mTrianglesBuffered * mVertexAttributes.floatCount() * VERTICESPER * FLOATSIZE, mVertexBuffer);
+        mVertexPreBuffer.glBufferDataArray();
+        mVertexPreBuffer.reset();
         glDrawArrays(GL_TRIANGLES, 0, mTrianglesBuffered * VERTICESPER);
         mTrianglesBuffered = 0;
     }

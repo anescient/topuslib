@@ -13,6 +13,7 @@ import static android.opengl.GLES20.glBufferData;
 import static android.opengl.GLES20.glBufferSubData;
 
 
+@SuppressWarnings("unused")
 public class FloatVertexPreBuffer {
 
     private final boolean mDynamic;
@@ -49,6 +50,13 @@ public class FloatVertexPreBuffer {
     public void put(Vec2 v) {
         mPreBuffer[mFloatsBuffered++] = v.x;
         mPreBuffer[mFloatsBuffered++] = v.y;
+    }
+
+    public void putRGBA(float[] rgba) {
+        mPreBuffer[mFloatsBuffered++] = rgba[0];
+        mPreBuffer[mFloatsBuffered++] = rgba[1];
+        mPreBuffer[mFloatsBuffered++] = rgba[2];
+        mPreBuffer[mFloatsBuffered++] = rgba[3];
     }
 
     public void putSum(Vec2 a, Vec2 b) {
