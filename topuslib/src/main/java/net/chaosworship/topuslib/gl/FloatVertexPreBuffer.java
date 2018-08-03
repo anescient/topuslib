@@ -10,7 +10,6 @@ import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_DYNAMIC_DRAW;
 import static android.opengl.GLES20.GL_STATIC_DRAW;
 import static android.opengl.GLES20.glBufferData;
-import static android.opengl.GLES20.glBufferSubData;
 
 
 @SuppressWarnings("unused")
@@ -20,14 +19,12 @@ public class FloatVertexPreBuffer {
     private float[] mPreBuffer;
     private FloatBuffer mFloatBuffer;
     private int mFloatsBuffered;
-    private boolean mGLBufferInitialized;
 
     public FloatVertexPreBuffer(int floatCount, boolean dynamic) {
         mDynamic = dynamic;
         mPreBuffer = new float[floatCount];
         mFloatBuffer = Brush.makeFloatBuffer(mPreBuffer.length);
         mFloatsBuffered = 0;
-        mGLBufferInitialized = false;
     }
 
     public void ensureCapacity(int floatCount) {
@@ -36,7 +33,6 @@ public class FloatVertexPreBuffer {
         }
         mPreBuffer = Arrays.copyOf(mPreBuffer, floatCount);
         mFloatBuffer = Brush.makeFloatBuffer(mPreBuffer.length);
-        mGLBufferInitialized = false;
     }
 
     public void reset() {
@@ -90,12 +86,9 @@ public class FloatVertexPreBuffer {
         mFloatBuffer.position(0);
         mFloatBuffer.put(mPreBuffer, 0, mFloatsBuffered);
         mFloatBuffer.position(0);
-        if(!mGLBufferInitialized) {
-            int usage = mDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
-            glBufferData(GL_ARRAY_BUFFER, mFloatBuffer.capacity() * Brush.FLOATSIZE, mFloatBuffer, usage);
-            mGLBufferInitialized = true;
-        } else {
-            glBufferSubData(GL_ARRAY_BUFFER, 0, mFloatsBuffered * Brush.FLOATSIZE, mFloatBuffer);
-        }
+        int usage = mDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
+        // turns out BufferSubData is much more expensive than this
+        glBufferData(GL_ARRAY_BUFFER, 0, null, usage);
+        glBufferData(GL_ARRAY_BUFFER, mFloatsBuffered * Brush.FLOATSIZE, mFloatBuffer, usage);
     }
 }

@@ -112,6 +112,9 @@ public class FlatTrianglesBrush extends Brush {
     }
 
     private void flush() {
+        if(mTrianglesBuffered == 0) {
+            return;
+        }
         mVertexPreBuffer.glBufferDataArray();
         mVertexPreBuffer.reset();
         glDrawArrays(GL_TRIANGLES, 0, mTrianglesBuffered * VERTICESPER);
