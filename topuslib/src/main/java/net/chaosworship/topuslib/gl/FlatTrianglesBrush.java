@@ -67,7 +67,7 @@ public class FlatTrianglesBrush extends Brush {
         mMVPHandle = glGetUniformLocation(program, "uMVPMatrix");
 
         mVertexBufferHandle = generateBuffer();
-        mVertexPreBuffer = new FloatVertexPreBuffer(mVertexAttributes.floatCount() * BATCHSIZE, true);
+        mVertexPreBuffer = new FloatVertexPreBuffer(mVertexAttributes.floatCount() * VERTICESPER * BATCHSIZE, true);
         mTrianglesBuffered = 0;
     }
 
