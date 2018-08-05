@@ -101,13 +101,10 @@ public class FloatAttributeList {
             mInitialized = true;
         }
 
-        int stride = 0;
-        for(Attribute attr : mAttributes) {
-            stride += attr.floatCount * FLOATSIZE;
-        }
-
+        int stride = mFloatCount * FLOATSIZE;
         int offset = 0;
-        for(Attribute attr : mAttributes) {
+        for(int i = 0; i < mAttributes.size(); i++) {
+            Attribute attr = mAttributes.get(i);
             glVertexAttribPointer(attr.handle, attr.floatCount, GL_FLOAT, false, stride, offset);
             offset += attr.floatCount * FLOATSIZE;
             glEnableVertexAttribArray(attr.handle);
@@ -121,8 +118,8 @@ public class FloatAttributeList {
             throw new IllegalStateException();
         }
 
-        for(Attribute attr : mAttributes) {
-            glDisableVertexAttribArray(attr.handle);
+        for(int i = 0; i < mAttributes.size(); i++) {
+            glDisableVertexAttribArray(mAttributes.get(i).handle);
         }
 
         mEnabled = false;
