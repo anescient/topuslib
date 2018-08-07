@@ -1,12 +1,14 @@
 package net.chaosworship.topuslib.geom2d;
 
 import android.annotation.SuppressLint;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import net.chaosworship.topuslib.math.Spline;
 
 
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue", "SameParameterValue"})
-public class Vec2 implements Cloneable {
+public class Vec2 implements Cloneable, Parcelable {
 
     public float x;
     public float y;
@@ -378,4 +380,35 @@ public class Vec2 implements Cloneable {
     public static boolean inHalfPlane(Vec2 p, Vec2 a, Vec2 b) {
         return ((p.x - b.x) * (a.y - b.y) - (a.x - b.x) * (p.y - b.y)) < 0;
     }
+
+    ///////////////////////////////////////////////////////////
+    // Parcelable
+
+    protected Vec2(Parcel in) {
+        x = in.readFloat();
+        y = in.readFloat();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeFloat(x);
+        dest.writeFloat(y);
+    }
+
+    public static final Creator<Vec2> CREATOR = new Creator<Vec2>() {
+        @Override
+        public Vec2 createFromParcel(Parcel in) {
+            return new Vec2(in);
+        }
+
+        @Override
+        public Vec2[] newArray(int size) {
+            return new Vec2[size];
+        }
+    };
 }

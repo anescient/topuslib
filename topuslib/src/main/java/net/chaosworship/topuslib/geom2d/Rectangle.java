@@ -2,6 +2,8 @@ package net.chaosworship.topuslib.geom2d;
 
 import android.annotation.SuppressLint;
 import android.graphics.RectF;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +11,7 @@ import java.util.Iterator;
 
 
 @SuppressWarnings({"UnusedReturnValue", "unused"})
-public class Rectangle implements SolidShape {
+public class Rectangle implements SolidShape, Parcelable {
 
     public float minx;
     public float miny;
@@ -228,4 +230,39 @@ public class Rectangle implements SolidShape {
         }
         return rect;
     }
+
+    ///////////////////////////////////////////////////////////
+    // Parcelable
+
+    protected Rectangle(Parcel in) {
+        minx = in.readFloat();
+        miny = in.readFloat();
+        maxx = in.readFloat();
+        maxy = in.readFloat();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeFloat(minx);
+        dest.writeFloat(miny);
+        dest.writeFloat(maxx);
+        dest.writeFloat(maxy);
+    }
+
+    public static final Creator<Rectangle> CREATOR = new Creator<Rectangle>() {
+        @Override
+        public Rectangle createFromParcel(Parcel in) {
+            return new Rectangle(in);
+        }
+
+        @Override
+        public Rectangle[] newArray(int size) {
+            return new Rectangle[size];
+        }
+    };
 }
