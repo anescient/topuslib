@@ -51,6 +51,17 @@ public class FloatVertexPreBuffer {
         mPreBuffer[mFloatsBuffered++] = v.y;
     }
 
+    public void put(float x, float y) {
+        mPreBuffer[mFloatsBuffered++] = x;
+        mPreBuffer[mFloatsBuffered++] = y;
+    }
+
+    public void put(float x, float y, float z) {
+        mPreBuffer[mFloatsBuffered++] = x;
+        mPreBuffer[mFloatsBuffered++] = y;
+        mPreBuffer[mFloatsBuffered++] = z;
+    }
+
     public void putRGBA(float[] rgba) {
         mPreBuffer[mFloatsBuffered++] = rgba[0];
         mPreBuffer[mFloatsBuffered++] = rgba[1];
