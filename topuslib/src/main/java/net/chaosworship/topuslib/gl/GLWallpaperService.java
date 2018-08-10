@@ -14,6 +14,8 @@ public abstract class GLWallpaperService extends WallpaperService {
 
     public abstract class GLEngine extends Engine {
 
+        private final GLSurfaceView.EGLConfigChooser mEGLConfigChooser;
+
         public class WallpaperGLSurfaceView extends GLSurfaceView {
 
             public WallpaperGLSurfaceView(Context context) {
@@ -37,7 +39,12 @@ public abstract class GLWallpaperService extends WallpaperService {
         private WallpaperGLSurfaceView mGLSurfaceView;
 
         public GLEngine() {
+            this(null);
+        }
+
+        public GLEngine(GLSurfaceView.EGLConfigChooser configChooser) {
             super();
+            mEGLConfigChooser = configChooser;
             mGLSurfaceView = null;
         }
 
@@ -60,6 +67,9 @@ public abstract class GLWallpaperService extends WallpaperService {
             mGLSurfaceView = this.new WallpaperGLSurfaceView(GLWallpaperService.this);
             mGLSurfaceView.setEGLContextClientVersion(2);
             mGLSurfaceView.setPreserveEGLContextOnPause(false);
+            if(mEGLConfigChooser != null) {
+                mGLSurfaceView.setEGLConfigChooser(mEGLConfigChooser);
+            }
         }
 
         @Override
