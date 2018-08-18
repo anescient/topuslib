@@ -30,8 +30,8 @@ public class WeightedSampler<V> {
         mItems = new ArrayList<>();
     }
 
-    public void insert(Float weight, V item) {
-        mItems.add(new WeightedItem<V>(weight, item));
+    public void insert(float weight, V item) {
+        mItems.add(new WeightedItem<>(weight, item));
     }
 
     public V sample(Random random) {
@@ -45,12 +45,17 @@ public class WeightedSampler<V> {
         }
 
         float x = random.nextFloat() * weightSum;
-        int i = 0;
+        int i = -1;
         while(i < mItems.size() - 1 && x > 0) {
-            x -= mItems.get(i++).getWeight();
+            x -= mItems.get(++i).getWeight();
         }
         return mItems.get(i).getItem();
     }
+
+    /*
+
+    This method has a problem.
+    If weights are equal, biased weights will all be 0, and sampling those is not correct.
 
     public V sigmaScaledSample(Random random) {
         if(mItems.isEmpty()) {
@@ -87,4 +92,5 @@ public class WeightedSampler<V> {
         }
         return mItems.get(i).getItem();
     }
+    */
 }
