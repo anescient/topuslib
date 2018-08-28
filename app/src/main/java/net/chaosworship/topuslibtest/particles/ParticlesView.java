@@ -110,7 +110,6 @@ class ParticlesView
                 requestRender();
             }
         }, 30, 30);
-
     }
 
     private void stop() {
@@ -194,6 +193,7 @@ class ParticlesView
                 if(p.pos.magnitudeSq() > mBoundRadius * mBoundRadius && p.pos.dot(p.vel) > 0) {
                     p.pos.set(random.uniformInCircle(new Circle(new Vec2(0, 0), mBoundRadius)));
                     p.vel.setZero();
+                    p.radius = 0.001f;
                     //p.vel.scale(0.99f);
                 }
 

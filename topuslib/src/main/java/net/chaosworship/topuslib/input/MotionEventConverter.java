@@ -96,6 +96,25 @@ public class MotionEventConverter {
             return latestEvent().position;
         }
 
+        public Vec2 getFuturePosition(long timestamp) {
+            Event a;
+            Event b;
+            synchronized(mEvents) {
+                b = mEvents.get(mEvents.size() - 1);
+                if(mEvents.size() > 1) {
+                    a = mEvents.get(mEvents.size() - 2);
+                } else {
+                    return b.position;
+                }
+            }
+            float mix = (timestamp - a.timestamp) / (float)(b.timestamp - a.timestamp);
+            return Vec2.mix(a.position, b.position, mix);
+        }
+
+        public long getLastTimestamp() {
+            return latestEvent().timestamp;
+        }
+
         public ArrayList<Vec2> getPath() {
             ArrayList<Vec2> path = new ArrayList<>();
             synchronized(mEvents) {

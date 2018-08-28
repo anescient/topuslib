@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
+import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import net.chaosworship.topuslib.geom2d.Circle;
@@ -16,6 +18,9 @@ import net.chaosworship.topuslib.input.MotionEventConverter;
 import net.chaosworship.topuslibtest.gl.TestLoader;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -29,11 +34,18 @@ public class InputTestView
         extends GLSurfaceView
         implements GLSurfaceView.Renderer {
 
+    private static boolean GOFAST = true;
+
     private final TestLoader mLoader;
     private final FlatViewTransform mViewTransform;
     private final MotionEventConverter mInputConverter;
 
-    private final ArrayList<Vec2> mDowns;
+    private final Vec2 mPosition;
+    private MotionEventConverter.Pointer mPointer;
+
+    private Timer mTicker;
+
+    private long mLastTimestamp;
 
     public InputTestView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -42,14 +54,19 @@ public class InputTestView
         mViewTransform = new FlatViewTransform();
         mInputConverter = new MotionEventConverter();
 
-        mDowns = new ArrayList<>();
+        mPosition = new Vec2();
+        mPointer = null;
+
+        mTicker = null;
+
+        mLastTimestamp = 0;
 
         mViewTransform.setViewZoom(300);
 
         setEGLContextClientVersion(2);
         setPreserveEGLContextOnPause(false);
         setRenderer(this);
-        setRenderMode(RENDERMODE_CONTINUOUSLY);
+        setRenderMode(GOFAST ? RENDERMODE_CONTINUOUSLY : RENDERMODE_WHEN_DIRTY);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -68,16 +85,38 @@ public class InputTestView
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
         mLoader.invalidateAll();
         mViewTransform.setViewport(width, height);
+
+        if(!GOFAST) {
+            if(mTicker != null) {
+                mTicker.cancel();
+                mTicker = null;
+            }
+            mTicker = new Timer();
+            mTicker.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    requestRender();
+                }
+            }, 50, 50);
+        }
     }
 
     @Override
     public void onDrawFrame(GL10 gl10) {
-        Vec2Transformer viewWorldTransform = mViewTransform.getViewToWorldTransformer();
-        for(Vec2 dp : mInputConverter.dumpDowns()) {
-            mDowns.add(viewWorldTransform.transform(dp));
+        long t = SystemClock.uptimeMillis();
+
+        if(mPointer == null || !mPointer.isActive()) {
+            List<MotionEventConverter.Pointer> pointers = mInputConverter.getActivePointers();
+            if(!pointers.isEmpty()) {
+                mPointer = pointers.get(0);
+            }
         }
-        while(mDowns.size() > 20) {
-            mDowns.remove(0);
+
+        if(mPointer != null) {
+            Vec2Transformer viewWorldTransform = mViewTransform.getViewToWorldTransformer();
+            mPosition.set(viewWorldTransform.transform(mPointer.getLastPosition()));
+            //mPosition.set(viewWorldTransform.transform(mPointer.getFuturePosition(t + 20)));
+            //mPosition.add(0, 1);
         }
 
         mViewTransform.callGlViewport();
@@ -87,10 +126,8 @@ public class InputTestView
         brush.begin(mViewTransform.getViewMatrix());
         brush.setColor(Color.WHITE);
         brush.setAlpha(1);
-        for(Vec2 p : mDowns) {
-            brush.drawSpot(p, 0.05f);
-            brush.drawCircle(new Circle(p, 0.1f), 0.01f);
-        }
+        brush.drawSpot(mPosition, 0.1f);
+        brush.drawCircle(new Circle(mPosition, 0.3f), 0.02f);
         brush.end();
     }
 }
