@@ -10,11 +10,13 @@ import static junit.framework.Assert.*;
 
 public class PathTest {
 
+    @Test
     public void straight() {
         Vec3 a = new Vec3(1, 1, 0);
         Vec3 b = new Vec3(0, 1, 0);
         Vec3 c = new Vec3(-1, 1, 0);
-        List<Vec3> path = Path.generateCurve(a, b, c, 99, 0.01f);
+        List<Vec3> path = new ArrayList<>();
+        Path.generateCurve(path, a, b, c, 99, 0.01f);
         assertTrue(path.size() == 3);
     }
 
@@ -23,7 +25,8 @@ public class PathTest {
         Vec3 a = new Vec3(1, 0, 0);
         Vec3 b = new Vec3(1, 1, 0);
         Vec3 c = new Vec3(0, 1, 0);
-        List<Vec3> path = Path.generateCurve(a, b, c, 99, 0.1f);
+        List<Vec3> path = new ArrayList<>();
+        Path.generateCurve(path, a, b, c, 99, 0.1f);
         assertTrue(path.size() > 3);
     }
 }
