@@ -4,11 +4,17 @@ import net.chaosworship.topuslib.geom2d.Arc;
 import net.chaosworship.topuslib.geom2d.Circle;
 import net.chaosworship.topuslib.geom2d.Vec2;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 
 public class Path {
+
+    private static final Vec3 sATrans = new Vec3();
+    private static final Vec3 sCTrans = new Vec3();
+    private static final OrthonormalBasis sBasis = new OrthonormalBasis();
+    private static final Vec3 sInTangent = new Vec3();
+    private static final Vec3 sOutTangent = new Vec3();
+    private static final Vec3 sCircleCenter = new Vec3();
 
     private Path() {}
 
@@ -16,12 +22,12 @@ public class Path {
     public static void generateCurve(Collection<Vec3> appendPath, Vec3 a, Vec3 b, Vec3 c, float maxRadius, float radiansPerSegment) {
 
         // translate everything to b = (0,0)
-        Vec3 aTrans = a.difference(b);
-        Vec3 cTrans = c.difference(b);
+        sATrans.setDifference(a, b);
+        sCTrans.setDifference(c, b);
 
-        LazyInternalAngle angle = new LazyInternalAngle(aTrans, cTrans);
+        LazyInternalAngle angle = new LazyInternalAngle(sATrans, sCTrans);
 
-        float minArm = (float)Math.sqrt(Math.min(aTrans.magnitudeSq(), cTrans.magnitudeSq()));
+        float minArm = (float)Math.sqrt(Math.min(sATrans.magnitudeSq(), sCTrans.magnitudeSq()));
         maxRadius = Math.min(maxRadius, minArm * angle.sine());
         if(maxRadius <= 0 || angle.cosine() > 0.99999f) {
             appendPath.add(a);
@@ -52,31 +58,33 @@ public class Path {
             trim = radius / tanHalfAngle;
         }
 
-        OrthonormalBasis basis = new OrthonormalBasis().setRightHandedW(cTrans, aTrans);
+        sBasis.setRightHandedW(sCTrans, sATrans);
 
-        Vec3 inTangent = new Vec3(0, 1, 0);
-        Vec3 outTangent = basis.transformedToStandardBasis(cTrans).normalize();
-        Vec3 inPoint = inTangent.scaled(trim);
-        Vec3 outPoint = outTangent.scaled(trim);
-        basis.transformFromStandardBasis(inPoint);
-        basis.transformFromStandardBasis(outPoint);
+        sInTangent.set(0, 1, 0);
+        sOutTangent.set(sCTrans);
+        sBasis.transformToStandardBasis(sOutTangent);
+        sOutTangent.normalize();
+        Vec3 inPoint = sInTangent.scaled(trim);
+        Vec3 outPoint = sOutTangent.scaled(trim);
+        sBasis.transformFromStandardBasis(inPoint);
+        sBasis.transformFromStandardBasis(outPoint);
         inPoint.add(b);
         outPoint.add(b);
 
-        double outAngle = Math.atan2(outTangent.x, -outTangent.y);
+        double outAngle = Math.atan2(sOutTangent.x, -sOutTangent.y);
         Arc arc = new Arc(new Circle(), 0, outAngle);
         int n = Math.max((int)(Math.abs(outAngle) / radiansPerSegment), 1);
 
-        Vec3 circleCenter = inTangent.sum(outTangent).normalize().scale(trim / cosHalfAngle);
+        sCircleCenter.setSum(sInTangent, sOutTangent).normalize().scale(trim / cosHalfAngle);
 
-        appendPath.add(a);
+        appendPath.add(new Vec3(a));
         appendPath.add(inPoint);
         for(Vec2 p2 : arc.getPointsAlongOpen(n)) {
-            Vec3 p = new Vec3(p2.x, p2.y, 0).scale(-radius).add(circleCenter);
-            basis.transformFromStandardBasis(p);
+            Vec3 p = new Vec3(p2.x, p2.y, 0).scale(-radius).add(sCircleCenter);
+            sBasis.transformFromStandardBasis(p);
             appendPath.add(p.add(b));
         }
         appendPath.add(outPoint);
-        appendPath.add(c);
+        appendPath.add(new Vec3(c));
     }
 }
