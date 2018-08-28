@@ -12,6 +12,7 @@ public class OrthonormalBasis {
     public final Vec3 w;
 
     private AxisAngleRotator mRotator;
+    private Vec3 mCrossTemp;
 
     @SuppressWarnings("WeakerAccess")
     public OrthonormalBasis() {
@@ -19,6 +20,7 @@ public class OrthonormalBasis {
         v = new Vec3(0, 1, 0);
         w = new Vec3(0, 0, 1);
         mRotator = null;
+        mCrossTemp = new Vec3();
     }
 
     public OrthonormalBasis set(OrthonormalBasis src) {
@@ -120,6 +122,7 @@ public class OrthonormalBasis {
     }
 
     public boolean isRightHanded() {
-        return Vec3.cross(u, v).dot(w) > 0;
+        mCrossTemp.setCross(u, v);
+        return mCrossTemp.dot(w) > 0;
     }
 }
