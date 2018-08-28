@@ -310,6 +310,14 @@ public class Vec3 implements Cloneable {
         return x * rhs.x + y * rhs.y + z * rhs.z;
     }
 
+    public float dotNormalized(Vec3 rhs) {
+        float divisor = magnitude() * rhs.magnitude();
+        if(divisor == 0) {
+            divisor = 1;
+        }
+        return (x * rhs.x + y * rhs.y + z * rhs.z) / divisor;
+    }
+
     @SuppressWarnings("SuspiciousNameCombination")
     public Vec3 setArbitraryPerpendicular(Vec3 v) {
         if(v.isZero()) {

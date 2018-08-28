@@ -5,6 +5,7 @@ import net.chaosworship.topuslib.random.SuperRandom;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.Assert.*;
 
@@ -46,8 +47,23 @@ public class Vec3Test {
         }
     }
 
-    static boolean epsilonMagnitudeEquals(Vec3 v, float mag) {
-        return Math.abs(v.magnitude() - mag) < 0.000001;
+    @Test
+    public void dotNormalized() {
+        List<Vec3> aaa = someRandomVectors(100);
+        List<Vec3> bbb = someRandomVectors(aaa.size());
+        for(int i = 0; i < aaa.size(); i++) {
+            Vec3 a = aaa.get(i);
+            Vec3 b = bbb.get(i);
+            assertTrue(epsilonEquals(a.normalized().dot(b.normalized()), a.dotNormalized(b)));
+        }
+    }
+
+    private static boolean epsilonMagnitudeEquals(Vec3 v, float mag) {
+        return epsilonEquals(v.magnitude(), mag);
+    }
+
+    private static boolean epsilonEquals(float a, float b) {
+        return Math.abs(a - b) < 0.000001;
     }
 
     static ArrayList<Vec3> someRandomUnitVectors(int count) {
