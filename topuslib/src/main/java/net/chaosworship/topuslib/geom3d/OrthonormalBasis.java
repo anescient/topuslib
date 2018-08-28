@@ -43,7 +43,7 @@ public class OrthonormalBasis {
         if(mRotator == null) {
             mRotator = new AxisAngleRotator();
         }
-        mRotator.capture(this.w, w.normalized());
+        mRotator.capture(this.w, w);
         mRotator.rotate(this.u);
         mRotator.rotate(this.v);
         mRotator.rotate(this.w);
@@ -57,7 +57,7 @@ public class OrthonormalBasis {
         if(!isRightHanded()) {
             this.u.negate();
         }
-        this.v.setCross(this.w, this.u).normalize();
+        this.v.setCross(this.w, this.u);
         return this;
     }
 
@@ -68,7 +68,7 @@ public class OrthonormalBasis {
         if(!isRightHanded()) {
             this.v.negate();
         }
-        this.u.setCross(this.v, this.w).normalize();
+        this.u.setCross(this.v, this.w);
         return this;
     }
 
@@ -79,7 +79,7 @@ public class OrthonormalBasis {
         if(!isRightHanded()) {
             this.w.negate();
         }
-        this.u.setCross(this.v, this.w).normalize();
+        this.u.setCross(this.v, this.w);
         return this;
     }
 

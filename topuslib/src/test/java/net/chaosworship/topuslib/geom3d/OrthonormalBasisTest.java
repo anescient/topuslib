@@ -35,7 +35,6 @@ public class OrthonormalBasisTest {
             uvw.setArbitraryAboutW(p);
             assertOrthogonal(uvw);
             assertTrue(uvw.isRightHanded());
-
         }
     }
 
@@ -67,17 +66,19 @@ public class OrthonormalBasisTest {
             assertTrue(uvw.isRightHanded());
             assertOrthogonal(uvw);
             assertRoundTrip(uvw);
+            assertUnit(uvw);
 
             uvw.setRightHandedV(p, q);
             assertTrue(uvw.isRightHanded());
             assertOrthogonal(uvw);
             assertRoundTrip(uvw);
-
+            assertUnit(uvw);
 
             uvw.setRightHandedW(p, q);
             assertTrue(uvw.isRightHanded());
             assertOrthogonal(uvw);
             assertRoundTrip(uvw);
+            assertUnit(uvw);
 
             // Path.generateCurve() depends on this
             uvw.setRightHandedW(q, p);
@@ -110,6 +111,7 @@ public class OrthonormalBasisTest {
             assertOrthogonal(uvw.v, w);
             assertOrthogonal(uvw);
             assertTrue(uvw.isRightHanded());
+            assertUnit(uvw);
         }
     }
 
@@ -132,6 +134,7 @@ public class OrthonormalBasisTest {
             assertOrthogonal(uvw.u, alignment);
             assertOrthogonal(uvw.v, alignment);
             assertTrue(uvw.isRightHanded());
+            assertUnit(uvw);
         }
     }
 
@@ -161,6 +164,16 @@ public class OrthonormalBasisTest {
     private static void assertOrthogonal(Vec3 a, Vec3 b) {
         assertTrue(!a.isZero() && !b.isZero());
         assertTrue(Math.abs(a.normalized().dot(b.normalized())) < 0.00001f);
+    }
+
+    private static void assertUnit(OrthonormalBasis uvw) {
+        assertUnit(uvw.u);
+        assertUnit(uvw.v);
+        assertUnit(uvw.w);
+    }
+
+    private static void assertUnit(Vec3 v) {
+        assertTrue(Math.abs(1 - v.magnitude()) < 0.00001f);
     }
 
     private static boolean vectorsEqual(Vec3 a, Vec3 b) {
