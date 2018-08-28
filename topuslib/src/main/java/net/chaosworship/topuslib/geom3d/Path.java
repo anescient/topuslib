@@ -1,9 +1,5 @@
 package net.chaosworship.topuslib.geom3d;
 
-import net.chaosworship.topuslib.geom2d.Arc;
-import net.chaosworship.topuslib.geom2d.Circle;
-import net.chaosworship.topuslib.geom2d.Vec2;
-
 import java.util.Collection;
 
 
@@ -72,15 +68,15 @@ public class Path {
         outPoint.add(b);
 
         double outAngle = Math.atan2(sOutTangent.x, -sOutTangent.y);
-        Arc arc = new Arc(new Circle(), 0, outAngle);
         int n = Math.max((int)(Math.abs(outAngle) / radiansPerSegment), 1);
 
         sCircleCenter.setSum(sInTangent, sOutTangent).normalize().scale(trim / cosHalfAngle);
 
         appendPath.add(new Vec3(a));
         appendPath.add(inPoint);
-        for(Vec2 p2 : arc.getPointsAlongOpen(n)) {
-            Vec3 p = new Vec3(p2.x, p2.y, 0).scale(-radius).add(sCircleCenter);
+        for(int i = 0; i < n; i++) {
+            double theta = (double)(i + 1) * (outAngle) / (n + 1);
+            Vec3 p = new Vec3((float)Math.cos(theta), (float)Math.sin(theta), 0).scale(-radius).add(sCircleCenter);
             sBasis.transformFromStandardBasis(p);
             appendPath.add(p.add(b));
         }
