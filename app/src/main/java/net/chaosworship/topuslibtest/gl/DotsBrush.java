@@ -81,19 +81,21 @@ public class DotsBrush extends Brush {
 
         mVertexPreBuffer = new FloatVertexPreBuffer(BATCHSIZE * VERTEXSIZE * VERTICESPER, true);
         for(int quadi = 0; quadi < BATCHSIZE; quadi++) {
-            mVertexPreBuffer.skip(2);
-            mVertexPreBuffer.put(0); // texture coordinates
-            mVertexPreBuffer.put(1);
-            mVertexPreBuffer.skip(3);
-            mVertexPreBuffer.put(1);
-            mVertexPreBuffer.put(1);
-            mVertexPreBuffer.skip(3);
-            mVertexPreBuffer.put(1);
-            mVertexPreBuffer.put(0);
-            mVertexPreBuffer.skip(3);
-            mVertexPreBuffer.put(0);
-            mVertexPreBuffer.put(0);
-            mVertexPreBuffer.skip(1);
+            mVertexPreBuffer.skipVec2();
+            mVertexPreBuffer.put(0, 1); // texture coordinates
+            mVertexPreBuffer.skipFloat();
+
+            mVertexPreBuffer.skipVec2();
+            mVertexPreBuffer.put(1, 1);
+            mVertexPreBuffer.skipFloat();
+
+            mVertexPreBuffer.skipVec2();
+            mVertexPreBuffer.put(1, 0);
+            mVertexPreBuffer.skipFloat();
+
+            mVertexPreBuffer.skipVec2();
+            mVertexPreBuffer.put(0, 0);
+            mVertexPreBuffer.skipFloat();
         }
         mVertexPreBuffer.reset();
 
@@ -175,24 +177,20 @@ public class DotsBrush extends Brush {
             flush();
         }
 
-        mVertexPreBuffer.put(position.x - radius);
-        mVertexPreBuffer.put(position.y - radius);
-        mVertexPreBuffer.skip(2); // skip texture coords
+        mVertexPreBuffer.put(position.x - radius, position.y - radius);
+        mVertexPreBuffer.skipVec2();
         mVertexPreBuffer.put(alpha);
 
-        mVertexPreBuffer.put(position.x - radius);
-        mVertexPreBuffer.put(position.y + radius);
-        mVertexPreBuffer.skip(2); // skip texture coords
+        mVertexPreBuffer.put(position.x - radius, position.y + radius);
+        mVertexPreBuffer.skipVec2();
         mVertexPreBuffer.put(alpha);
 
-        mVertexPreBuffer.put(position.x + radius);
-        mVertexPreBuffer.put(position.y + radius);
-        mVertexPreBuffer.skip(2); // skip texture coords
+        mVertexPreBuffer.put(position.x + radius, position.y + radius);
+        mVertexPreBuffer.skipVec2();
         mVertexPreBuffer.put(alpha);
 
-        mVertexPreBuffer.put(position.x + radius);
-        mVertexPreBuffer.put(position.y - radius);
-        mVertexPreBuffer.skip(2); // skip texture coords
+        mVertexPreBuffer.put(position.x + radius, position.y - radius);
+        mVertexPreBuffer.skipVec2();
         mVertexPreBuffer.put(alpha);
 
         mQuadsBuffered++;

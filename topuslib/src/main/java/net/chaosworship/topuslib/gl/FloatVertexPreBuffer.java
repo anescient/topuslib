@@ -92,8 +92,20 @@ public class FloatVertexPreBuffer {
         }
     }
 
-    public void skip(int count) {
+    public void skipFloats(int count) {
         mFloatsBuffered += count;
+    }
+
+    public void skipFloat() {
+        skipFloats(1);
+    }
+
+    public void skipVec2() {
+        skipFloats(2);
+    }
+
+    public void skipVec3() {
+        skipFloats(3);
     }
 
     public void glBufferDataArray() {

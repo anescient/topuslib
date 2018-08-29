@@ -82,16 +82,16 @@ public class FlatFillBrush extends Brush {
         mVertexPreBuffer = new FloatVertexPreBuffer(VERTEXSIZE * VERTICESPER, false);
 
         mVertexPreBuffer.put(-1, -1);
-        mVertexPreBuffer.skip(2);
+        mVertexPreBuffer.skipVec2();
 
         mVertexPreBuffer.put(1, -1);
-        mVertexPreBuffer.skip(2);
+        mVertexPreBuffer.skipVec2();
 
         mVertexPreBuffer.put(1, 1);
-        mVertexPreBuffer.skip(2);
+        mVertexPreBuffer.skipVec2();
 
         mVertexPreBuffer.put(-1, 1);
-        mVertexPreBuffer.skip(2);
+        mVertexPreBuffer.skipVec2();
 
         mVertexBufferHandle = generateBuffer();
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBufferHandle);
@@ -124,16 +124,16 @@ public class FlatFillBrush extends Brush {
 
         mVertexPreBuffer.reset();
 
-        mVertexPreBuffer.skip(2);
+        mVertexPreBuffer.skipVec2();
         mVertexPreBuffer.put(0, 0);
 
-        mVertexPreBuffer.skip(2);
+        mVertexPreBuffer.skipVec2();
         mVertexPreBuffer.put(1 / xScale, 0);
 
-        mVertexPreBuffer.skip(2);
+        mVertexPreBuffer.skipVec2();
         mVertexPreBuffer.put(1 / xScale, 1 / yScale);
 
-        mVertexPreBuffer.skip(2);
+        mVertexPreBuffer.skipVec2();
         mVertexPreBuffer.put(0, 1 / yScale);
 
         mVertexPreBuffer.glBufferDataArray();
