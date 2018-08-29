@@ -7,6 +7,8 @@ import net.chaosworship.topuslib.geom2d.Vec2;
 import net.chaosworship.topuslib.math.Spline;
 import net.chaosworship.topuslib.tuple.IntTriple;
 
+import java.util.Random;
+
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Vec3 implements Cloneable {
@@ -105,6 +107,19 @@ public class Vec3 implements Cloneable {
         return new Vec2(this.x, this.y);
     }
 
+    ///////////////////////////////////////////////////
+
+    public Vec3 setRandomOnUnitSphere(Random random) {
+        double theta = 2 * Math.PI * random.nextDouble();
+        z = random.nextFloat() * 2 - 1;
+        float rt = (float)Math.sqrt(1 - z * z);
+        x = rt * (float)Math.cos(theta);
+        y = rt * (float)Math.sin(theta);
+        return this;
+    }
+
+    ///////////////////////////////////////////////////
+
     // u in [0,1]
     public Vec3 setCubicBSpline(Vec3 a, Vec3 b, Vec3 c, Vec3 d, float u) {
         x = Spline.CubicBSpline(a.x, b.x, c.x, d.x, u);
@@ -160,6 +175,8 @@ public class Vec3 implements Cloneable {
         z = Spline.SavitzkyGolay(a.z, b.z, c.z, d.z, e.z);
         return this;
     }
+
+    ///////////////////////////////////////////////////
 
     public static Vec3 midpoint(Vec3 a, Vec3 b) {
         return new Vec3().setMidpoint(a, b);

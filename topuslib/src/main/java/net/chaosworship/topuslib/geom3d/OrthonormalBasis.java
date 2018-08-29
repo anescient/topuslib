@@ -1,7 +1,7 @@
 package net.chaosworship.topuslib.geom3d;
 
-
 import net.chaosworship.topuslib.geom3d.transform.AxisAngleRotator;
+
 
 @SuppressWarnings("UnusedReturnValue")
 public class OrthonormalBasis {
@@ -122,7 +122,6 @@ public class OrthonormalBasis {
     }
 
     public boolean isRightHanded() {
-        mCrossTemp.setCross(u, v);
-        return mCrossTemp.dot(w) > 0;
+        return mCrossTemp.setCross(u, v).dot(w) > 0;
     }
 }

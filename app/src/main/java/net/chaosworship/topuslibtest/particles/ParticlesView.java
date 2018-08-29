@@ -167,7 +167,7 @@ class ParticlesView
         SuperRandom random = SuperRandom.getInstance();
         for(int i = 0; i < 500; i++) {
             Particle p = new Particle();
-            p.pos.set(random.uniformInCircle(insertArea));
+            p.pos.setRandomInCircle(random, insertArea);
             p.vel.setZero();
             float r = random.nextFloat();
             p.radius = 0.03f + (float)Math.pow(r, 3) * 0.03f;
@@ -191,7 +191,7 @@ class ParticlesView
 
             for(Particle p : mParticles) {
                 if(p.pos.magnitudeSq() > mBoundRadius * mBoundRadius && p.pos.dot(p.vel) > 0) {
-                    p.pos.set(random.uniformInCircle(new Circle(new Vec2(0, 0), mBoundRadius)));
+                    p.pos.setRandomInCircle(random, mBoundRadius);
                     p.vel.setZero();
                     p.radius = 0.001f;
                     //p.vel.scale(0.99f);

@@ -5,6 +5,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import net.chaosworship.topuslib.math.Spline;
+import net.chaosworship.topuslib.random.SuperRandom;
+
+import java.util.Random;
 
 
 @SuppressWarnings({"unused", "WeakerAccess", "UnusedReturnValue", "SameParameterValue"})
@@ -89,6 +92,60 @@ public class Vec2 implements Cloneable, Parcelable {
         return this;
     }
 
+    ///////////////////////////////////////////////////
+
+    public Vec2 setRandomInRect(Rectangle rect, SuperRandom random) {
+        x = random.uniformInRange(rect.minx, rect.maxx);
+        y = random.uniformInRange(rect.miny, rect.maxy);
+        return this;
+    }
+
+    public Vec2 setRandomOnRect(Rectangle rect, Random random) {
+        float h = rect.height();
+        float w = rect.width();
+        float u = random.nextFloat() * (h * 2 + w * 2);
+        if(u < h) {
+            x = rect.minx;
+            y = rect.miny + u;
+            return this;
+        }
+        u -= h;
+        if(u < h) {
+            x = rect.maxx;
+            y = rect.miny + u;
+            return this;
+        }
+        u -= h;
+        if(u < w) {
+            x = rect.minx + u;
+            y = rect.miny;
+            return this;
+        }
+        u -= w;
+        x = rect.minx + u;
+        y = rect.maxy;
+        return this;
+    }
+
+    public Vec2 setRandomUnit(Random random) {
+        setUnit(random.nextDouble() * Math.PI * 2);
+        return this;
+    }
+
+    public Vec2 setRandomInCircle(Random random, float radius) {
+        setRandomUnit(random);
+        scale(radius * (float)Math.sqrt(random.nextDouble()));
+        return this;
+    }
+
+    public Vec2 setRandomInCircle(Random random, Circle circle) {
+        setRandomInCircle(random, circle.radius);
+        add(circle.center);
+        return this;
+    }
+
+    ///////////////////////////////////////////////////
+
     // u in [0,1]
     public Vec2 setCubicBSpline(Vec2 a, Vec2 b, Vec2 c, Vec2 d, float u) {
         x = Spline.CubicBSpline(a.x, b.x, c.x, d.x, u);
@@ -137,6 +194,8 @@ public class Vec2 implements Cloneable, Parcelable {
         y = Spline.SavitzkyGolay(a.y, b.y, c.y, d.y, e.y);
         return this;
     }
+
+    ///////////////////////////////////////////////////
 
     public static Vec2 midpoint(Vec2 a, Vec2 b) {
         return new Vec2().setMidpoint(a, b);

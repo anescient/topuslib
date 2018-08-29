@@ -23,7 +23,7 @@ public class PoissonDiskFill {
         Rectangle searchRect = new Rectangle();
         ArrayList<Vec2> points = new ArrayList<>();
         RandomQueue<Vec2> active = new RandomQueue<>(sRandom);
-        points.add(sRandom.uniformInRect(area));
+        points.add(new Vec2().setRandomInRect(area, sRandom));
         active.add(points.get(0));
         locator.insert(points.get(0), points.get(0));
         while(!active.isEmpty()) {
