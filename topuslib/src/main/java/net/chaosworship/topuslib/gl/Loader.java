@@ -164,19 +164,19 @@ public class Loader {
 
     public FrameBuffer getFrameBuffer(String name, int width, int height, FrameBuffer.Format format) throws LoaderException {
         if(!mFrameBuffers.containsKey(name)) {
-            FrameBuffer newFB;
             try {
-                newFB = new FrameBuffer(width, height, format);
+                mFrameBuffers.put(name, new FrameBuffer(width, height, format));
             } catch (LoaderException e) {
-                e.printStackTrace();
-                newFB = null;
+                mFrameBuffers.put(name, null);
+                throw e;
             }
-
-            mFrameBuffers.put(name, newFB);
         }
 
         FrameBuffer frameBuffer = mFrameBuffers.get(name);
-        if(frameBuffer != null && !frameBuffer.isSize(width, height)) {
+        if(frameBuffer == null) {
+            throw new LoaderException("framebuffer " + name + " already failed");
+        }
+        if(!frameBuffer.isSize(width, height)) {
             throw new LoaderException("possible frame buffer name collision");
         }
         return frameBuffer;
