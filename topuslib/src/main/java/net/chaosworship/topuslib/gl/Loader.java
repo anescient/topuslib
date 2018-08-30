@@ -17,7 +17,11 @@ import java.util.Scanner;
 
 import static android.opengl.GLES20.GL_COMPILE_STATUS;
 import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
+import static android.opengl.GLES20.GL_INVALID_OPERATION;
+import static android.opengl.GLES20.GL_INVALID_VALUE;
 import static android.opengl.GLES20.GL_LINK_STATUS;
+import static android.opengl.GLES20.GL_NO_ERROR;
+import static android.opengl.GLES20.GL_OUT_OF_MEMORY;
 import static android.opengl.GLES20.GL_RGB;
 import static android.opengl.GLES20.GL_RGBA;
 import static android.opengl.GLES20.GL_TEXTURE_2D;
@@ -33,6 +37,7 @@ import static android.opengl.GLES20.glCreateShader;
 import static android.opengl.GLES20.glGenFramebuffers;
 import static android.opengl.GLES20.glGenRenderbuffers;
 import static android.opengl.GLES20.glGenTextures;
+import static android.opengl.GLES20.glGetError;
 import static android.opengl.GLES20.glGetProgramInfoLog;
 import static android.opengl.GLES20.glGetProgramiv;
 import static android.opengl.GLES20.glGetShaderInfoLog;
@@ -317,6 +322,7 @@ public class Loader {
         glBindTexture(GL_TEXTURE_2D, handle);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
         glBindTexture(GL_TEXTURE_2D, 0);
+        checkGlError();
         return handle;
     }
 
@@ -325,6 +331,7 @@ public class Loader {
         glBindTexture(GL_TEXTURE_2D, handle);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, null);
         glBindTexture(GL_TEXTURE_2D, 0);
+        checkGlError();
         return handle;
     }
 
@@ -365,6 +372,24 @@ public class Loader {
             fOut.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    static void checkGlError() throws LoaderException {
+        // glGetError could report multiple errors (needs to be called repeatedly)
+        // but fuck it, throw the first one
+        int error = glGetError();
+        switch(error) {
+            case GL_NO_ERROR:
+                break;
+            default:
+                throw new LoaderException(String.format("gl error %d", error));
+            case GL_OUT_OF_MEMORY:
+                throw new LoaderException("gl error out of memory");
+            case GL_INVALID_VALUE:
+                throw new LoaderException("gl invalid value");
+            case GL_INVALID_OPERATION:
+                throw new LoaderException("gl invalid operation");
         }
     }
 }

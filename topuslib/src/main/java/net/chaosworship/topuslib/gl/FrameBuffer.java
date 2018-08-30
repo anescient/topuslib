@@ -14,6 +14,7 @@ import static android.opengl.GLES20.glFramebufferRenderbuffer;
 import static android.opengl.GLES20.glFramebufferTexture2D;
 import static android.opengl.GLES20.glRenderbufferStorage;
 import static android.opengl.GLES20.glViewport;
+import static net.chaosworship.topuslib.gl.Loader.checkGlError;
 
 
 public class FrameBuffer {
@@ -50,11 +51,14 @@ public class FrameBuffer {
         int depthRBO = Loader.genRenderBuffer();
         glBindRenderbuffer(GL_RENDERBUFFER, depthRBO);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, mWidth, mHeight);
+        checkGlError();
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mColorTexture, 0);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRBO);
+        checkGlError();
+
         int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         if(status != GL_FRAMEBUFFER_COMPLETE) {
